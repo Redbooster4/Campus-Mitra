@@ -1,5 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE students(
 	student_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	full_name VARCHAR(100) NOT NULL,
@@ -46,4 +48,16 @@ CREATE TABLE chat_history(
 	user_message TEXT,
 	ai_reply TEXT,
 	created_at TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE users_auth(
+    user_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    counselor_id INTEGER REFERENCES counselors(counselor_id) ON DELETE CASCADE,
+    student_id UUID REFERENCES students(student_id) ON DELETE CASCADE,
+
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+	role VARCHAR(20) NOT NULL CHECK(role IN ('Admin', 'Counselor', 'Student')),
+
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
