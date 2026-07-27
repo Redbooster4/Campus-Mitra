@@ -6,9 +6,8 @@ import axios from 'axios';
 function Login() {
     const [data, setData] = useState({
         username: "",
-        email: "",
+        role: "",
         password: "",
-        otp: ""
     })
     const [isRegister, setIsRegister] = useState(false);
     const [error, setError] = useState("");
@@ -31,15 +30,15 @@ function Login() {
         }
         try{
             setLoading(true);
-                // const resp = await axios.post(
-                // "http://localhost:3000/api/auth/login",
-                // {
-                //     identifier: data.email || data.username, 
-                //     password: data.password
-                // },
-                // {
-                //     withCredentials: true
-                // });
+                const resp = await axios.post(
+                "http://localhost:3000/api/auth/login",
+                {
+                    username: data.username,
+                    password: data.password
+                },
+                {
+                    withCredentials: true
+                });
                 localStorage.setItem("token", resp.data.token);
             }
         catch(err){
@@ -72,16 +71,16 @@ function Login() {
         }
         try{
             setLoading(true);
-            // const resp = await axios.post(
-            // "http://localhost:3000/api/auth/register",
-            // {
-            //     username: data.username,
-            //     email: data.email, 
-            //     password: data.password
-            // },
-            // {
-            //     withCredentials: true
-            // });
+            const resp = await axios.post(
+            "http://localhost:3000/api/auth/register",
+            {
+                username: data.username,
+                role: data.role, 
+                password: data.password
+            },
+            {
+                withCredentials: true
+            });
         }
         catch(err){
             console.log("Registeration Error Occured: ", err);
