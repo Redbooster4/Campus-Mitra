@@ -106,7 +106,7 @@ async function getUser(req, res) {
             WHERE user_id = $1
             `, [decoded.id]
             );
-            if(result.row.length === 0){
+            if(result.rows.length === 0){
                 return res.status(404).json({
                     success:false,
                     "message": "User Not Found"
@@ -114,7 +114,7 @@ async function getUser(req, res) {
             }
             return res.status(200).json({
                 success: true,
-                user: result.row[0]
+                user: result.rows[0]
             })
         }
         catch(err) {

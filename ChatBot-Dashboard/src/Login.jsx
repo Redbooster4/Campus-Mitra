@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PixelTrail from './components/PixelTrail';
 import axios from 'axios';
-
+// npm install three @react-three/fiber @react-three/drei axios react-router-dom tailwindcss @tailwindcss/vite
 function Login() {
     const [data, setData] = useState({
         username: "",
@@ -12,7 +12,6 @@ function Login() {
     })
     const [isRegister, setIsRegister] = useState(false);
     const [error, setError] = useState("");
-    const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -83,9 +82,6 @@ function Login() {
             // {
             //     withCredentials: true
             // });
-            if(resp.status === 201){
-                setStep(2);
-            }
         }
         catch(err){
             console.log("Registeration Error Occured: ", err);
@@ -125,6 +121,12 @@ function Login() {
             setLoading(false);
         }
     }
+
+    async function handleLogout(){
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        navigate("/login");
+    }
     return (
         <div className="flex min-h-screen" style={{ background: "#0E0C1A" }}>
             <div className="hidden md:flex w-1/2 items-center justify-center relative overflow-hidden" style={{ background: "#0c091b" }}>
@@ -139,9 +141,9 @@ function Login() {
                     gooStrength={2}
                 />
                 <div className="absolute text-center pointer-events-none">
-                    <div className="text-5xl mb-4" style={{ color: "#594bf9" }}>✦</div>
+                    <div className="text-5xl mb-4" style={{ color: "#594bf9" }}>🤖</div>
                     <h1 className="text-4xl font-bold mb-2" style={{ color: "#EEEDFE" }}>Welcome Back</h1>
-                    <p className="text-sm" style={{ color: "#594bf9" }}>Your canvas is waiting</p>
+                    <p className="text-sm" style={{ color: "#594bf9" }}>Your ChatBot is waiting</p>
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center flex-1 px-8" style={{ background: "#1a1556" }}>
@@ -152,9 +154,9 @@ function Login() {
                         }
                     </h1>
                     <p className="text-sm mb-8" style={{ color: "#594bf9" }}>
-                        {isRegister && step === 2 ? `Enter the OTP sent to ${data.email}`: `Enter your credentials to continue`} 
+                        Enter your credentials to continue
                     </p>
-                    {isRegister && step === 1 && (
+                    {isRegister && (
                         <div className="flex flex-col w-full">
                             <input
                                 type="text"
@@ -169,19 +171,25 @@ function Login() {
                                     color: "#EEEDFE",
                                 }}
                             />
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Email"
-                                value={data.email}
+                            <select
+                                name="role"
+                                value={data.role}
                                 onChange={handleChange}
-                                className="w-full rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-white"
+                                className="w-full rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-white appearance-none cursor-pointer"
                                 style={{
                                     background: "#0E0C1A",
                                     border: "1px solid #594bf9",
                                     color: "#EEEDFE",
                                 }}
-                            />
+                            >
+                                <option value="" disabled hidden>
+                                    Select your role
+                                </option>
+                                <option value="student" style={{ background: "#0E0C1A" }}>Student</option>
+                                <option value="admin" style={{ background: "#0E0C1A" }}>Admin</option>
+                                <option value="counselor" style={{ background: "#0E0C1A" }}>Counselor</option>
+                            </select>
+
                             <input
                                 type="password"
                                 name="password"
@@ -202,43 +210,18 @@ function Login() {
                                 onMouseLeave={e => e.target.style.background="#594bf9"}
                                 onClick={handleRegisterInitiate}
                                 disabled={loading}>
-                                {loading?"Sending Code...": "Send Verification Code"}
+                                Register
                             </button>
                         </div>
                     )}
                     
-                    {isRegister && step === 2 && (
-                        <div className="flex flex-col w-full gap-4">
-                            <input
-                                type="text"
-                                name="otp"
-                                placeholder="Enter your 6-digit OTP"
-                                value={data.otp}
-                                onChange={handleChange}
-                                className="w-full rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-white"
-                                style={{ background: "#0E0C1A", border: "1px solid #594bf9", color: "#EEEDFE" }}
-                            />
-                            <button
-                                onClick={handleVerifyAndRegister}
-                                disabled={loading}
-                                className="w-full font-semibold py-3 rounded-xl transition"
-                                style={{ background: "#594bf9", color: "#EEEDFE" }}>
-                                {loading ? "Verifying...":"Verify & Complete Registration"}
-                            </button>
-                            <button
-                                onClick={() => setStep(1)} 
-                                className="text-sm underline cursor-pointer self-center" 
-                                style={{ color: "#7F77DD" }}>
-                                Go Back / Edit Details
-                            </button>
-                        </div>
-                    )}
+                    
                     {!isRegister && (
                         <div className="flex flex-col gap-5 w-full">
                             <input
                                 type="text"
                                 name="email"
-                                placeholder="Username or Email"
+                                placeholder="Username"
                                 value={data.email}
                                 onChange={handleChange}
                                 className="w-full rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-white"
@@ -282,7 +265,6 @@ function Login() {
                             style={{ color: "#ffffff" }} 
                             onClick={() => {
                                 setIsRegister(!isRegister);
-                                setStep(1);
                                 setError("");
                             }}> 
                                 {isRegister?" Log In":" Sign up"}
