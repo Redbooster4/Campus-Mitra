@@ -1,16 +1,13 @@
 import argparse
-import os
-import shutil
 import chromadb
 
-from langchain_community.document_loaders import PyPDFDirectoryLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_ollama import ChatOllama
 from langchain.prompts import ChatPromptTemplate
 from get_embedding_function import get_embedding_function
 
 CHROMA_PATH="chroma_sbmp"
+COLLECTION_NAME="sbmp_final_year_project"
 
 model = ChatOllama(
     model="llama3.2:3b",
@@ -20,11 +17,9 @@ model = ChatOllama(
     # other params ...
 )
 
-messages = [
-    ("system", "You are a helpful translator. Translate the user sentence to French."),
-    ("human", "I love programming."),
-]
-model.invoke(messages)
+PROMPT_TEMPLATE="""
+
+"""
 
 # PROMPT_TEMPLATE="""
 # You are the AI Admission Assistant for Shri Bhagubhai Mafatlal Polytechnic and College of Engineering(SBMP).
