@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PixelTrail from './components/PixelTrail';
-import axios from 'axios';
+import api from './api/api.js';
+
 // npm install three @react-three/fiber @react-three/drei axios react-router-dom tailwindcss @tailwindcss/vite
 function Login() {
     const [data, setData] = useState({
         username: "",
-        role: "",
+        role: "Student",
         password: "",
     })
     const [isRegister, setIsRegister] = useState(false);
@@ -20,8 +21,8 @@ function Login() {
     
     async function handleLogin(e){
         setError("");
-        if(!data.email.trim() || !data.password.trim()){
-            setError("Username/Email and Password are required");
+        if(!data.username.trim() || !data.password.trim()){
+            setError("Username and Password are required");
             return;
         }
         if(data.password.length < 6){
@@ -30,18 +31,29 @@ function Login() {
         }
         try{
             setLoading(true);
-                const resp = await axios.post(
-                "http://localhost:3000/api/auth/login",
+                const resp = await api.post(
+                "/auth/login",
                 {
                     username: data.username,
                     password: data.password
                 },
-                {
-                    withCredentials: true
-                });
-                localStorage.setItem("token", resp.data.token);
-            }
-        catch(err){
+                { withCredentials: true });
+
+                if(resp.data?.success && resp.data?.token){
+                    localStorage.setItem("token", resp.data.token);
+                }
+
+                const user = resp.data?.user;
+                if(user?.role === "Student" && !user?.student_id){
+                    navigate("/onboarding/student-profile");
+                } 
+                else if(user?.role === "Counselor" && !user?.counselor_id){
+                    navigate("/onboarding/counselor-profile");
+                } 
+                else{
+                    navigate("/home");
+                }
+            } catch(err){
             console.log("Login Error Occured: ", err);
             const backendMessage = err.response?.data?.message;
             setError(backendMessage || "Login Failed");
@@ -52,13 +64,12 @@ function Login() {
     }
 
     async function handleRegisterInitiate(e){
+        if(e && e.preventDefault){
+            e.preventDefault();
+        }
         setError("");
         if(!data.username.trim()){
             setError("Username is Required")
-            return
-        }
-        if(!data.email.trim()){
-            setError("Email is Required")
             return
         }
         if(!data.password.trim()){
@@ -71,20 +82,32 @@ function Login() {
         }
         try{
             setLoading(true);
-            const resp = await axios.post(
-            "http://localhost:3000/api/auth/register",
+            const resp = await api.post(
+            "/auth/register",
             {
                 username: data.username,
                 role: data.role, 
                 password: data.password
             },
-            {
-                withCredentials: true
-            });
+            { withCredentials: true });
+            if(resp.data?.success && resp.data?.token){
+                localStorage.setItem("token", resp.data.token);
+            }
+            const user = resp.data?.user;
+            if(user?.role === "Student" && !user?.student_id){
+                navigate("/onboarding/student-profile");
+            }
+            else if(user?.role === "Counselor" && !user?.counselor_id){
+                navigate("/onboarding/counselor-profile");
+            }
+            else{
+                navigate("/home");
+            }
         }
         catch(err){
             console.log("Registeration Error Occured: ", err);
             const backendMessage = err.response?.data?.message;
+            console.log("Backend Message: ", backendMessage);
             setError(backendMessage || "Registeration Failed");
         }
         finally {
@@ -92,38 +115,16 @@ function Login() {
         } 
     }
 
-    async function handleVerifyAndRegister(){
-        setError("");
-        if(!data.otp.trim()){
-            setError("OTP Required");
-            return;
-        }
+    async function handleLogout(){
         try{
-            setLoading(true);
-            // const resp = await axios.post(
-            //     "http://localhost:3000/api/auth/verify",
-            //     {
-            //         email: data.email,
-            //         otp: data.otp
-            //     },
-            //     { withCredentials: true }
-            // );
-            // localStorage.setItem("token", resp.data.token);
-            // navigate("/dashboard");
-        } 
+            await api.post("/auth/logout", {}, { withCredentials: true });
+        }
         catch(err){
-            console.error("Verification Error Occurred: ",err);
-            const backendMessage=err.response?.data?.message;
-            setError(backendMessage || "Invalid OTP verification code.");
+            console.log("Logout Error Occured: ", err);
         }
         finally{
-            setLoading(false);
+            localStorage.removeItem("token");
         }
-    }
-
-    async function handleLogout(){
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
         navigate("/login");
     }
     return (
@@ -184,10 +185,11 @@ function Login() {
                                 <option value="" disabled hidden>
                                     Select your role
                                 </option>
-                                <option value="student" style={{ background: "#0E0C1A" }}>Student</option>
-                                <option value="admin" style={{ background: "#0E0C1A" }}>Admin</option>
-                                <option value="counselor" style={{ background: "#0E0C1A" }}>Counselor</option>
+                                <option value="Student" style={{ background: "#0E0C1A" }}>Student</option>
+                                <option value="Admin" style={{ background: "#0E0C1A" }}>Admin</option>
+                                <option value="Counselor" style={{ background: "#0E0C1A" }}>Counselor</option>
                             </select>
+
 
                             <input
                                 type="password"
@@ -219,9 +221,9 @@ function Login() {
                         <div className="flex flex-col gap-5 w-full">
                             <input
                                 type="text"
-                                name="email"
+                                name="username"
                                 placeholder="Username"
-                                value={data.email}
+                                value={data.username}
                                 onChange={handleChange}
                                 className="w-full rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-white"
                                 style={{

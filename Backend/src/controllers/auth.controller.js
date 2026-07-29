@@ -11,21 +11,6 @@ const registerUser = async (req, res) => {
                 message: "Fill all required fields (username, password, role)."
             });
         }
-
-        // 1. Fixed table name: users -> users_auth
-        const userExists = await pool.query(
-            `SELECT user_id FROM users_auth WHERE username = $1`,
-            [username]
-        );
-
-        if (userExists.rows.length > 0) {
-            return res.status(409).json({
-                success: false,
-                message: "Username already exists"
-            });
-        }
-
-        // 2. Fixed table name & added RETURNING clause
         const result = await pool.query(
             `INSERT INTO users_auth (
                 username,
@@ -41,19 +26,30 @@ const registerUser = async (req, res) => {
             )
             RETURNING user_id, username, role, student_id, counselor_id`,
             [
-                username,
+                username.trim(),
                 password,
                 role,
                 student_id || null,
                 counselor_id || null
             ]
         );
-
-        // 3. Fixed typo: result.rows instead of result.row
+        console.log(result);
+        const user = result.rows[0];
+        const token=jwt.sign(
+            {
+                user_id: user.user_id,
+                role: user.role,
+                username: user.username
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+        console.log("User Registered:", user);
         return res.status(201).json({
             success: true,
             message: "Registration Successful",
-            user: result.rows[0]
+            token,
+            user
         });
 
     } catch (error) {
@@ -86,27 +82,28 @@ const loginUser = async (req, res) => {
             [username, password]
         );
 
-        // Fixed typo: result.rows instead of result.row
         if (result.rows.length === 0) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid Username or Password"
             });
         }
-
         const user = result.rows[0];
-
         const token = jwt.sign(
-            { id: user.user_id, role: user.role },
+            { 
+                user_id: user.user_id, 
+                role: user.role,
+                username: user.username
+            },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
         );
-
+        console.log("User Logged: ", user);
         return res.status(200).json({
             success: true,
             message: "Login Successful",
-            user: user,
-            token: token
+            token,
+            user
         });
 
     } catch (error) {
@@ -115,7 +112,7 @@ const loginUser = async (req, res) => {
     }
 };
 
-async function getUser(req, res) {
+const getUser = async (req, res) => {
     try {
         const token = req.headers.authorization?.split(" ")[1];
 
