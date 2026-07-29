@@ -1,13 +1,21 @@
-const express=require("express");
-const pool=require("./src/config/db.js");
+const express = require("express");
+const pool = require("./src/config/db.js");
 require("dotenv").config();
 
-const app=express();
+const authRoutes = require("./src/routes/auth.routes.js");
+
+const app = express();
+
 app.use(express.json());
 
-app.listen(process.env.PORT, () => {
-    console.log("Server Running")
-})
+app.use("/api/auth", authRoutes);
 
+app.get("/", (req, res) => {
+    res.send("CampusMitra Backend API is running!");
+});
 
-//npm install express pg dotenv cors jsonwebtoken multer uuid morgan helmet express-rate-limit
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
