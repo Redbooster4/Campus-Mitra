@@ -44,8 +44,8 @@ function Login() {
                 }
 
                 const user = resp.data?.user;
-                if(user?.role === "Student" && !user?.student_id){
-                    navigate("/onboarding/student-profile");
+                if(user?.role === "Student" ){
+                    navigate("/home");
                 } 
                 else if(user?.role === "Counselor" && !user?.counselor_id){
                     navigate("/onboarding/counselor-profile");
@@ -94,8 +94,8 @@ function Login() {
                 localStorage.setItem("token", resp.data.token);
             }
             const user = resp.data?.user;
-            if(user?.role === "Student" && !user?.student_id){
-                navigate("/onboarding/student-profile");
+            if(user?.role === "Student" ){
+                navigate("/home");
             }
             else if(user?.role === "Counselor" && !user?.counselor_id){
                 navigate("/onboarding/counselor-profile");
