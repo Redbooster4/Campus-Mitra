@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PixelTrail from './components/PixelTrail';
-import api from './api/api.js';
+import PixelTrail from '../components/PixelTrail.jsx';
+import api from '../api/api.js';
 
-// npm install three @react-three/fiber @react-three/drei axios react-router-dom tailwindcss @tailwindcss/vite
+// npm install three @react-three/fiber @react-three/drei axios react-router-dom tailwindcss @tailwindcss/vite gsap
 function Login() {
     const [data, setData] = useState({
         username: "",

@@ -73,4 +73,3 @@ if __name__ == "__main__":
         res = classify_query_source(q)
         print(f"Query: {q}")
         print(json.dumps(res, indent=2))
-        print("-"*60)
