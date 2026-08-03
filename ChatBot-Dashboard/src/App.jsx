@@ -4,8 +4,6 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 
 function App() {
-  const [count, setCount] = useState(0)
-  //
   return (
     <BrowserRouter>
       <Routes>
