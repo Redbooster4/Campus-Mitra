@@ -6,10 +6,8 @@ name: Frontend Build Check
 on:
   push:
     branches: [ "main" ]
-    paths: "ChatBot-Dashboard/**"
   pull_request:
     branches: [ "main" ]
-    paths: "ChatBot-Dashboard/**"
 
 jobs:
   frontend-build:

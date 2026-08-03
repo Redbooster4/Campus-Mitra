@@ -6,17 +6,8 @@ name: Backend Build Check
 on:
   push:
     branches: [ "main" ]
-    paths: 
-        - "Backend/**"
-        - "package.json"
-        - "package-lock.json"
-        - ".github/workflows/backend_ci.yml"
   pull_request:
     branches: [ "main" ]
-    paths: 
-        - "Backend/**"
-        - "package.json"
-        - "package-lock.json"
 
 jobs:
   backend-build:
