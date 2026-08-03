@@ -5,9 +5,9 @@ name: Frontend Build Check
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "Working" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "Working" ]
 
 jobs:
   frontend-build:
