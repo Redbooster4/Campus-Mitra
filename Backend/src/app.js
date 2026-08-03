@@ -7,10 +7,9 @@ const cookieParser = require("cookie-parser")
 const app = express();
 
 const allowedOrigins = [
-    "http://localhost:5000",   // ← add your actual frontend port
-    "http://localhost:5173",   // Vite
-    "http://localhost:3001",   // CRA
-    "https://yourproductiondomain.com",
+    "http://localhost:5000",
+    "http://localhost:5173",
+    "http://localhost:3001",
 ]
 const corsOptions = {
     origin: allowedOrigins, 
