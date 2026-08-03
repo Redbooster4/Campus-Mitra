@@ -33,4 +33,4 @@ jobs:
         run: npm run test --if-present
       - name: Syntax Check Backend
         run: 
-          node --check Backend/server.js
+          node --check ./server.js
