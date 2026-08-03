@@ -1,19 +1,26 @@
 node_modules/
 **/node_modules/
 
+# Chroma & Vector Databases
 chroma_data/
 **/chroma_data/
 chroma_db/
 **/chroma_db/
+chroma_db_data/
+**/chroma_db_data/
+path_to_your_chroma_db_folder/
+**/path_to_your_chroma_db_folder/
 *.sqlite3
 *.sqlite3-journal
 *.parquet
 
+# Environment Variables
 .env
 .env.local
 .env.*.local
 *.env
 
+# Python Caches & Environments
 __pycache__/
 *.py[cod]
 *$py.class
@@ -22,10 +29,12 @@ venv/
 ENV/
 env/
 
+# Build & Logs
 dist/
 build/
 *.log
 
+# IDE & OS Files
 .vscode/
 .idea/
 .DS_Store

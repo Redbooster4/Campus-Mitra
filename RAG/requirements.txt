@@ -2,7 +2,10 @@ langchain
 langchain-community
 langchain-text-splitters
 langchain-chroma
+langchain-ollama
 chromadb
+ollama
+psycopg2
 #pypdfs
 #pip install -r requirements.txt
 
