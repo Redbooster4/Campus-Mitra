@@ -11,7 +11,8 @@ class QuerySource(BaseModel):
         "POSTGRESQL",
         "CHROMADB",
         "BOTH",
-        "HUMAN_ESCALATION"
+        "HUMAN_ESCALATION",
+        "GREETING"
     ] = Field(
         description="Backend(s) required for answering the query."
     )
@@ -39,6 +40,26 @@ You MUST return ONLY one of:
 - CHROMADB
 - BOTH
 - HUMAN_ESCALATION
+- GREETING
+
+--------------------------------------------------
+GREETING
+--------------------------------------------------
+
+Choose GREETING when the message is only a greeting or small talk,
+with no actual question about admissions.
+
+Examples:
+
+- hi
+- hello
+- hey
+- namaste
+- good morning
+- thanks / thank you
+
+Do NOT choose GREETING if the message contains any real question,
+even if it also includes a greeting word.
 
 --------------------------------------------------
 POSTGRESQL
@@ -74,12 +95,8 @@ Marathi examples:
 - माझी फी भरली आहे का?
 - माझे कागदपत्र पडताळले का?
 - माझ्या अर्जाची स्थिती काय आहे?
-- माझा प्रवेश अर्ज मंजूर झाला का?
-- माझी फी भरली आहे का?
 - माझ्या फीचे पेमेंट झाले का?
 - माझे पेमेंट यशस्वी झाले का?
-- माझे कागदपत्र पडताळले का?
-- माझ्या अर्जाची स्थिती काय आहे?
 - माझी फी बाकी आहे का?
 
 --------------------------------------------------
@@ -136,7 +153,7 @@ Examples:
 - mera admission status aur hostel rules batao
 - meri fee payment aur fee structure batao
 - meri application status aur admission process batao
-- mere documents verify hue kya aur aur documents kya chahiye
+- mere documents verify hue kya aur documents kya chahiye
 - माझा प्रवेश अर्ज मंजूर झाला का आणि पुढची प्रक्रिया काय आहे?
 
 --------------------------------------------------
@@ -163,8 +180,12 @@ Examples:
 IMPORTANT RULES
 --------------------------------------------------
 
-
 Rule 1
+
+If the message is only a greeting or small talk with no real question,
+ALWAYS choose GREETING.
+
+Rule 2
 
 If the query asks about the user's OWN information, ALWAYS choose POSTGRESQL.
 
@@ -212,19 +233,19 @@ Examples:
 
 Always choose POSTGRESQL unless the same query ALSO asks for general college information.
 
-Rule 2
+Rule 3
 
 If the query asks only general college information,
 
 ALWAYS choose CHROMADB.
 
-Rule 3
+Rule 4
 
 If both personal information AND general information are required,
 
 choose BOTH.
 
-Rule 4
+Rule 5
 
 If the user explicitly asks to talk to a human or support,
 
@@ -279,6 +300,8 @@ def classify_query(query: str) -> dict:
 if __name__ == "__main__":
 
     test_queries = [
+
+        "hi",
 
         "mera admission status kya hai",
 

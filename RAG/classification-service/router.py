@@ -169,14 +169,16 @@ def route_query(query_text, student_id=None):
             query_text,
             student_id
         )
-
+    elif source=="GREETING":
+        data = {"message": "Hello! How can I help you with your admission query today?"}
+        
     else:
 
         data = {
             "error": "Unknown routing source"
         }
 
-    if source == "HUMAN_ESCALATION":
+    if source == ["HUMAN_ESCALATION","GREETING"]:
 
         final_answer = data["message"]
 
