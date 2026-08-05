@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PixelTrail from '../components/PixelTrail.jsx';
 import api from '../api/api.js';
+import AnimatedLogo from "../components/AnimatedLogo.jsx";
 
 // npm install three @react-three/fiber @react-three/drei axios react-router-dom tailwindcss @tailwindcss/vite gsap
 function Login() {
@@ -46,10 +47,10 @@ function Login() {
                 const user = resp.data?.user;
                 if(user?.role === "Student" && !user?.student_id){
                     navigate("/onboarding/student-profile");
-                } 
+                }
                 else if(user?.role === "Counselor" && !user?.counselor_id){
                     navigate("/onboarding/counselor-profile");
-                } 
+                }
                 else{
                     navigate("/home");
                 }
@@ -140,10 +141,16 @@ function Login() {
                     gooeyEnabled
                     gooStrength={2}
                 />
-                <div className="absolute text-center pointer-events-none">
-                    <div className="text-5xl mb-4" style={{ color: "#594bf9" }}>🤖</div>
-                    <h1 className="text-4xl font-bold mb-2" style={{ color: "#EEEDFE" }}>Welcome Back</h1>
-                    <p className="text-sm" style={{ color: "#594bf9" }}>Your ChatBot is waiting</p>
+                <div className="absolute z-10 text-center pointer-events-none">
+                    <div className="mb-4 pointer-events-auto flex justify-center">
+                        <AnimatedLogo/>
+                    </div>
+                    <h1 className="text-4xl font-bold mb-2" style={{ color: "#EEEDFE" }}>
+                        Welcome Back
+                    </h1>
+                    <p className="text-sm" style={{ color: "#594bf9" }}>
+                        Your ChatBot is waiting
+                    </p>
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center flex-1 px-8" style={{ background: "#1a1556" }}>

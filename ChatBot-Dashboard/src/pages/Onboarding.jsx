@@ -35,7 +35,7 @@ const QUESTIONS = [
   {
     key: 'goal',
     label: 'What field interests you most?',
-    options: [],
+    options: ['Engineering & Innovation', 'Arts', 'Commerce', 'Other'],
   },
   {
     key: 'timeline',
