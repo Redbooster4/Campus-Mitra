@@ -13,13 +13,10 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use("/api/auth", authRoutes);
-
 app.get("/", (req, res) => {
     res.send("CampusMitra Backend API is running!");
 });
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
+app.listen(process.env.PORT, ()=>{
     console.log(`Server running on port ${PORT}`);
 });

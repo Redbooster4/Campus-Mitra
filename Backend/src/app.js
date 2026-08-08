@@ -1,8 +1,9 @@
 const express = require("express");
-const morgan = require("morgan")
-const authRoute = require("./routes/auth.routes")
-const cors = require("cors")
-const cookieParser = require("cookie-parser")
+const morgan = require("morgan");
+const authRoute = require("./routes/auth.routes");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
 
 const app = express();
 const allowedOrigins = [
@@ -23,6 +24,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
+app.use(hemlet());
 
 app.use("/api/auth", authRoute)
 
