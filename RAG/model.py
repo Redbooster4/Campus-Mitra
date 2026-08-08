@@ -3,11 +3,9 @@ import chromadb
 
 from langchain_chroma import Chroma
 from langchain_ollama import ChatOllama
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from get_embedding_function import get_embedding_function
 
-CHROMA_PATH="chroma_sbmp"
-COLLECTION_NAME="sbmp_final_year_project"
 
 model = ChatOllama(
     model="llama3.2:3b",
@@ -16,30 +14,6 @@ model = ChatOllama(
     num_predict=256,
     # other params ...
 )
-
-PROMPT_TEMPLATE="""
-
-"""
-
-# PROMPT_TEMPLATE="""
-# You are the AI Admission Assistant for Shri Bhagubhai Mafatlal Polytechnic and College of Engineering(SBMP).
-# Answer the student's question using ONLY the following context, which is taken
-# directly from official SBMP admission documents:
-
-# {context}
-
-# ---
-
-# Instructions:
-# - Answer the question based only on the above context.
-# - Be clear, concise, and helpful — the user is a prospective student or parent.
-# - If the answer is NOT found in the context, respond exactly with:
-#   "I don't have that information right now. I'm connecting you with an admission counselor for further help."
-# - Do not make up fees, dates, or eligibility criteria that are not in the context.
-
-# Question: {question}
-# """
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("query_text", type=str, help="The query text.")
