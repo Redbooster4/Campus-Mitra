@@ -60,7 +60,7 @@ if __name__ == "__main__":
     source = classification["source"]
     if(source == "CHROMADB"):
         context=query_chroma(sampleQuery)    
-    elif(source == "POSTGRESQL")
+    elif(source == "POSTGRESQL"):
         context=query_postgres(sampleQuery)
     else:
         ctxChroma=query_chroma(sampleQuery)    
