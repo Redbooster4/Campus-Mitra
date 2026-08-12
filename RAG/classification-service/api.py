@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from router import route_query
-
+#pip install flask, requrests, flask-cors,  sentence_transformers
 app = Flask(__name__)
 CORS(app)
 
