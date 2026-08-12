@@ -45,7 +45,7 @@ collection.add(
     ]
 )
 
-print("=" * 60)
+print("=" * 60) 
 print("Documents stored:", collection.count())
 print("=" * 60)
 

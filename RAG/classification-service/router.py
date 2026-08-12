@@ -143,7 +143,7 @@ def escalate_to_human(query_text, student_id=None):
 
 
 
-def route_query(query_text, student_id=None):
+def route_query(query_text, student_id=None, language="en"):
 
     classification = classify_query(query_text)
     source = classification["source"]
@@ -169,16 +169,16 @@ def route_query(query_text, student_id=None):
             query_text,
             student_id
         )
-    elif source=="GREETING":
+    elif source == "GREETING":
         data = {"message": "Hello! How can I help you with your admission query today?"}
-        
+
     else:
 
         data = {
             "error": "Unknown routing source"
         }
 
-    if source == ["HUMAN_ESCALATION","GREETING"]:
+    if source in ["HUMAN_ESCALATION", "GREETING"]:
 
         final_answer = data["message"]
 
@@ -186,7 +186,8 @@ def route_query(query_text, student_id=None):
 
         final_answer = generate_answer(
             user_query=query_text,
-            retrieved_data=data
+            retrieved_data=data,
+            language=language
         )
 
     return {
@@ -230,5 +231,6 @@ if __name__ == "__main__":
 
         print(route_query(
             q,
-            student_id
+            student_id,
+            language="hi"
         ))

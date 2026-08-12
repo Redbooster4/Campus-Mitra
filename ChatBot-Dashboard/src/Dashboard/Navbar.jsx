@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Bell, Search, Menu, X } from "lucide-react";
+import LanguageSelector from "./LanguageSelector.jsx";
 
-function Navbar({ studentName = "Student", onMenuClick }) {
+function Navbar({ studentName = "Student", onMenuClick, language, onLanguageChange }) {
   const [searchOpen, setSearchOpen] = useState(false);
 
   if (searchOpen) {
@@ -30,7 +31,7 @@ function Navbar({ studentName = "Student", onMenuClick }) {
   }
 
   return (
-    <header className="h-16 flex items-center justify-between gap-3 px-4 md:px-6 bg-[#0F0B1F] border-b border-[#2E1F6B] overflow-hidden">
+    <header className="h-16 flex items-center justify-between gap-3 px-4 md:px-6 bg-[#0F0B1F] border-b border-[#2E1F6B]">
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <button
           onClick={onMenuClick}
@@ -59,6 +60,8 @@ function Navbar({ studentName = "Student", onMenuClick }) {
           <Search size={20} />
         </button>
 
+        <LanguageSelector language={language} onChange={onLanguageChange} />
+
         <button className="relative text-indigo-200 hover:text-white transition-colors shrink-0">
           <Bell size={20} />
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-indigo-500 rounded-full" />
@@ -77,4 +80,4 @@ function Navbar({ studentName = "Student", onMenuClick }) {
   );
 }
 
-export default Navbar;
+export default Navbar;  

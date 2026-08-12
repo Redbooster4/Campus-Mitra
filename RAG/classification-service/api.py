@@ -10,11 +10,12 @@ def chat():
     data = request.get_json()
     query_text = data.get("query")
     student_id = data.get("student_id")
+    language = data.get("language", "en")
 
     if not query_text:
         return jsonify({"error": "query is required"}), 400
 
-    result = route_query(query_text, student_id)
+    result = route_query(query_text, student_id, language)
     return jsonify(result)
 
 if __name__ == "__main__":
