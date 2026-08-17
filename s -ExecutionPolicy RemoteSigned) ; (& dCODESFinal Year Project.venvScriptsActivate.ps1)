@@ -1,0 +1,243 @@
+[33mcommit 6ee4b30c5af43316e75364b5e5afbb59c608312e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mWorking[m[33m, [m[1;31morigin/Working[m[33m)[m
+Author: Redbooster4 <neev.p4@gmail.com>
+Date:   Tue Aug 11 20:14:46 2026 +0530
+
+    Frontend Progress
+
+[33mcommit bef7b1953c2f56359bd0306eb28f550181bbbc87[m
+Author: Redbooster4 <neev.p4@gmail.com>
+Date:   Sun Aug 9 01:43:54 2026 +0530
+
+    Core RAG Model w/o actual retreivers
+
+[33mcommit 9a356e891e66f2ea7c4f35068d0914b0a17abe45[m
+Author: Redbooster4 <neev.p4@gmail.com>
+Date:   Sat Aug 8 10:42:14 2026 +0530
+
+    Fixed dependency
+
+[33mcommit 1b0d8ac02ad8bbbe381b3247a894d5e22bdaf994[m
+Author: Redbooster4 <neev.p4@gmail.com>
+Date:   Sat Aug 8 10:17:48 2026 +0530
+
+    Before dependency Cleanup
+
+[33mcommit 1d10218bd92df4d7f3d6cd9dc8e3535dcf827f8e[m
+Author: Redbooster4 <neev.p4@gmail.com>
+Date:   Wed Aug 5 11:02:40 2026 +0530
+
+    Frontend
+
+[33mcommit b63483221e7fe58c4cd779f4909a174fcb39f7de[m
+Author: Redbooster4 <neev.p4@gmail.com>
+Date:   Wed Aug 5 10:48:59 2026 +0530
+
+    Frontend + Core AI part almost half
+
+[33mcommit 7e46426238eb75cfc60d5059231cc6df1023c60e[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: Redbooster4 <neev.p4@gmail.com>
+Date:   Mon Aug 3 19:58:55 2026 +0530
+
+    Add space for CI testing
+
+[33mcommit c7a017a05b62cc80d28be5f3d05702fd77df44ce[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 19:28:08 2026 +0530
+
+    Final Backend Pipeline Fix
+
+[33mcommit a48455c04d2fa868fbc37c6c0bacf0f941c377d4[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 19:22:04 2026 +0530
+
+    Final Fix
+
+[33mcommit 7148adf3ca308e75369174ea899a98e6dabb49f9[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 19:18:25 2026 +0530
+
+    Backend Pipeline
+
+[33mcommit f2656b2d04b90cc0eedd26f5014814f830f9020a[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 19:13:57 2026 +0530
+
+    Pipelines onto the Working branch too
+
+[33mcommit b501f86fc303de54de455cc51edf833567cc6759[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 19:09:40 2026 +0530
+
+    Fix
+
+[33mcommit dd57878cba8f12cf14eba4c04420d3e4b6aeb9f3[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 19:08:33 2026 +0530
+
+    Pipeline Check
+
+[33mcommit 8f492a219b8231483161f0196665d9840230d412[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 19:07:02 2026 +0530
+
+    Minor Update on Pipelines
+
+[33mcommit 25b0db8c137078a214017f0ac0999cc79afa18a5[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 19:03:45 2026 +0530
+
+    Backend Pipeline
+
+[33mcommit e3b1124168453df35a4ee5a1b5abca9a0495ba77[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 18:27:39 2026 +0530
+
+    Sync package-lock.json to fix CI build
+
+[33mcommit 5a9c3cb86160f8616fbbff3b78b71ab9e917d61a[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Mon Aug 3 17:54:07 2026 +0530
+
+    Minor fix
+
+[33mcommit 55a75467359edefd0d2b8bd4230da76b5eeeac60[m
+Merge: 4efcba6 643d9c8
+Author: Ronit <ronitdoshi2008@gmail.com>
+Date:   Mon Aug 3 10:49:44 2026 +0530
+
+    Merge branch 'Working' of https://github.com/Redbooster4/Campus-Mitra into Working
+
+[33mcommit 4efcba68088d23ed5d3abeb4bebe74a146eec905[m
+Author: Ronit <ronitdoshi2008@gmail.com>
+Date:   Mon Aug 3 10:49:15 2026 +0530
+
+    Package-lock.json Update
+
+[33mcommit 643d9c8ff0de268be27e7c586512d7d348e26e9c[m
+Merge: 02bdb09 f19af06
+Author: CpsPro274 <166975991+CpsPro274@users.noreply.github.com>
+Date:   Mon Aug 3 10:47:26 2026 +0530
+
+    Merge branch 'main' into Working
+
+[33mcommit 02bdb09e867db7e717837fe2314ee43f8f4a75ce[m
+Author: Ronit <ronitdoshi2008@gmail.com>
+Date:   Mon Aug 3 10:16:33 2026 +0530
+
+    Added RAG Model Template
+
+[33mcommit f19af0602bc7372f142e8880bc03bde2727b8412[m
+Merge: c7eff07 68b3cde
+Author: CpsPro274 <166975991+CpsPro274@users.noreply.github.com>
+Date:   Mon Aug 3 08:29:46 2026 +0530
+
+    Merge pull request #1 from Redbooster4/CpsPro274-patch-1
+    
+    Remove unnecessary comment in App component
+
+[33mcommit 68b3cde1c1354e8953ca4587a9da1d08f447dea2[m[33m ([m[1;31morigin/CpsPro274-patch-1[m[33m)[m
+Author: CpsPro274 <166975991+CpsPro274@users.noreply.github.com>
+Date:   Mon Aug 3 08:26:27 2026 +0530
+
+    Remove unnecessary comment in App component
+
+[33mcommit ea59fd85eae5ce6d42d574e1578234713dce2236[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Sat Aug 1 19:22:27 2026 +0530
+
+    Pipeline Check
+
+[33mcommit c7eff07577f252a8911b92c999b24c0bc4b55482[m
+Author: Redbooster <166083953+Redbooster4@users.noreply.github.com>
+Date:   Sat Aug 1 19:13:57 2026 +0530
+
+    Update CI workflow to include paths for ChatBot-Dashboard
+
+[33mcommit 0c839bd2bec9650a0cb4f73fac7c028e35a12391[m
+Author: Redbooster <166083953+Redbooster4@users.noreply.github.com>
+Date:   Sat Aug 1 19:11:09 2026 +0530
+
+    Rename workflow to Frontend Build Check
+    
+    Updated workflow to focus on frontend build process and renamed it accordingly.
+
+[33mcommit b60114867e5cab8328277c1eaad5cdec25c95d55[m
+Author: Redbooster <166083953+Redbooster4@users.noreply.github.com>
+Date:   Sat Aug 1 19:02:40 2026 +0530
+
+    Simplify Node.js workflow to use Node 20.x only
+    
+    Updated Node.js workflow to use only version 20.x and reorganized steps for clarity.
+
+[33mcommit 73cc42d4a82d5d9a6acc711886424f2e1782b2d9[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Sat Aug 1 18:39:42 2026 +0530
+
+    Home Page Begin
+
+[33mcommit e80725581fc7825fb8aa39be894495b979c09286[m
+Merge: 35ed783 81b9985
+Author: Ronit <ronitdoshi2008@gmail.com>
+Date:   Wed Jul 29 10:44:56 2026 +0530
+
+    Merge branch 'Working' of https://github.com/Redbooster4/Campus-Mitra into Working
+
+[33mcommit 35ed783ea3268a878d19fe4993d096ca4a1b7e5e[m
+Author: Ronit <ronitdoshi2008@gmail.com>
+Date:   Wed Jul 29 10:44:33 2026 +0530
+
+    Vector Embeddings Testing Works
+
+[33mcommit 81b9985f3d32c98d1adc0a19636bf0d57755023d[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Wed Jul 29 10:43:18 2026 +0530
+
+    Router Classification Completed
+
+[33mcommit f52e07fa023eafb498054821a76104881be3feec[m
+Author: Ronit <ronitdoshi2008@gmail.com>
+Date:   Wed Jul 29 09:32:04 2026 +0530
+
+    Login and Register working
+
+[33mcommit 4203d8eee191235fbdac9b3efcde853a50103d5c[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Wed Jul 29 08:19:37 2026 +0530
+
+    Combine Frontend n Backend Login
+
+[33mcommit dadfca20ed6005f478ebd9ecbd78acd338af3a04[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Sun Jul 26 16:16:49 2026 +0530
+
+    Backend for the WEB almost
+
+[33mcommit 7c3230337797cb912ea0ccf744be8d55991257f5[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Sun Jul 26 14:35:49 2026 +0530
+
+    DB Schema+RAG Code
+
+[33mcommit ac9214c4b5a01fac6aeac367bcad143aacf9eee3[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Wed Jul 22 10:57:50 2026 +0530
+
+    Model code given
+
+[33mcommit 1ef84c7673b85ed1531aca8258de1e18ab7e32d0[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Wed Jul 22 10:38:00 2026 +0530
+
+    Backend Structure
+
+[33mcommit 8598588bce02b2038aa7824011eefa305a1c2c4f[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Wed Jul 22 10:34:55 2026 +0530
+
+    Structure
+
+[33mcommit dbcfed713e13f7638811e17e893c949aa5f5250a[m
+Author: Redbooster4 <your-email@example.com>
+Date:   Wed Jul 22 09:03:50 2026 +0530
+
+    First Commit

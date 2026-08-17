@@ -11,7 +11,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace/>}/>
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />}/>
-        <Route path="/onboarding/student-profile" element={<Onboarding />}/>
+        <Route path="/onboarding" element={<Onboarding />}/>
       </Routes>
     </BrowserRouter>
   );
