@@ -1,0 +1,13 @@
+cookie-parser
+cors
+dotenv
+express
+express-rate-limit
+helmet
+jsonwebtoken
+morgan
+multer
+n8n
+pg
+uuid
+nodemon
