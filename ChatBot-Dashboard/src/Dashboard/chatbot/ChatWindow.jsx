@@ -113,7 +113,7 @@ function ChatWindow({ language = "en" }) {
   }
 
   return (
-    <div className="flex-1 flex bg-gradient-to-br from-[#0F0B1F] via-[#120C24] to-[#0F0B1F]">
+   <div className="flex-1 flex min-h-0 bg-gradient-to-br from-[#0F0B1F] via-[#120C24] to-[#0F0B1F]">  
       <ChatSidebar
         chats={chats}
         activeChatId={activeChatId}
@@ -123,8 +123,8 @@ function ChatWindow({ language = "en" }) {
         onRenameChat={handleRenameChat}
       />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <div className="flex-1 overflow-y-auto">
+     <div className="flex-1 flex flex-col min-w-0 min-h-0">
+      <div className="flex-1 overflow-y-auto chat-scrollbar min-h-0">
           <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
             {messages.map((msg, index) => (
               <div
@@ -202,4 +202,4 @@ function ChatWindow({ language = "en" }) {
   );
 }
 
-export default ChatWindow;
+export default ChatWindow;  
