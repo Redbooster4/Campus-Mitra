@@ -1,7 +1,10 @@
 import json
 from typing import Literal
 from pydantic import BaseModel, Field
-from langchain_ollama import ChatOllama
+from dotenv import load_dotenv
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+load_dotenv()
 
 
 class QuerySource(BaseModel):
@@ -265,8 +268,8 @@ Never explain outside JSON.
 """
 
 
-classifier = ChatOllama(
-    model="llama3.2:3b",
+classifier = ChatGoogleGenerativeAI(
+    model="gemini-3.5-flash-lite",
     temperature=0,
 ).with_structured_output(QuerySource)
 

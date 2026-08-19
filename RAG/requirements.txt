@@ -8,3 +8,6 @@ chromadb
 
 pg 
 dotenv
+langchain-google-genai
+langchain-ollama
+python-dotenv

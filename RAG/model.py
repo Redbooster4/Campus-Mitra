@@ -1,18 +1,21 @@
+import os
 import argparse
+from dotenv import load_dotenv
 
 from langchain_chroma import Chroma
-from langchain_ollama import ChatOllama
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
 from get_embedding_function import get_embedding_function
+
+load_dotenv()
 
 CHROMA_PATH = "chroma_sbmp"
 COLLECTION_NAME = "sbmp_final_year_project"
 
-model = ChatOllama(
-    model="llama3.2:3b",
-    validate_model_on_init=True,
-    temperature=0.8,
-    num_predict=256,
+model = ChatGoogleGenerativeAI(
+    model="gemini-3.5-flash-lite",
+    temperature=0.2,
+    max_output_tokens=512,
 )
 
 PROMPT_TEMPLATE = """
@@ -54,11 +57,12 @@ def query_rag(query_text: str):
 
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(context=context_text, question=query_text)
-    print(prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
 
-    response_text = model.invoke(prompt)
+    response = model.invoke(prompt)
+    response_text = response.content
+
     formatted_response = f"Response: {response_text}\nSources: {sources}"
     print(formatted_response)
     return response_text

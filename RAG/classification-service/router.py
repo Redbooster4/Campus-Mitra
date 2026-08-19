@@ -1,13 +1,12 @@
-from classify import classify_query
-import psycopg2
 import os
 import chromadb
+import psycopg2
 from dotenv import load_dotenv
-from answer_generator import generate_answer
 from chromadb.utils import embedding_functions
+from classify import classify_query
+from answer_generator import generate_answer
 
 load_dotenv()
-
 
 POSTGRES_CONFIG = {
     "host": os.getenv("POSTGRES_HOST"),
@@ -16,7 +15,6 @@ POSTGRES_CONFIG = {
     "user": os.getenv("POSTGRES_USER"),
     "password": os.getenv("POSTGRES_PASSWORD")
 }
-
 
 CHROMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "chroma_db_data"))
 
@@ -104,6 +102,7 @@ def query_postgres(student_id=None):
     except Exception as e:
         return {"error": f"PostgreSQL query failed: {str(e)}"}
 
+
 def query_chromadb(query_text, n_results=3):
     try:
         results = knowledge_collection.query(
@@ -118,131 +117,130 @@ def query_chromadb(query_text, n_results=3):
 
 
 def log_chat(student_id, user_message, ai_reply, department_id=None):
+    try:
+        conn = get_postgres_connection()
+        cursor = conn.cursor()
 
-    conn = get_postgres_connection()
-    cursor = conn.cursor()
+        valid_student_id = None
+        if student_id:
+            cursor.execute("SELECT 1 FROM students WHERE student_id = %s", (student_id,))
+            if cursor.fetchone():
+                valid_student_id = student_id
 
-    cursor.execute("""
-        INSERT INTO chat_history
-        (student_id, department_id, user_message, ai_reply)
-        VALUES (%s,%s,%s,%s)
-    """, (
-        student_id,
-        department_id,
-        user_message,
-        ai_reply
-    ))
+        cursor.execute("""
+            INSERT INTO chat_history
+            (student_id, department_id, user_message, ai_reply)
+            VALUES (%s, %s, %s, %s)
+        """, (
+            valid_student_id,
+            department_id,
+            user_message,
+            ai_reply
+        ))
 
-    conn.commit()
-
-    cursor.close()
-    conn.close()
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"[Error logging chat]: {e}")
 
 
 def escalate_to_human(query_text, student_id=None):
-
     reply = "ESCALATED: Forwarded to counselor."
-
     log_chat(
         student_id,
         query_text,
         reply
     )
-
     return {
         "message": "Your query has been forwarded to a counselor."
     }
 
 
+def sanitize_text(val):
+    """Ensure output is always a clean string for JSON / React rendering."""
+    if hasattr(val, "content"):
+        val = val.content
+
+    if isinstance(val, dict):
+        return val.get("text") or val.get("answer") or val.get("message") or str(val)
+    elif isinstance(val, list):
+        extracted = []
+        for item in val:
+            if isinstance(item, dict):
+                extracted.append(item.get("text", "") or str(item))
+            elif hasattr(item, "content"):
+                extracted.append(str(item.content))
+            else:
+                extracted.append(str(item))
+        return "\n".join(extracted)
+    elif val is None:
+        return ""
+    return str(val)
+
 
 def route_query(query_text, student_id=None, language="en"):
-
     classification = classify_query(query_text)
-    source = classification["source"]
+    source = classification.get("source")
 
     if source == "POSTGRESQL":
-
         data = query_postgres(student_id)
 
     elif source == "CHROMADB":
-
         data = query_chromadb(query_text)
 
     elif source == "BOTH":
-
         data = {
             "postgres": query_postgres(student_id),
             "chromadb": query_chromadb(query_text)
         }
 
     elif source == "HUMAN_ESCALATION":
-
         data = escalate_to_human(
             query_text,
             student_id
         )
+
     elif source == "GREETING":
         data = {"message": "Hello! How can I help you with your admission query today?"}
 
     else:
-
         data = {
             "error": "Unknown routing source"
         }
 
     if source in ["HUMAN_ESCALATION", "GREETING"]:
-
-        final_answer = data["message"]
-
+        final_answer = data.get("message", "")
     else:
-
         final_answer = generate_answer(
             user_query=query_text,
             retrieved_data=data,
             language=language
         )
 
+    clean_answer = sanitize_text(final_answer)
+
     return {
-
         "source": source,
-
-        "confidence": classification.get(
-            "confidence",
-            None
-        ),
-
-        "reasoning": classification["reasoning"],
-
-        "answer": final_answer,
-
+        "confidence": classification.get("confidence", None),
+        "reasoning": classification.get("reasoning", ""),
+        "answer": clean_answer,
         "retrieved_data": data
     }
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     student_id = "e6f53010-740a-4074-956a-d9b45685adf4"
 
     queries = [
-
         "mera admission status kya hai",
-
         "eligibility criteria kya hai computer branch ke liye",
-
         "mera admission status aur hostel rules batao",
-
         "mujhe kisi insaan se baat karni hai",
-
         "What is my application status?",
-
         "माझी फी भरली आहे का?"
     ]
 
     for q in queries:
-
         print("=" * 80)
-
-        print(route_query(
-            q,
-            student_id,
-            language="hi"
-        ))
+        print(route_query(q, student_id, language="hi"))

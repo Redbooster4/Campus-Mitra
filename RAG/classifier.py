@@ -2,7 +2,15 @@ import json
 from typing import Literal
 
 from pydantic import BaseModel, Field
-from langchain_ollama import ChatOllama
+from dotenv import load_dotenv
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+load_dotenv()
+
+classifier_model = ChatGoogleGenerativeAI(
+    model="gemini-3.5-flash-lite",
+    temperature=0,
+)
 class QuerySource(BaseModel):
     """Schema for the router's decision."""
     source: Literal["CHROMADB", "POSTGRESQL", "BOTH"] = Field(
@@ -37,11 +45,6 @@ Rules:
 - Respond only with the structured fields requested — no extra commentary.
 """
 
-classifier_model = ChatOllama(
-    model="llama3.2:3b",
-    temperature=0,
-    validate_model_on_init=True,
-)
 structured_classifier=classifier_model.with_structured_output(QuerySource)
 
 def classify_query_source(query_text: str) -> dict:
