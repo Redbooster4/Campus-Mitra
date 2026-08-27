@@ -9,7 +9,6 @@ const menuItems = [
   { label: 'Dashboard', ariaLabel: 'Go to dashboard', link: '/dashboard' },
   { label: 'Applications', ariaLabel: 'View application', link: '/application' },
   { label: 'Chatbot', ariaLabel: 'Chat with AI', link: '/chat' },
-  { label: 'Support', ariaLabel: 'Get help', link: '/support' }
 ];
 
 const socialItems = [
@@ -31,48 +30,44 @@ export default function Home() {
 
   return (
     <div className="home-wrapper">
-      <div className='staggered-menu-wrapper'>
-        <StaggeredMenu
-          position="left"
-          items={menuItems}
-          socialItems={socialItems}
-          displaySocials
-          displayItemNumbering={true}
-          menuButtonColor="#ffffff"
-          openMenuButtonColor="#fff"
-          changeMenuColorOnOpen={true}
-          colors={['#B497CF', '#5227FF']}
-          logoUrl={AnimatedLogo}
-          accentColor="#5227FF"
-          onClick={()=> setSidebarOpen(true)}
-        />
-      </div>
+      <StaggeredMenu
+        position="left"
+        items={menuItems}
+        socialItems={socialItems}
+        displaySocials
+        displayItemNumbering={true}
+        menuButtonColor="#ffffff"
+        openMenuButtonColor="#fff"
+        changeMenuColorOnOpen={true}
+        colors={['#B497CF', '#5227FF']}
+        logoUrl={<AnimatedLogo className="staggered-logo"/>}
+        accentColor="#5227FF"
+        onClick={()=> setSidebarOpen(true)}
+      />
       <div className="bg-glow"></div>
+
       <main className="main-content">
         <div className="badge">
           <Zap size={14} className="badge-icon" />
           <span>Admissions for 2026 now open</span>
         </div>
-
         <h1 className="hero-title">
           Navigate your future <br className="hide-mobile"/>
           <span className="text-gradient">
             with confidence.
           </span>
         </h1>
-
         <p className="hero-description">
           The intelligent, AI-powered admission and counselling portal for SVKM's Shri Bhagubhai Mafatlal Polytechnic. Get personalized guidance, instant document verification, and real-time status updates.
         </p>
 
         <div className="btn-group">
-          <button className="btn-primary" onClick={handleStartApp}>
+          <button className="btn btn-primary btn-large" onClick={handleStartApp}>
             Start Application
-            <ArrowRight size={18} className="arrow-icon" />
+            <ArrowRight size={18}/>
           </button>
-          
-          <button className="btn-secondary">
-            <MessageSquare size={18} className="chat-icon" onClick={handleChat}/>
+          <button className="btn btn-secondary btn-large" onClick={handleChat}>
+            <MessageSquare size={18}/>
             Ask AI Counselor
           </button>
         </div>
@@ -85,7 +80,6 @@ export default function Home() {
             <h3 className="feature-title">24/7 AI Guidance</h3>
             <p className="feature-desc">Have questions about courses, cut-offs, or fees? Our AI chatbot provides instant, accurate answers anytime.</p>
           </div>
-
           <div className="feature-card">
             <div className="feature-icon-wrapper">
               <ShieldCheck size={24} />

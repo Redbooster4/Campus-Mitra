@@ -211,19 +211,16 @@ function QuestionnaireActions({
 function QuestionnairePrevious({
   children,
   className,
-  size = "default",
-  variant = "outline",
   ...props
-}: React.ComponentProps<typeof QuestionnairePrimitive.Previous> &
-  Pick<React.ComponentProps<typeof Button>, "size" | "variant">) {
+}: React.ComponentProps<typeof QuestionnairePrimitive.Previous>) {
   return (
     <QuestionnairePrimitive.Previous
       data-slot="questionnaire-previous"
-      data-size={size}
-      data-variant={variant}
       className={cn(
-        buttonVariants({ size, variant }),
-        "col-start-1 row-start-1 min-h-11 justify-self-start sm:min-h-0",
+        "col-start-1 row-start-1 min-h-11 justify-self-start",
+        "px-3 text-sm font-medium text-muted-foreground",
+        "transition-colors hover:bg-transparent hover:text-violet-400",
+        "sm:min-h-0",
         className
       )}
       {...props}
@@ -237,7 +234,7 @@ function QuestionnaireSkip({
   children,
   className,
   size = "default",
-  variant = "outline",
+  variant = "ghost",
   ...props
 }: React.ComponentProps<typeof QuestionnairePrimitive.Skip> &
   Pick<React.ComponentProps<typeof Button>, "size" | "variant">) {
@@ -248,7 +245,7 @@ function QuestionnaireSkip({
       data-variant={variant}
       className={cn(
         buttonVariants({ size, variant }),
-        "col-start-2 row-start-1 min-h-11 justify-self-end sm:min-h-0",
+        "col-start-2 row-start-1 min-h-11 justify-self-end text-muted-foreground hover:bg-transparent hover:text-violet-400 sm:min-h-0",
         className
       )}
       {...props}
@@ -257,6 +254,7 @@ function QuestionnaireSkip({
     </QuestionnairePrimitive.Skip>
   )
 }
+
 
 function QuestionnaireNext({
   children,

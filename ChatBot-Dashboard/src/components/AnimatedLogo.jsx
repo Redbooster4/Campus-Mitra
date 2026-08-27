@@ -6,13 +6,13 @@ export default function AnimatedLogo({ className="w-32 h-32 mx-auto" }) {
   const handleMouseEnter=()=>{
     if(videoRef.current){
       videoRef.current.currentTime = 0; 
-      videoRef.current.play();
+      videoRef.current.play().catch(()=>{});
     }
   };
 
   return(
     <div 
-      className={`flex items-center justify-center rounded-full overflow-hidden ${className}`}
+      className={`animated-logo ${className}`}
       onMouseEnter={handleMouseEnter}>
       <video
         ref={videoRef}

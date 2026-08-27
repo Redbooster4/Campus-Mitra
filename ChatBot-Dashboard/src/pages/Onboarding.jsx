@@ -15,8 +15,6 @@ import {
   QuestionnaireSubmit,
   QuestionnaireTitle,
 } from "@/components/ui/questionnaire"
-import { useState } from "react";
-import { formToJSON } from "axios";
 
 // Where are you in your education journey ?
 // High school graduate
@@ -99,10 +97,10 @@ export default function Onboarding(){
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log("Form submitted!"); 
+    //console.log("Form submitted!"); 
     const answers = new FormData(event.currentTarget);
     const formDataObj = Object.fromEntries(answers.entries());
-    console.log("Captured Answers:", formDataObj);
+    //console.log("Captured Answers:", formDataObj);
     navigate("/preview", {state: {preview: formDataObj}});
   }
 
