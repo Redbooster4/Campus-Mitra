@@ -132,10 +132,7 @@ export default function Onboarding(){
 
             <QuestionnaireChoices>
               {question.choices.map((choice) => (
-                <QuestionnaireChoice
-                  key={choice.value}
-                  value={choice.value}
-                >
+                <QuestionnaireChoice key={choice.value} value={choice.value}>
                   <span className="option-label">{choice.label}</span>
 
                   {"description" in choice && (
@@ -153,16 +150,15 @@ export default function Onboarding(){
                 />
               )}
             </QuestionnaireChoices>
-
-            <QuestionnaireError />
+            <QuestionnaireError className="error-msg"/>
           </QuestionnaireItem>
         ))}
 
         <QuestionnaireActions>
-          <QuestionnairePrevious />
+          <QuestionnairePrevious className="back-btn"/>
           <QuestionnaireSkip className="skip-btn"/>
-          <QuestionnaireNext />
-          <QuestionnaireSubmit />
+          <QuestionnaireNext className="next-btn"/>
+          <QuestionnaireSubmit/>
         </QuestionnaireActions>
       </Questionnaire>
     </div>
