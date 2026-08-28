@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PixelTrail from '../components/PixelTrail.jsx';
 import api from '../api/api.js';
 import AnimatedLogo from "../components/AnimatedLogo.jsx";
+import "./styles/Login.css";
 
 // npm install three @react-three/fiber @react-three/drei axios react-router-dom tailwindcss @tailwindcss/vite gsap
 function Login() {
@@ -19,8 +20,7 @@ function Login() {
     function handleChange(e){
         setData({ ...data, [e.target.name]: e.target.value });
     }
-    
-    async function handleLogin(e){
+    async function handleLogin(){
         setError("");
         if(!data.username.trim() || !data.password.trim()){
             setError("Username and Password are required");
@@ -39,7 +39,6 @@ function Login() {
                     password: data.password
                 },
                 { withCredentials: true });
-
                 if(resp.data?.success && resp.data?.token){
                     localStorage.setItem("token", resp.data.token);
                 }
@@ -63,11 +62,8 @@ function Login() {
             setLoading(false);
         }
     }
-
     async function handleRegisterInitiate(e){
-        if(e && e.preventDefault){
-            e.preventDefault();
-        }
+        e.preventDefault();
         setError("");
         if(!data.username.trim()){
             setError("Username is Required")
@@ -115,7 +111,6 @@ function Login() {
             setLoading(false);
         } 
     }
-
     async function handleLogout(){
         try{
             await api.post("/auth/logout", {}, { withCredentials: true });
@@ -129,8 +124,8 @@ function Login() {
         navigate("/login");
     }
     return (
-        <div className="flex min-h-screen" style={{ background: "#0E0C1A" }}>
-            <div className="hidden md:flex w-1/2 items-center justify-center relative overflow-hidden" style={{ background: "#0c091b" }}>
+        <div className="container">
+            <div className="leftSection">
                 <PixelTrail
                     gridSize={50}
                     trailSize={0.1}
@@ -139,39 +134,34 @@ function Login() {
                     color="#7F77DD"
                     gooeyFilter={{ id: "custom-goo-filter", strength: 2 }}
                     gooeyEnabled
-                    gooStrength={2}
-                />
-                <div className="absolute z-10 text-center pointer-events-none">
-                    <div className="mb-4 pointer-events-auto flex justify-center">
+                    gooStrength={2}/>
+                    
+                <div className="left">
+                    <div className="logo">
                         <AnimatedLogo/>
                     </div>
-                    <h1 className="text-4xl font-bold mb-2" style={{ color: "#EEEDFE" }}>
-                        Welcome Back
-                    </h1>
-                    <p className="text-sm" style={{ color: "#594bf9" }}>
-                        Your ChatBot is waiting
-                    </p>
+                    <h1>Welcome Back</h1>
+                    <p>Your ChatBot is waiting</p>
                 </div>
             </div>
-            <div className="flex flex-col items-center justify-center flex-1 px-8" style={{ background: "#1a1556" }}>
-                <div className="w-full max-w-md">
-                    <h1 className="text-3xl font-bold mb-1" style={{ color: "#EEEDFE" }}>
+            <div className="rightSection">
+                <div className="box">
+                    <h1 className="title">
                         {
                             isRegister?"Register":"Login"
                         }
                     </h1>
-                    <p className="text-sm mb-8" style={{ color: "#594bf9" }}>
-                        Enter your credentials to continue
-                    </p>
+                    <p className="subtitle">Enter your credentials to continue</p>
+
                     {isRegister && (
-                        <div className="flex flex-col w-full">
+                        <div className="form">
                             <input
                                 type="text"
                                 name="username"
                                 placeholder="Username"
                                 value={data.username}
                                 onChange={handleChange}
-                                className="w-full rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-white"
+                                className="loginInput"
                                 style={{
                                     background: "#0E0C1A",
                                     border: "1px solid #594bf9",
@@ -182,21 +172,19 @@ function Login() {
                                 name="role"
                                 value={data.role}
                                 onChange={handleChange}
-                                className="w-full rounded-lg px-4 py-3 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-white appearance-none cursor-pointer"
+                                className="loginSelect"
                                 style={{
                                     background: "#0E0C1A",
                                     border: "1px solid #594bf9",
                                     color: "#EEEDFE",
-                                }}
-                            >
+                                }}>
                                 <option value="" disabled hidden>
                                     Select your role
                                 </option>
-                                <option value="Student" style={{ background: "#0E0C1A" }}>Student</option>
-                                <option value="Admin" style={{ background: "#0E0C1A" }}>Admin</option>
-                                <option value="Counselor" style={{ background: "#0E0C1A" }}>Counselor</option>
+                                <option value="Student">Student</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Counselor">Counselor</option>
                             </select>
-
 
                             <input
                                 type="password"
@@ -204,7 +192,7 @@ function Login() {
                                 placeholder="Password"
                                 value={data.password}
                                 onChange={handleChange}
-                                className="w-full rounded-lg px-4 py-3 mb-6 text-sm focus:outline-none focus:ring-2 focus:ring-white"
+                                className="loginInput"
                                 style={{
                                     background: "#0E0C1A",
                                     border: "1px solid #594bf9",
@@ -212,8 +200,7 @@ function Login() {
                                 }}
                             />
                             <button 
-                                className="items-center font-semibold py-2 rounded-xl transition duration-200 mb-8"
-                                style={{ background: "#594bf9", color: "#EEEDFE" }}
+                                className="btn"
                                 onMouseEnter={e => e.target.style.background="#776bfc"}
                                 onMouseLeave={e => e.target.style.background="#594bf9"}
                                 onClick={handleRegisterInitiate}
@@ -225,19 +212,14 @@ function Login() {
                     
                     
                     {!isRegister && (
-                        <div className="flex flex-col gap-5 w-full">
+                        <div className="form">
                             <input
                                 type="text"
                                 name="username"
                                 placeholder="Username"
                                 value={data.username}
                                 onChange={handleChange}
-                                className="w-full rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-white"
-                                style={{
-                                    background: "#0E0C1A",
-                                    border: "1px solid #594bf9",
-                                    color: "#EEEDFE",
-                                }}
+                                className="loginInput"
                             />
                             <input
                                 type="password"
@@ -245,16 +227,10 @@ function Login() {
                                 placeholder="Password"
                                 value={data.password}
                                 onChange={handleChange}
-                                className="w-full rounded-lg px-4 py-3 mb-6 text-sm focus:outline-none focus:ring-2 focus:ring-white"
-                                style={{
-                                    background: "#0E0C1A",
-                                    border: "1px solid #594bf9",
-                                    color: "#EEEDFE",
-                                }}
+                                className="loginInput"
                             />
                             <button 
-                                className="items-center w-40 font-semibold py-2 rounded-xl transition duration-200 mb-8"
-                                style={{ background: "#594bf9", color: "#EEEDFE" }}
+                                className="btn"
                                 onMouseEnter={e => e.target.style.background="#776bfc"}
                                 onMouseLeave={e => e.target.style.background="#594bf9"}
                                 onClick={handleLogin}
@@ -264,13 +240,11 @@ function Login() {
                         </div>
                     )}
                     
-                    <p className="text-center text-sm mt-6" style={{ color: "#594bf9" }}>
+                    <p className="switch">
                         {
                             isRegister?"Already Have An Account ?":"Don't have an Account ?"
                         }
-                        <span 
-                            className="cursor-pointer font-medium" 
-                            style={{ color: "#ffffff" }} 
+                        <span
                             onClick={() => {
                                 setIsRegister(!isRegister);
                                 setError("");
@@ -280,7 +254,7 @@ function Login() {
                     </p>
                     {
                         error&&(
-                            <p className="text-red-500 text-sm text-center mt-4 font-medium bg-red-500/10 py-2 rounded-lg border border-red-500/20">
+                            <p className="error">
                                 {error}
                             </p>
                         )

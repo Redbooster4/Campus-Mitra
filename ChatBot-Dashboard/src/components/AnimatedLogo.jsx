@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import logoAnimation from '../assets/chatbot.mp4'; 
 
-export default function AnimatedLogo({ className="w-32 h-32 mx-auto" }) {
+export default function AnimatedLogo() {
   const videoRef=useRef(null);
   const handleMouseEnter=()=>{
     if(videoRef.current){
@@ -11,13 +11,10 @@ export default function AnimatedLogo({ className="w-32 h-32 mx-auto" }) {
   };
 
   return(
-    <div 
-      className={`animated-logo ${className}`}
-      onMouseEnter={handleMouseEnter}>
+    <div onMouseEnter={handleMouseEnter}>
       <video
         ref={videoRef}
         src={logoAnimation}
-        className="w-full h-full object-cover cursor-default"
         muted
         playsInline
         disablePictureInPicture

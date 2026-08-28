@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import "./Onboarding.css";
+import "./styles/Onboarding.css";
 
 export default function OnboardingPreview() {
   const navigate = useNavigate();

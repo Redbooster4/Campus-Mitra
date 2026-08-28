@@ -15,7 +15,7 @@ import {
   QuestionnaireSubmit,
   QuestionnaireTitle,
 } from "@/components/ui/questionnaire"
-
+import "./styles/Onboarding.css"
 // Where are you in your education journey ?
 // High school graduate
 // Which program are you exploring ?
@@ -104,59 +104,68 @@ export default function Onboarding(){
     navigate("/preview", {state: {preview: formDataObj}});
   }
 
-  return(
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-8 text-slate-50">
-      <div className="w-full max-w-3xl rounded-2xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-indigo-950/40 backdrop-blur-sm sm:p-8">
-        <div className="mb-6">
-          <p className="text-sm font-medium uppercase tracking-[0.24em] text-violet-400">
-            {isCounselorFlow ? "Counselor onboarding" :"Student onboarding"}
-          </p>
-          <h1 className="mt-2 text-3xl font-bold text-white">
-            Tell us a bit more about your goals
-          </h1>
-        </div>
+  return (
+  <main className="onboarding-wrapper">
+    <div className="onboarding-container">
+      <header className="onboarding-header">
+        <p className="question-label">
+          {isCounselorFlow ? "Counselor onboarding" : "Student onboarding"}
+        </p>
+        <h1>Tell us a bit more about your goals</h1>
+      </header>
 
-        <Questionnaire items={items} onSubmit={handleSubmit}>
-          <QuestionnaireProgress />
-          {items.map((question) => (
-            <QuestionnaireItem
-              key={question.name}
-              name={question.name}
-              required={question.required}
-            >
-              <QuestionnaireTitle>{question.prompt}</QuestionnaireTitle>
-              <QuestionnaireDescription>
-                {question.description}
-              </QuestionnaireDescription>
-              <QuestionnaireChoices>
-                {question.choices.map((choice) => (
-                  <QuestionnaireChoice key={choice.value} value={choice.value}>
-                    <span className="font-medium">{choice.label}</span>
-                    {"description" in choice ? (
-                      <span className="text-muted-foreground">
-                        {choice.description}
-                      </span>
-                    ) : null}
-                  </QuestionnaireChoice>
-                ))}
-                {"input" in question ? (
-                  <QuestionnaireInput
-                    aria-label={question.input.label}
-                    placeholder={question.input.placeholder}
-                  />
-                ) : null}
-              </QuestionnaireChoices>
-              <QuestionnaireError />
-            </QuestionnaireItem>
-          ))}
-          <QuestionnaireActions>
-            <QuestionnairePrevious />
-            <QuestionnaireSkip />
-            <QuestionnaireNext />
-            <QuestionnaireSubmit />
-          </QuestionnaireActions>
-        </Questionnaire>
-      </div>
-    </main>
-  );
+      <Questionnaire items={items} onSubmit={handleSubmit}>
+        <QuestionnaireProgress />
+
+        {items.map((question) => (
+          <QuestionnaireItem
+            key={question.name}
+            name={question.name}
+            required={question.required}>
+            <QuestionnaireTitle>
+              {question.prompt}
+            </QuestionnaireTitle>
+
+            <QuestionnaireDescription>
+              {question.description}
+            </QuestionnaireDescription>
+
+            <QuestionnaireChoices>
+              {question.choices.map((choice) => (
+                <QuestionnaireChoice
+                  key={choice.value}
+                  value={choice.value}
+                >
+                  <span className="option-label">{choice.label}</span>
+
+                  {"description" in choice && (
+                    <span className="option-description">
+                      {choice.description}
+                    </span>
+                  )}
+                </QuestionnaireChoice>
+              ))}
+
+              {"input" in question && (
+                <QuestionnaireInput
+                  aria-label={question.input.label}
+                  placeholder={question.input.placeholder}
+                />
+              )}
+            </QuestionnaireChoices>
+
+            <QuestionnaireError />
+          </QuestionnaireItem>
+        ))}
+
+        <QuestionnaireActions>
+          <QuestionnairePrevious />
+          <QuestionnaireSkip className="skip-btn"/>
+          <QuestionnaireNext />
+          <QuestionnaireSubmit />
+        </QuestionnaireActions>
+      </Questionnaire>
+    </div>
+  </main>
+);
 }

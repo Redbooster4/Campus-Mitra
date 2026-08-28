@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import StaggeredMenu from '../components/StaggeredMenu';
 import AnimatedLogo from '../components/AnimatedLogo'; 
 import { ArrowRight, MessageSquare, ShieldCheck, Zap } from 'lucide-react';
-import './Home.css';
+import './styles/Home.css';
 
 const menuItems = [
   { label: 'Dashboard', ariaLabel: 'Go to dashboard', link: '/dashboard' },
@@ -25,11 +25,10 @@ export default function Home() {
    window.open("http://sbmp.ac.in/", "_blank");
   }
   function handleChat(){
-    navigate("/chat");
+    navigate("/onboarding");
   }
-
   return (
-    <div className="home-wrapper">
+    <div className="wrapper">
       <StaggeredMenu
         position="left"
         items={menuItems}
@@ -37,63 +36,63 @@ export default function Home() {
         displaySocials
         displayItemNumbering={true}
         menuButtonColor="#ffffff"
-        openMenuButtonColor="#fff"
+        openMenuButtonColor="#000000"
         changeMenuColorOnOpen={true}
         colors={['#B497CF', '#5227FF']}
-        logoUrl={<AnimatedLogo className="staggered-logo"/>}
+        logoUrl={<div className='logo'><AnimatedLogo/></div>}
         accentColor="#5227FF"
         onClick={()=> setSidebarOpen(true)}
       />
-      <div className="bg-glow"></div>
+      <div className="bg"></div>
 
-      <main className="main-content">
+      <main className="main">
         <div className="badge">
           <Zap size={14} className="badge-icon" />
           <span>Admissions for 2026 now open</span>
         </div>
-        <h1 className="hero-title">
+        <h1 className="title">
           Navigate your future <br className="hide-mobile"/>
           <span className="text-gradient">
             with confidence.
           </span>
         </h1>
-        <p className="hero-description">
+        <p className="description">
           The intelligent, AI-powered admission and counselling portal for SVKM's Shri Bhagubhai Mafatlal Polytechnic. Get personalized guidance, instant document verification, and real-time status updates.
         </p>
 
-        <div className="btn-group">
+        <div className="btngroup">
           <button className="btn btn-primary btn-large" onClick={handleStartApp}>
-            Start Application
-            <ArrowRight size={18}/>
+            <ArrowRight size={18} className='hide'/>
+            Start Application 
           </button>
           <button className="btn btn-secondary btn-large" onClick={handleChat}>
-            <MessageSquare size={18}/>
+            <MessageSquare size={18} className='hide'/>
             Ask AI Counselor
           </button>
         </div>
 
-        <div className="features-grid">
-          <div className="feature-card">
-            <div className="feature-icon-wrapper">
+        <div className="grid">
+          <div className="card">
+            <div className="icon">
               <MessageSquare size={24} />
             </div>
-            <h3 className="feature-title">24/7 AI Guidance</h3>
-            <p className="feature-desc">Have questions about courses, cut-offs, or fees? Our AI chatbot provides instant, accurate answers anytime.</p>
+            <h3 className="featureTitle">24/7 AI Guidance</h3>
+            <p className="description">Have questions about courses, cut-offs, or fees? Our AI chatbot provides instant, accurate answers anytime.</p>
           </div>
-          <div className="feature-card">
-            <div className="feature-icon-wrapper">
+          <div className="card">
+            <div className="icon">
               <ShieldCheck size={24} />
             </div>
-            <h3 className="feature-title">Smart Verification</h3>
-            <p className="feature-desc">Upload your documents securely. Our system automatically scans and verifies them to speed up your admission process.</p>
+            <h3 className="featureTitle">Smart Verification</h3>
+            <p className="description">Upload your documents securely. Our system automatically scans and verifies them to speed up your admission process.</p>
           </div>
 
-          <div className="feature-card">
-            <div className="feature-icon-wrapper">
+          <div className="card">
+            <div className="icon">
               <Zap size={24} />
             </div>
-            <h3 className="feature-title">Live Tracking</h3>
-            <p className="feature-desc">Never wonder where you stand. Track your application status step-by-step from inquiry to final confirmation.</p>
+            <h3 className="featureTitle">Live Tracking</h3>
+            <p className="description">Never wonder where you stand. Track your application status step-by-step from inquiry to final confirmation.</p>
           </div>
         </div>
       </main>
