@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import StaggeredMenu from '../components/StaggeredMenu';
 import AnimatedLogo from '../components/AnimatedLogo'; 
 import { ArrowRight, MessageSquare, ShieldCheck, Zap } from 'lucide-react';
-import './styles/Home.css';
+import styles from './styles/Home.module.css';
 
 const menuItems = [
-  { label: 'Dashboard', ariaLabel: 'Go to dashboard', link: '/dashboard' },
-  { label: 'Applications', ariaLabel: 'View application', link: '/application' },
-  { label: 'Chatbot', ariaLabel: 'Chat with AI', link: '/chat' },
+  { label: 'Home', ariaLabel: 'Go to Home', link: '/home' },
+  { label: 'About', ariaLabel: 'About the portal', link: '/about' },
+  { label: 'Login', ariaLabel: 'Login In', link: '/login' },
 ];
 
 const socialItems = [
@@ -25,10 +25,16 @@ export default function Home() {
    window.open("http://sbmp.ac.in/", "_blank");
   }
   function handleChat(){
-    navigate("/onboarding");
+    const token = localStorage.getItem("token");
+    if(token){
+      navigate("/dashboard");
+    }
+    else{
+      navigate("/login");
+    } 
   }
   return (
-    <div className="wrapper">
+    <div className={styles.wrapper}>
       <StaggeredMenu
         position="left"
         items={menuItems}
@@ -39,60 +45,56 @@ export default function Home() {
         openMenuButtonColor="#000000"
         changeMenuColorOnOpen={true}
         colors={['#B497CF', '#5227FF']}
-        logoUrl={<div className='logo'><AnimatedLogo/></div>}
+        logoUrl={<div className={styles.logo}><AnimatedLogo/></div>}
         accentColor="#5227FF"
         onClick={()=> setSidebarOpen(true)}
       />
-      <div className="bg"></div>
+      <div className={styles.bg}></div>
 
-      <main className="main">
-        <div className="badge">
-          <Zap size={14} className="badge-icon" />
-          <span>Admissions for 2026 now open</span>
-        </div>
-        <h1 className="title">
+      <main className={styles.main}>
+        <h1 className={styles.title}>
           Navigate your future <br className="hide-mobile"/>
-          <span className="text-gradient">
+          <span className={styles.gradient}>
             with confidence.
           </span>
         </h1>
-        <p className="description">
+        <p className={styles.description}>
           The intelligent, AI-powered admission and counselling portal for SVKM's Shri Bhagubhai Mafatlal Polytechnic. Get personalized guidance, instant document verification, and real-time status updates.
         </p>
 
-        <div className="btngroup">
-          <button className="btn btn-primary btn-large" onClick={handleStartApp}>
-            <ArrowRight size={18} className='hide'/>
+        <div className={styles.btngroup}>
+          <button className={`${styles.btn} ${styles.btnPrimary} ${styles.btnLarge}`} onClick={handleStartApp}>
+            <ArrowRight size={18} className={styles.hide}/>
             Start Application 
           </button>
-          <button className="btn btn-secondary btn-large" onClick={handleChat}>
-            <MessageSquare size={18} className='hide'/>
+          <button className={`${styles.btn} ${styles.btnSecondary} ${styles.btnLarge}`} onClick={handleChat}>
+            <MessageSquare size={18} className={styles.hide}/>
             Ask AI Counselor
           </button>
         </div>
 
-        <div className="grid">
-          <div className="card">
-            <div className="icon">
+        <div className={styles.grid}>
+          <div className={styles.card}>
+            <div className={styles.icon}>
               <MessageSquare size={24} />
             </div>
-            <h3 className="featureTitle">24/7 AI Guidance</h3>
-            <p className="description">Have questions about courses, cut-offs, or fees? Our AI chatbot provides instant, accurate answers anytime.</p>
+            <h3 className={styles.featureTitle}>24/7 AI Guidance</h3>
+            <p className={styles.description}>Have questions about courses, cut-offs, or fees? Our AI chatbot provides instant, accurate answers anytime.</p>
           </div>
-          <div className="card">
-            <div className="icon">
+          <div className={styles.card}>
+            <div className={styles.icon}>
               <ShieldCheck size={24} />
             </div>
-            <h3 className="featureTitle">Smart Verification</h3>
-            <p className="description">Upload your documents securely. Our system automatically scans and verifies them to speed up your admission process.</p>
+            <h3 className={styles.featureTitle}>Smart Verification</h3>
+            <p className={styles.description}>Upload your documents securely. Our system automatically scans and verifies them to speed up your admission process.</p>
           </div>
 
-          <div className="card">
-            <div className="icon">
+          <div className={styles.card}>
+            <div className={styles.icon}>
               <Zap size={24} />
             </div>
-            <h3 className="featureTitle">Live Tracking</h3>
-            <p className="description">Never wonder where you stand. Track your application status step-by-step from inquiry to final confirmation.</p>
+            <h3 className={styles.featureTitle}>Live Tracking</h3>
+            <p className={styles.description}>Never wonder where you stand. Track your application status step-by-step from inquiry to final confirmation.</p>
           </div>
         </div>
       </main>

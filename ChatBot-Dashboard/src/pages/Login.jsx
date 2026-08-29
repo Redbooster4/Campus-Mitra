@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PixelTrail from '../components/PixelTrail.jsx';
 import api from '../api/api.js';
 import AnimatedLogo from "../components/AnimatedLogo.jsx";
-import "./styles/Login.css";
+import styles from "./styles/Login.module.css";
 
 // npm install three @react-three/fiber @react-three/drei axios react-router-dom tailwindcss @tailwindcss/vite gsap
 function Login() {
@@ -91,14 +91,11 @@ function Login() {
                 localStorage.setItem("token", resp.data.token);
             }
             const user = resp.data?.user;
-            if(user?.role === "Student" && !user?.student_id){
-                navigate("/onboarding/student-profile");
-            }
-            else if(user?.role === "Counselor" && !user?.counselor_id){
-                navigate("/onboarding/counselor-profile");
+            if(!user.onboardingCompleted){
+                navigate("/onboarding");
             }
             else{
-                navigate("/home");
+                navigate("/dashboard");
             }
         }
         catch(err){
@@ -120,12 +117,12 @@ function Login() {
         }
         finally{
             localStorage.removeItem("token");
+            navigate("/home", {replace: true});
         }
-        navigate("/login");
     }
     return (
-        <div className="container">
-            <div className="leftSection">
+        <div className={styles.container}>
+            <div className={styles.leftSection}>
                 <PixelTrail
                     gridSize={50}
                     trailSize={0.1}
@@ -136,32 +133,32 @@ function Login() {
                     gooeyEnabled
                     gooStrength={2}/>
                     
-                <div className="left">
-                    <div className="logo">
+                <div className={styles.left}>
+                    <div className={styles.logo}>
                         <AnimatedLogo/>
                     </div>
                     <h1>Welcome Back</h1>
                     <p>Your ChatBot is waiting</p>
                 </div>
             </div>
-            <div className="rightSection">
-                <div className="box">
-                    <h1 className="title">
+            <div className={styles.rightSection}>
+                <div className={styles.box}>
+                    <h1 className={styles.title}>
                         {
                             isRegister?"Register":"Login"
                         }
                     </h1>
-                    <p className="subtitle">Enter your credentials to continue</p>
+                    <p className={styles.subtitle}>Enter your credentials to continue</p>
 
                     {isRegister && (
-                        <div className="form">
+                        <div className={styles.form}>
                             <input
                                 type="text"
                                 name="username"
                                 placeholder="Username"
                                 value={data.username}
                                 onChange={handleChange}
-                                className="loginInput"
+                                className={styles.loginInput}
                                 style={{
                                     background: "#0E0C1A",
                                     border: "1px solid #594bf9",
@@ -172,7 +169,7 @@ function Login() {
                                 name="role"
                                 value={data.role}
                                 onChange={handleChange}
-                                className="loginSelect"
+                                className={styles.loginSelect}
                                 style={{
                                     background: "#0E0C1A",
                                     border: "1px solid #594bf9",
@@ -192,7 +189,7 @@ function Login() {
                                 placeholder="Password"
                                 value={data.password}
                                 onChange={handleChange}
-                                className="loginInput"
+                                className={styles.loginInput}
                                 style={{
                                     background: "#0E0C1A",
                                     border: "1px solid #594bf9",
@@ -200,7 +197,7 @@ function Login() {
                                 }}
                             />
                             <button 
-                                className="btn"
+                                className={styles.btn}
                                 onMouseEnter={e => e.target.style.background="#776bfc"}
                                 onMouseLeave={e => e.target.style.background="#594bf9"}
                                 onClick={handleRegisterInitiate}
@@ -212,14 +209,14 @@ function Login() {
                     
                     
                     {!isRegister && (
-                        <div className="form">
+                        <div className={styles.form}>
                             <input
                                 type="text"
                                 name="username"
                                 placeholder="Username"
                                 value={data.username}
                                 onChange={handleChange}
-                                className="loginInput"
+                                className={styles.loginInput}
                             />
                             <input
                                 type="password"
@@ -227,10 +224,10 @@ function Login() {
                                 placeholder="Password"
                                 value={data.password}
                                 onChange={handleChange}
-                                className="loginInput"
+                                className={styles.loginInput}
                             />
                             <button 
-                                className="btn"
+                                className={styles.btn}
                                 onMouseEnter={e => e.target.style.background="#776bfc"}
                                 onMouseLeave={e => e.target.style.background="#594bf9"}
                                 onClick={handleLogin}
@@ -240,7 +237,7 @@ function Login() {
                         </div>
                     )}
                     
-                    <p className="switch">
+                    <p className={styles.switch}>
                         {
                             isRegister?"Already Have An Account ?":"Don't have an Account ?"
                         }
@@ -254,7 +251,7 @@ function Login() {
                     </p>
                     {
                         error&&(
-                            <p className="error">
+                            <p className={styles.error}>
                                 {error}
                             </p>
                         )

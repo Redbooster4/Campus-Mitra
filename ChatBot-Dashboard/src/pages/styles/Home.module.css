@@ -40,21 +40,6 @@ body{
   filter: blur(100px);
   opacity: 0.15;
 }
-.badge{
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.8rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--purple-light);
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-.badge-icon{
-  color: var(--primary);
-}
 .logo{
   width: 60px;
   height: 60px;
@@ -75,7 +60,7 @@ body{
   font-weight: 800;
   line-height: 1.1;
 }
-.text-gradient{
+.gradient{
   background: linear-gradient(
     to right, var(--purple-light), var(--primary)
   );
@@ -102,25 +87,25 @@ body{
   font: inherit;
   transition: var(--transition);
 }
-.btn-large{
+.btnLarge{
   margin-top: 40px;
   padding: 1rem 1.5rem;
   font-size: 1rem;
 }
-.btn-primary{
+.btnPrimary{
   background: var(--primary);
   color: var(--white);
 }
-.btn-primary:hover{
+.btnPrimary:hover{
   background: var(--primary-hover);
   transform: translateY(-2px);
 }
-.btn-secondary{
+.btnSecondary{
   background: var(--card);
   border: 1px solid var(--border);
   color: var(--white);
 }
-.btn-secondary:hover{
+.btnSecondary:hover{
   border-color: var(--primary);
   color: var(--purple-light);
 }
@@ -202,7 +187,7 @@ body{
     flex-direction: column;
     width: 100%;
   }
-  .btn-primary, .btn-secondary{
+  .btnPrimary, .btnSecondary{
     font-size: 1.3rem;
   }
   .hide{
