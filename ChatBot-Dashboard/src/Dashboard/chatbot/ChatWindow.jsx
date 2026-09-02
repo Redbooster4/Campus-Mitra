@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { Send, Loader2 } from "lucide-react";
 import ChatSidebar from "./ChatSidebar";
 import Toast from "./Toast";
+import MessageFeedback from "./MessageFeedback";
 
-const initialMessage = { sender: "bot", text: "Hi! How can I help you today?" };
+const initialMessage = { id: "init", sender: "bot", text: "Hi! How can I help you today?" };
 
 function ChatWindow({ language = "en" }) {
   const [chats, setChats] = useState([
@@ -67,7 +68,7 @@ function ChatWindow({ language = "en" }) {
   async function handleSend() {
     if (input.trim() === "" || isSending) return;
 
-    const userMessage = { sender: "user", text: input };
+    const userMessage = { id: `${Date.now()}-user`, sender: "user", text: input };
     updateActiveChatMessages((prev) => [...prev, userMessage]);
 
     setChats((prev) =>
@@ -94,14 +95,38 @@ function ChatWindow({ language = "en" }) {
       });
 
       const data = await response.json();
-      updateActiveChatMessages((prev) => [...prev, { sender: "bot", text: data.answer }]);
+      const botMessage = {
+        id: `${Date.now()}-bot`,
+        sender: "bot",
+        text: data.answer
+      };
+      updateActiveChatMessages((prev) => [...prev, botMessage]);
     } catch (err) {
       updateActiveChatMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "Something went wrong. Please try again." }
+        { id: `${Date.now()}-error`, sender: "bot", text: "Something went wrong. Please try again." }
       ]);
     } finally {
       setIsSending(false);
+    }
+  }
+
+  async function handleFeedback(chatId, messageId, type) {
+    const chat = chats.find((c) => c.id === chatId);
+    const message = chat?.messages.find((m) => m.id === messageId);
+
+    try {
+      await fetch("http://localhost:5000/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          student_id: "e6f53010-740a-4074-956a-d9b45685adf4",
+          message_text: message?.text,
+          feedback: type // "up" or "down"
+        })
+      });
+    } catch (err) {
+      console.error("Feedback submission failed:", err);
     }
   }
 
@@ -113,7 +138,7 @@ function ChatWindow({ language = "en" }) {
   }
 
   return (
-   <div className="flex-1 flex min-h-0 bg-gradient-to-br from-[#0F0B1F] via-[#120C24] to-[#0F0B1F]">  
+    <div className="flex-1 flex min-h-0 bg-gradient-to-br from-[#0F0B1F] via-[#120C24] to-[#0F0B1F]">
       <ChatSidebar
         chats={chats}
         activeChatId={activeChatId}
@@ -123,12 +148,12 @@ function ChatWindow({ language = "en" }) {
         onRenameChat={handleRenameChat}
       />
 
-     <div className="flex-1 flex flex-col min-w-0 min-h-0">
-      <div className="flex-1 overflow-y-auto chat-scrollbar min-h-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
+        <div className="flex-1 overflow-y-auto chat-scrollbar min-h-0">
           <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
-            {messages.map((msg, index) => (
+            {messages.map((msg) => (
               <div
-                key={index}
+                key={msg.id}
                 className={`flex items-end gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300 ${
                   msg.sender === "user" ? "justify-end" : "justify-start"
                 }`}
@@ -138,14 +163,23 @@ function ChatWindow({ language = "en" }) {
                     🤖
                   </div>
                 )}
-                <div
-                  className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                    msg.sender === "user"
-                      ? "bg-indigo-600 text-white rounded-br-sm"
-                      : "bg-[#1A1333] text-indigo-100 rounded-bl-sm"
-                  }`}
-                >
-                  {msg.text}
+                <div className="flex flex-col">
+                  <div
+                    className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                      msg.sender === "user"
+                        ? "bg-indigo-600 text-white rounded-br-sm"
+                        : "bg-[#1A1333] text-indigo-100 rounded-bl-sm"
+                    }`}
+                  >
+                    {msg.text}
+                  </div>
+                  {msg.sender === "bot" && msg.id !== "init" && (
+                    <MessageFeedback
+                      messageId={msg.id}
+                      chatId={activeChatId}
+                      onFeedback={handleFeedback}
+                    />
+                  )}
                 </div>
                 {msg.sender === "user" && (
                   <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-semibold text-white shrink-0">
@@ -202,4 +236,4 @@ function ChatWindow({ language = "en" }) {
   );
 }
 
-export default ChatWindow;  
+export default ChatWindow;

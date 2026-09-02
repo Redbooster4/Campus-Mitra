@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Bell, Search, Menu, X } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
 import LanguageSelector from "./LanguageSelector.jsx";
+import NotificationDropdown from "./NotificationDropdown.jsx";
 
 function Navbar({ studentName = "Student", onMenuClick, language, onLanguageChange }) {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -62,10 +63,7 @@ function Navbar({ studentName = "Student", onMenuClick, language, onLanguageChan
 
         <LanguageSelector language={language} onChange={onLanguageChange} />
 
-        <button className="relative text-indigo-200 hover:text-white transition-colors shrink-0">
-          <Bell size={20} />
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-indigo-500 rounded-full" />
-        </button>
+        <NotificationDropdown />
 
         <div className="flex items-center gap-2 md:gap-3">
           <div className="w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-semibold shrink-0">
