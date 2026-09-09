@@ -15,7 +15,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import styles from "./styles/Dashboard.module.css";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const menuItems = [
   {
@@ -46,29 +46,28 @@ const socialItems = [
   { label: "LinkedIn", link: "https://linkedin.com" },
 ];
 
-const navigate = new Navigate;
-const handleChat = () => {
-    navigate("/onboarding");
-};
-
 export default function Dashboard() {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const handleChat = () => {
+      navigate("/onboarding");
+  };
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
+    if(!storedUser) {
       return;
     }
     try {
       setUser(JSON.parse(storedUser));
-    } 
+    }
     catch {
       setUser(null);
     }
   }, []);
   const displayName = user?.username || "Student";
 
-  return (
+  return(
     <div className={styles.dashboard}>
       <StaggeredMenu
         position="left"
@@ -87,7 +86,7 @@ export default function Dashboard() {
         }
         accentColor="#5227FF"
       />
-      <div className={styles.bg} />
+      <div className={styles.bg}/>
 
       <main className={styles.main}>
         <header className={styles.header}>
@@ -98,8 +97,8 @@ export default function Dashboard() {
           <button
             className={styles.notificationButton}
             aria-label="Notifications">
-            <Bell size={20} />
-            <span className={styles.notificationDot} />
+            <Bell size={20}/>
+            <span className={styles.notificationDot}/>
           </button>
         </header>
 
@@ -123,7 +122,6 @@ export default function Dashboard() {
                   <span className={styles.statusLabel}>
                     Current status
                   </span>
-
                   <h3 className={styles.statusValue}>
                     Application in progress
                   </h3>
@@ -166,9 +164,8 @@ export default function Dashboard() {
 
               <div className={styles.timelineItem}>
                 <div
-                  className={`${styles.timelineIcon} ${styles.active}`}
-                >
-                  <FileText size={16} />
+                  className={`${styles.timelineIcon} ${styles.active}`}>
+                  <FileText size={16}/>
                 </div>
 
                 <div>
@@ -177,7 +174,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className={styles.timelineLine} />
+              <div className={styles.timelineLine}/>
 
               <div className={styles.timelineItem}>
                 <div className={styles.timelineIcon}>
@@ -193,7 +190,7 @@ export default function Dashboard() {
 
             <button className={styles.outlineButton}>
               View application
-              <ArrowUpRight size={16} />
+              <ArrowUpRight size={16}/>
             </button>
           </div>
 

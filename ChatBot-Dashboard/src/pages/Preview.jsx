@@ -7,27 +7,24 @@ export default function OnboardingPreview() {
 
   const preview = state?.preview;
   const displayVal =
-    typeof preview === "object" && preview !== null
-      ? JSON.stringify(preview, null, 2)
-      : "";
+    (typeof preview === "object" && preview !== null)
+    ? Object.entries(preview).map(([key, value]) => `${key}: ${value}`)
+    .join("\n"):"";
 
   return (
     <main className="onboarding-wrapper">
       <div className="onboarding-container">
         <h1 className="onboarding-header">Your Answers</h1>
-
         <textarea
           className="preview-textarea"
           value={displayVal}
           readOnly
           rows={7}
-          placeholder="Your preview will appear here..."
-        />
+          placeholder="Your preview will appear here..."/>
 
         <button
           className="preview-button"
-          onClick={() => navigate("/chatbot")}
-        >
+          onClick={() => navigate("/chatbot")}>
           Navigate to ChatBot
         </button>
       </div>

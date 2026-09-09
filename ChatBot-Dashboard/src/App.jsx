@@ -4,7 +4,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
-import Preview from "./pages/Preview"
+import Preview from "./pages/Preview";
+import Chat from "./pages/chat";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />}/>
         <Route path="/onboarding" element={<Onboarding />}/>
         <Route path="/preview" element={<Preview />}/>
+        <Route path="/chat" element={<Chat />}/>
       </Routes>
     </BrowserRouter>
   );
