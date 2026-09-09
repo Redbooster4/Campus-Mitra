@@ -89,7 +89,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "sticky top-0 h-screen px-4 py-6 hidden md:flex md:flex-col bg-[#181a2f] border-r border-[#2a2d4a] w-[260px] flex-shrink-0 z-30 shadow-2xl backdrop-blur-xl",
+        "sticky top-0 h-screen px-4 py-6 hidden md:flex md:flex-col bg-[#181a2f] border-r border-[#2a2d4a] w-[260px] flex-shrink-0 z-30 shadow-2xl backdrop-blur-xl overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
         className
       )}
       animate={{
@@ -135,7 +135,7 @@ export const MobileSidebar = ({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-[#0f1020] border-r border-[#2a2d4a] p-6 z-[100] flex flex-col justify-between",
+                "fixed h-full w-full inset-0 bg-[#0f1020] border-r border-[#2a2d4a] p-6 z-[100] flex flex-col justify-between overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
                 className
               )}
             >
@@ -151,6 +151,27 @@ export const MobileSidebar = ({
         </AnimatePresence>
       </div>
     </>
+  );
+};
+
+export const SidebarText = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  const { open, animate } = useSidebar();
+  return (
+    <motion.span
+      animate={{
+        display: animate ? (open ? "inline-block" : "none") : "inline-block",
+        opacity: animate ? (open ? 1 : 0) : 1,
+      }}
+      className={className}
+    >
+      {children}
+    </motion.span>
   );
 };
 
@@ -184,5 +205,39 @@ export const SidebarLink = ({
         {link.label}
       </motion.span>
     </Link>
+  );
+};
+
+export const SidebarHistoryItem = ({
+  title,
+  isActive,
+  onClick,
+}: {
+  title: string;
+  isActive?: boolean;
+  onClick?: () => void;
+}) => {
+  const { open, animate } = useSidebar();
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "w-full text-left flex items-center justify-start gap-2.5 py-2 px-2.5 rounded-lg text-xs transition-colors truncate cursor-pointer",
+        isActive
+          ? "bg-indigo-600/30 text-indigo-200 font-medium border border-indigo-500/30"
+          : "text-slate-400 hover:text-slate-200 hover:bg-[#252848]"
+      )}
+    >
+      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+      <motion.span
+        animate={{
+          display: animate ? (open ? "inline-block" : "none") : "inline-block",
+          opacity: animate ? (open ? 1 : 0) : 1,
+        }}
+        className="truncate whitespace-pre"
+      >
+        {title}
+      </motion.span>
+    </button>
   );
 };

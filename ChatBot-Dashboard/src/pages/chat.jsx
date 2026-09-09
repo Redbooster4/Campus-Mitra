@@ -1,41 +1,42 @@
 import { useState, useEffect, useRef } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "../components/sideBar";
+import { Sidebar, SidebarBody, SidebarLink, SidebarHistoryItem, SidebarText } from "../components/sideBar";
 import {
   Send,
   LayoutDashboard,
   MessageSquare,
   Activity,
   User,
+  Plus,
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
+import AnimatedLogo from "@/components/AnimatedLogo";
 
 const sidebarLinks = [
   {
     label: "Home",
     href: "/home",
-    icon: <LayoutDashboard className="text-indigo-400 h-4 w-4 flex-shrink-0" />,
+    icon: <LayoutDashboard className={styles.sidebarIcon} />,
   },
   {
     label: "Dashboard",
     href: "/dashboard",
-    icon: <Activity className="text-indigo-400 h-4 w-4 flex-shrink-0" />,
+    icon: <Activity className={styles.sidebarIcon} />,
   },
   {
     label: "Chatbot",
     href: "/chat",
-    icon: <MessageSquare className="text-indigo-400 h-4 w-4 flex-shrink-0" />,
+    icon: <MessageSquare className={styles.sidebarIcon} />,
   },
   {
     label: "Profile",
     href: "/profile",
-    icon: <User className="text-indigo-400 h-4 w-4 flex-shrink-0" />,
+    icon: <User className={styles.sidebarIcon} />,
   },
 ];
 
 const initialSuggestions = [
   { label: "Course Recommendations", query: "Can you help me choose the right courses for next semester?" },
   { label: "Scholarships & Financial Aid", query: "What scholarship and financial aid options are available?" },
-  { label: "Campus Housing & Facilities", query: "Tell me about campus hostel accommodation and facilities." },
   { label: "Admission Deadlines & Fees", query: "What are the upcoming admission deadlines and fee structures?" },
 ];
 
@@ -47,9 +48,11 @@ const humanResponses = {
   default: "I hear you! As your campus counselor, I'm here to support you through every step of your college journey—whether it's managing study workload, navigating campus resources, or planning your career path. Tell me a bit more so I can help best!"
 };
 
+const getFormattedTime = () =>
+  new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
 export default function Chat() {
   const [user, setUser] = useState(null);
-  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -67,18 +70,26 @@ export default function Chat() {
   }, []);
 
   const userName = user?.username || "Friend";
-  const userInitial = userName.charAt(0).toUpperCase();
 
-  useEffect(() => {
-    setMessages([
-      {
-        id: 1,
-        sender: "counselor",
-        text: `Hey ${userName}! 👋 I'm Mitra, your campus counselor and academic advisor. Think of me as your friendly guide for everything campus life—from choosing courses and managing deadlines to finding scholarships. What's on your mind today?`,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
-  }, [userName]);
+  const [sessions, setSessions] = useState([
+    {
+      id: "session-1",
+      title: "Course Guidance",
+      messages: [
+        {
+          id: 1,
+          sender: "counselor",
+          text: `Hey ${userName}! I'm Mitra, your campus counselor and academic advisor. What's on your mind today?`,
+          time: "10:30 AM",
+        },
+      ],
+    },
+  ]);
+
+  const [activeSessionId, setActiveSessionId] = useState("session-1");
+
+  const activeSession = sessions.find((s) => s.id === activeSessionId) || sessions[0];
+  const messages = activeSession?.messages || [];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -88,18 +99,54 @@ export default function Chat() {
     scrollToBottom();
   }, [messages, isTyping]);
 
+  const handleNewChat = () => {
+    const now = Date.now();
+    const newId = `session-${now}`;
+    const timeStr = getFormattedTime();
+    const newSession = {
+      id: newId,
+      title: "New Conversation",
+      messages: [
+        {
+          id: now,
+          sender: "counselor",
+          text: `Hey ${userName}! How can I help you in this new session?`,
+          time: timeStr,
+        },
+      ],
+    };
+    setSessions((prev) => [newSession, ...prev]);
+    setActiveSessionId(newId);
+  };
+
   const handleSend = (textToSend) => {
     const query = textToSend || inputValue.trim();
     if (!query) return;
 
+    const userMsgId = Date.now();
+    const userMsgTime = getFormattedTime();
+
     const userMsg = {
-      id: Date.now(),
+      id: userMsgId,
       sender: "user",
       text: query,
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      time: userMsgTime,
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    setSessions((prevSessions) =>
+      prevSessions.map((s) => {
+        if (s.id === activeSessionId) {
+          const updatedTitle = s.title === "New Conversation" ? query.slice(0, 22) + "..." : s.title;
+          return {
+            ...s,
+            title: updatedTitle,
+            messages: [...s.messages, userMsg],
+          };
+        }
+        return s;
+      })
+    );
+
     if (!textToSend) setInputValue("");
     setIsTyping(true);
 
@@ -116,74 +163,112 @@ export default function Chat() {
         responseText = humanResponses.admission;
       }
 
+      const counselorMsgId = Date.now() + 1;
+      const counselorMsgTime = getFormattedTime();
+
       const counselorMsg = {
-        id: Date.now() + 1,
+        id: counselorMsgId,
         sender: "counselor",
         text: responseText,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        time: counselorMsgTime,
       };
 
-      setMessages((prev) => [...prev, counselorMsg]);
+      setSessions((prevSessions) =>
+        prevSessions.map((s) => {
+          if (s.id === activeSessionId) {
+            return {
+              ...s,
+              messages: [...s.messages, counselorMsg],
+            };
+          }
+          return s;
+        })
+      );
       setIsTyping(false);
     }, 1200);
   };
 
   const handleReset = () => {
-    setMessages([
-      {
-        id: Date.now(),
-        sender: "counselor",
-        text: `Fresh start! How can I help you today, ${userName}?`,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
+    const resetId = Date.now();
+    const resetTime = getFormattedTime();
+
+    setSessions((prevSessions) =>
+      prevSessions.map((s) => {
+        if (s.id === activeSessionId) {
+          return {
+            ...s,
+            messages: [
+              {
+                id: resetId,
+                sender: "counselor",
+                text: `Fresh start! How can I help you today, ${userName}?`,
+                time: resetTime,
+              },
+            ],
+          };
+        }
+        return s;
+      })
+    );
   };
 
   return (
     <div className={styles.chatPage}>
-      {/* Clean Minimal Sidebar */}
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            <div className="flex items-center gap-2.5 py-1 px-1 font-semibold text-white">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600/80 border border-indigo-500/30 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
-                CM
-              </div>
-              <span className="text-sm font-semibold tracking-wide text-slate-100">Campus Mitra</span>
+        <SidebarBody>
+          <div className={styles.sidebarWrapper}>
+            <div className={styles.brandContainer}>
+              <div className={styles.logo}><AnimatedLogo/></div>
+              <SidebarText className={styles.logoText}>Campus Mitra</SidebarText>
             </div>
-            <div className="mt-8 flex flex-col gap-1.5">
+
+            <div className={styles.navSection}>
               {sidebarLinks.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
+            </div>
+
+            <div className={styles.divider} />
+
+            <div className={styles.historySection}>
+              <div className={styles.historyHeader}>
+                <SidebarText className={styles.historyTitle}>Recent Chats</SidebarText>
+                <button
+                  onClick={handleNewChat}
+                  className={styles.newChatBtn}
+                  title="New Conversation"
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+
+              <div className={styles.historyList}>
+                {sessions.map((session) => (
+                  <SidebarHistoryItem
+                    key={session.id}
+                    title={session.title}
+                    isActive={session.id === activeSessionId}
+                    onClick={() => setActiveSessionId(session.id)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </SidebarBody>
       </Sidebar>
 
-      <div className={styles.bgGlow} />
-
       <main className={styles.mainLayout}>
-        {/* Counselor Profile Header */}
+        {/* Simple Header */}
         <header className={styles.counselorHeader}>
-          <div className={styles.counselorProfile}>
-            <div className={styles.avatarWrapper}>
-              <span className="font-bold text-sm text-white">M</span>
-              <span className={styles.onlineBadge} title="Mitra is online" />
-            </div>
-            <div className={styles.counselorInfo}>
-              <h2>Mitra</h2>
-              <p className={styles.subtitle}>Senior Academic Advisor & Student Counselor</p>
-            </div>
+          <div>
+            <h2>Mitra</h2>
+            <p className={styles.subtitle}>Senior Academic Advisor & Student Counselor</p>
           </div>
-
-          <div className={styles.headerActions}>
-            <button className={styles.actionBtn} onClick={handleReset} title="Restart Conversation">
-              Reset
-            </button>
-          </div>
+          <button className={styles.actionBtn} onClick={handleReset}>
+            Reset
+          </button>
         </header>
 
-        {/* Chat Messages */}
         <div className={styles.messagesContainer}>
           {messages.map((msg) => (
             <div
@@ -192,9 +277,6 @@ export default function Chat() {
                 msg.sender === "user" ? styles.userRow : styles.counselorRow
               }`}
             >
-              <div className={styles.messageAvatar}>
-                {msg.sender === "user" ? userInitial : "M"}
-              </div>
               <div className={styles.messageBubble}>
                 {msg.text}
                 <span className={styles.timeStamp}>{msg.time}</span>
@@ -204,7 +286,6 @@ export default function Chat() {
 
           {isTyping && (
             <div className={`${styles.messageRow} ${styles.counselorRow}`}>
-              <div className={styles.messageAvatar}>M</div>
               <div className={styles.messageBubble}>
                 <div className={styles.typingIndicator}>
                   <div className={styles.dot} />
@@ -233,7 +314,7 @@ export default function Chat() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Message Input Form */}
+        {/* Input Form */}
         <form
           className={styles.inputForm}
           onSubmit={(e) => {

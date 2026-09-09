@@ -24,7 +24,7 @@ export default function OnboardingPreview() {
 
         <button
           className="preview-button"
-          onClick={() => navigate("/chatbot")}>
+          onClick={() => navigate("/chat")}>
           Navigate to ChatBot
         </button>
       </div>

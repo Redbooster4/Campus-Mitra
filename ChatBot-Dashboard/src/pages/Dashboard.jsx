@@ -66,6 +66,9 @@ export default function Dashboard() {
     }
   }, []);
   const displayName = user?.username || "Student";
+  const handleAI=()=>{
+    navigate("/chat");
+  }
 
   return(
     <div className={styles.dashboard}>
@@ -214,32 +217,6 @@ export default function Dashboard() {
             </button>
           </div>
 
-          <div className={`${styles.card} ${styles.actionCard}`}>
-            <div className={styles.cardHeader}>
-              <div>
-                <p className={styles.cardEyebrow}>NEXT STEP</p>
-                <h2 className={styles.cardTitle}>
-                  Complete your profile
-                </h2>
-              </div>
-
-              <div className={styles.warningIcon}>
-                <AlertCircle size={21} />
-              </div>
-            </div>
-
-            <p className={styles.actionDescription}>
-              Complete your student profile so we can personalize your
-              counselling experience and keep your admission information
-              up to date.
-            </p>
-
-            <button className={styles.actionButton}>
-              Complete profile
-              <ChevronRight size={17} />
-            </button>
-          </div>
-
           <div className={`${styles.card} ${styles.quickCard}`}>
             <div className={styles.cardHeader}>
               <div>
@@ -270,7 +247,7 @@ export default function Dashboard() {
                   <MessageSquare size={19} />
                 </div>
 
-                <div>
+                <div onClick={handleAI}>
                   <strong>Ask AI Counselor</strong>
                   <span>Get instant guidance</span>
                 </div>
