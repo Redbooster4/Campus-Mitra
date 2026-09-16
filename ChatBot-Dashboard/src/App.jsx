@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import Preview from "./pages/Preview";
 import Chat from "./pages/chat";
+import AdminDashboard from "./pages/AdminDashboard";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -21,6 +22,7 @@ function App() {
         <Route path="/onboarding" element={<Onboarding />}/>
         <Route path="/preview" element={<Preview />}/>
         <Route path="/chat" element={<Chat />}/>
+        <Route path="/admin" element={<AdminDashboard />}/>
       </Routes>
     </BrowserRouter>
   );
