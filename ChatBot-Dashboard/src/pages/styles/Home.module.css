@@ -28,18 +28,6 @@ body{
   justify-content: center;
   text-align: center;
 }
-.bg{
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 600px;
-  height: 300px;
-  transform: translateX(-50%);
-  background: var(--primary);
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.15;
-}
 .logo{
   width: 60px;
   height: 60px;
@@ -62,7 +50,7 @@ body{
 }
 .gradient{
   background: linear-gradient(
-    to right, var(--purple-light), var(--primary)
+    to right, var(--orange-light), var(--primary)
   );
   background-clip: text;
   -webkit-background-clip: text;
@@ -81,11 +69,16 @@ body{
   gap: 1rem;
 }
 .btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
   font: inherit;
-  transition: var(--transition);
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 .btnLarge{
   margin-top: 40px;
@@ -94,11 +87,10 @@ body{
 }
 .btnPrimary{
   background: var(--primary);
-  color: var(--white);
+  color: var(--bg);
 }
 .btnPrimary:hover{
   background: var(--primary-hover);
-  transform: translateY(-2px);
 }
 .btnSecondary{
   background: var(--card);
@@ -107,7 +99,7 @@ body{
 }
 .btnSecondary:hover{
   border-color: var(--primary);
-  color: var(--purple-light);
+  color: var(--orange-light);
 }
 
 .grid{
@@ -140,8 +132,9 @@ body{
   justify-content: center;
   margin-bottom: 1rem;
   border-radius: var(--radius);
-  background: #30245f;
-  color: var(--purple-light);
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--primary);
+  border: 1px solid var(--border);
 }
 
 .featureTitle{

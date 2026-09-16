@@ -89,7 +89,7 @@ export const DesktopSidebar = ({
   return (
     <motion.div
       className={cn(
-        "sticky top-0 h-screen px-4 py-6 hidden md:flex md:flex-col bg-[#181a2f] border-r border-[#2a2d4a] w-[260px] flex-shrink-0 z-30 shadow-2xl backdrop-blur-xl overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
+        "sticky top-0 h-screen px-4 py-6 hidden md:flex md:flex-col bg-[var(--card)] border-r border-[var(--border)] w-[260px] flex-shrink-0 z-30 shadow-2xl backdrop-blur-xl overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
         className
       )}
       animate={{
@@ -114,13 +114,13 @@ export const MobileSidebar = ({
     <>
       <div
         className={cn(
-          "h-12 px-4 flex flex-row md:hidden items-center justify-between bg-[#181a2f] border-b border-[#2a2d4a] w-full"
+          "h-12 px-4 flex flex-row md:hidden items-center justify-between bg-[var(--card)] border-b border-[var(--border)] w-full"
         )}
         {...props}
       >
         <div className="flex justify-end z-20 w-full">
           <Menu
-            className="text-slate-200 hover:text-white cursor-pointer"
+            className="text-[var(--muted)] hover:text-[var(--text)] cursor-pointer"
             onClick={() => setOpen(!open)}
           />
         </div>
@@ -135,12 +135,12 @@ export const MobileSidebar = ({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-[#0f1020] border-r border-[#2a2d4a] p-6 z-[100] flex flex-col justify-between overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
+                "fixed h-full w-full inset-0 bg-[var(--bg)] border-r border-[var(--border)] p-6 z-[100] flex flex-col justify-between overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
                 className
               )}
             >
               <div
-                className="absolute right-6 top-6 z-50 text-slate-300 hover:text-white cursor-pointer"
+                className="absolute right-6 top-6 z-50 text-[var(--muted)] hover:text-[var(--text)] cursor-pointer"
                 onClick={() => setOpen(!open)}
               >
                 <X />
@@ -189,7 +189,7 @@ export const SidebarLink = ({
     <Link
       to={link.href}
       className={cn(
-        "flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-lg hover:bg-[#252848] transition-colors",
+        "flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-lg hover:bg-[var(--card-hover)] transition-colors",
         className
       )}
       {...props}
@@ -200,7 +200,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-slate-300 group-hover/sidebar:text-white text-sm font-medium group-hover/sidebar:translate-x-1 transition-all duration-150 whitespace-pre inline-block !p-0 !m-0"
+        className="text-[var(--muted)] group-hover/sidebar:text-[var(--text)] text-sm font-medium group-hover/sidebar:translate-x-1 transition-all duration-150 whitespace-pre inline-block !p-0 !m-0"
       >
         {link.label}
       </motion.span>
@@ -224,11 +224,11 @@ export const SidebarHistoryItem = ({
       className={cn(
         "w-full text-left flex items-center justify-start gap-2.5 py-2 px-2.5 rounded-lg text-xs transition-colors truncate cursor-pointer",
         isActive
-          ? "bg-indigo-600/30 text-indigo-200 font-medium border border-indigo-500/30"
-          : "text-slate-400 hover:text-slate-200 hover:bg-[#252848]"
+          ? "bg-[rgba(249,115,22,0.15)] text-[var(--primary)] font-medium border border-[var(--primary)]"
+          : "text-[var(--muted)] hover:text-[var(--text)] hover:bg-[var(--card-hover)]"
       )}
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+      <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", isActive ? "bg-[var(--primary)]" : "bg-[var(--border-hover)]")} />
       <motion.span
         animate={{
           display: animate ? (open ? "inline-block" : "none") : "inline-block",

@@ -2,21 +2,21 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
-:root{
-  --bg: #0f1020;
-  --card: #181a2f;
-  --card-hover: #1e2140;
+:root {
+  --bg: #0c0c0c;
+  --card: #151515;
+  --card-hover: #1c1c1c;
 
-  --primary: #6366f1;
-  --primary-hover: #818cf8;
-  --purple-light: #a5b4fc;
+  --primary: #f97316;
+  --primary-hover: #fb923c;
+  --orange-light: #fdba74;
 
   --white: #ffffff;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
+  --text: #f4f4f5;
+  --muted: #a1a1aa;
 
-  --border: #2a2d4a;
-  --border-hover: #454a78;
+  --border: #27272a;
+  --border-hover: #3f3f46;
 
   --radius: 12px;
   --font-sans: "Geist Variable", sans-serif;

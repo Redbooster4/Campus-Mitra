@@ -5,13 +5,9 @@ import {
   ArrowUpRight,
   Bell,
   Bot,
-  CheckCircle2,
-  Clock3,
   FileText,
-  GraduationCap,
   MessageSquare,
   UserRound,
-  AlertCircle,
   ChevronRight,
 } from "lucide-react";
 import styles from "./styles/Dashboard.module.css";
@@ -78,18 +74,17 @@ export default function Dashboard() {
         socialItems={socialItems}
         displaySocials
         displayItemNumbering
-        menuButtonColor="#ffffff"
-        openMenuButtonColor="#000000"
+        menuButtonColor="var(--text)"
+        openMenuButtonColor="var(--text)"
         changeMenuColorOnOpen
-        colors={["#B497CF", "#5227FF"]}
+        colors={["var(--border)", "var(--primary)"]}
         logoUrl={
           <div className={styles.logo}>
             <AnimatedLogo />
           </div>
         }
-        accentColor="#5227FF"
+        accentColor="var(--primary)"
       />
-      <div className={styles.bg}/>
 
       <main className={styles.main}>
         <header className={styles.header}>
@@ -106,97 +101,6 @@ export default function Dashboard() {
         </header>
 
         <section className={styles.contentGrid}>
-          <div className={`${styles.card} ${styles.applicationCard}`}>
-            <div className={styles.cardHeader}>
-              <div>
-                <p className={styles.cardEyebrow}>APPLICATION</p>
-                <h2 className={styles.cardTitle}>
-                  Your admission journey
-                </h2>
-              </div>
-              <div className={styles.cardIcon}>
-                <FileText size={21} />
-              </div>
-            </div>
-
-            <div className={styles.statusArea}>
-              <div className={styles.statusTop}>
-                <div>
-                  <span className={styles.statusLabel}>
-                    Current status
-                  </span>
-                  <h3 className={styles.statusValue}>
-                    Application in progress
-                  </h3>
-                </div>
-
-                <span className={styles.statusBadge}>
-                  <Clock3 size={14} />
-                  In Progress
-                </span>
-              </div>
-
-              <div className={styles.progressTrack}>
-                <div
-                  className={styles.progressBar}
-                  style={{ width: "55%" }}
-                />
-              </div>
-
-              <div className={styles.progressInfo}>
-                <span>Application started</span>
-                <span>55% complete</span>
-              </div>
-            </div>
-
-            <div className={styles.timeline}>
-              <div className={styles.timelineItem}>
-                <div
-                  className={`${styles.timelineIcon} ${styles.completed}`}
-                >
-                  <CheckCircle2 size={16} />
-                </div>
-
-                <div>
-                  <strong>Registration</strong>
-                  <span>Completed</span>
-                </div>
-              </div>
-
-              <div className={styles.timelineLine} />
-
-              <div className={styles.timelineItem}>
-                <div
-                  className={`${styles.timelineIcon} ${styles.active}`}>
-                  <FileText size={16}/>
-                </div>
-
-                <div>
-                  <strong>Application</strong>
-                  <span>In progress</span>
-                </div>
-              </div>
-
-              <div className={styles.timelineLine}/>
-
-              <div className={styles.timelineItem}>
-                <div className={styles.timelineIcon}>
-                  <GraduationCap size={16} />
-                </div>
-
-                <div>
-                  <strong>Confirmation</strong>
-                  <span>Pending</span>
-                </div>
-              </div>
-            </div>
-
-            <button className={styles.outlineButton}>
-              View application
-              <ArrowUpRight size={16}/>
-            </button>
-          </div>
-
           <div className={`${styles.card} ${styles.aiCard}`}>
             <div className={styles.aiGlow} />
             <div className={styles.aiIcon}>
@@ -211,7 +115,6 @@ export default function Dashboard() {
             </p>
 
             <button className={styles.primaryButton} onClick={handleChat}>
-              <MessageSquare size={17} />
               Chat with AI Counselor
               <ArrowUpRight size={16} />
             </button>
@@ -220,8 +123,6 @@ export default function Dashboard() {
           <div className={`${styles.card} ${styles.quickCard}`}>
             <div className={styles.cardHeader}>
               <div>
-                <p className={styles.cardEyebrow}>QUICK ACCESS</p>
-
                 <h2 className={styles.cardTitle}>
                   What would you like to do?
                 </h2>

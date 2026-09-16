@@ -14,7 +14,6 @@
   flex-direction: column;
 }
 
-/* Sidebar Elements */
 .sidebarWrapper {
   display: flex;
   flex-direction: column;
@@ -42,7 +41,7 @@
 }
 
 .logoText {
-  font-size: 0.875rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--text);
 }

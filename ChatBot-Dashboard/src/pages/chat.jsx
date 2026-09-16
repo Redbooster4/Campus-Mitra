@@ -60,7 +60,7 @@ export default function Chat() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    if(storedUser){
       try {
         setUser(JSON.parse(storedUser));
       } catch {
@@ -70,7 +70,6 @@ export default function Chat() {
   }, []);
 
   const userName = user?.username || "Friend";
-
   const [sessions, setSessions] = useState([
     {
       id: "session-1",
@@ -90,14 +89,6 @@ export default function Chat() {
 
   const activeSession = sessions.find((s) => s.id === activeSessionId) || sessions[0];
   const messages = activeSession?.messages || [];
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]);
 
   const handleNewChat = () => {
     const now = Date.now();
@@ -152,16 +143,8 @@ export default function Chat() {
 
     setTimeout(() => {
       let responseText = humanResponses.default;
-      const lower = query.toLowerCase();
-      if (lower.includes("course") || lower.includes("subject") || lower.includes("branch")) {
-        responseText = humanResponses.course;
-      } else if (lower.includes("scholarship") || lower.includes("fee") || lower.includes("financial")) {
-        responseText = humanResponses.scholarship;
-      } else if (lower.includes("housing") || lower.includes("hostel") || lower.includes("dorm") || lower.includes("room")) {
-        responseText = humanResponses.housing;
-      } else if (lower.includes("admission") || lower.includes("deadline") || lower.includes("apply")) {
-        responseText = humanResponses.admission;
-      }
+       
+      // AI RESPO
 
       const counselorMsgId = Date.now() + 1;
       const counselorMsgTime = getFormattedTime();

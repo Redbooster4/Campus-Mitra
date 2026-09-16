@@ -17,8 +17,7 @@ const socialItems = [
   { label: 'LinkedIn', link: 'https://linkedin.com' }
 ];
 
-export default function Home() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+export default function Home(){
   const navigate=useNavigate();
 
   function handleStartApp(){
@@ -33,6 +32,7 @@ export default function Home() {
       navigate("/login");
     } 
   }
+  
   return (
     <div className={styles.wrapper}>
       <StaggeredMenu
@@ -40,16 +40,18 @@ export default function Home() {
         items={menuItems}
         socialItems={socialItems}
         displaySocials
-        displayItemNumbering={true}
-        menuButtonColor="#ffffff"
-        openMenuButtonColor="#000000"
-        changeMenuColorOnOpen={true}
-        colors={['#B497CF', '#5227FF']}
-        logoUrl={<div className={styles.logo}><AnimatedLogo/></div>}
-        accentColor="#5227FF"
-        onClick={()=> setSidebarOpen(true)}
+        displayItemNumbering
+        menuButtonColor="var(--text)"
+        openMenuButtonColor="var(--text)"
+        changeMenuColorOnOpen
+        colors={["var(--border)", "var(--primary)"]}
+        logoUrl={
+          <div className={styles.logo}>
+            <AnimatedLogo />
+          </div>
+        }
+        accentColor="var(--primary)"
       />
-      <div className={styles.bg}></div>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
@@ -64,8 +66,8 @@ export default function Home() {
 
         <div className={styles.btngroup}>
           <button className={`${styles.btn} ${styles.btnPrimary} ${styles.btnLarge}`} onClick={handleStartApp}>
-            <ArrowRight size={18} className={styles.hide}/>
             Start Application 
+            <ArrowRight size={18} className={styles.hide}/>
           </button>
           <button className={`${styles.btn} ${styles.btnSecondary} ${styles.btnLarge}`} onClick={handleChat}>
             <MessageSquare size={18} className={styles.hide}/>
