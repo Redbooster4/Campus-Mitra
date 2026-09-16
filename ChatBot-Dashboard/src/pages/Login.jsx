@@ -41,6 +41,9 @@ function Login() {
                 { withCredentials: true });
                 if(resp.data?.success && resp.data?.token){
                     localStorage.setItem("token", resp.data.token);
+                    if (resp.data.user) {
+                        localStorage.setItem("user", JSON.stringify(resp.data.user));
+                    }
                 }
 
                 const user = resp.data?.user;
@@ -89,6 +92,9 @@ function Login() {
             { withCredentials: true });
             if(resp.data?.success && resp.data?.token){
                 localStorage.setItem("token", resp.data.token);
+                if (resp.data.user) {
+                    localStorage.setItem("user", JSON.stringify(resp.data.user));
+                }
             }
             const user = resp.data?.user;
             if(!user.onboardingCompleted){
@@ -117,6 +123,7 @@ function Login() {
         }
         finally{
             localStorage.removeItem("token");
+            localStorage.removeItem("user");
             navigate("/home", {replace: true});
         }
     }

@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const { registerUser, loginUser, getUser, logoutUser } = require("../controllers/auth.controller");
-const verifyToken = require("../middleware/auth.middleware");
+const { verifyToken, requireAdmin }  = require("../middleware/auth.middleware");
 const rateLimit=require("express-rate-limit");
 
 const loginLimit= rateLimit({windowMs:15*60*1000, max:5});

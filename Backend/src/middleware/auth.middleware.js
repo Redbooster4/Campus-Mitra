@@ -1,7 +1,7 @@
-const jwt = require("jwt");
+const jwt = require("jsonwebtoken");
 
 function verifyToken(req, res, next){
-    const token = req.cookies.token;
+    const token = req.cookies?.token || req.headers.authorization?.split(" ")[1];
     if(!token){
         return res.status(401).json({
             error:"Not Authenticated"
@@ -14,3 +14,10 @@ function verifyToken(req, res, next){
         res.status(403).json({error:"Invalid Token"});
     }
 }
+function requireAdmin(req, res, next){
+    if(!req.user || req.user.role !== "Admin"){
+        return res.status(403).json({error: "Admin Access Required"});
+    }
+    next();
+}
+module.exports={verifyToken, requireAdmin};

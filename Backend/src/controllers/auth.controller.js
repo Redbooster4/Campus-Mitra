@@ -130,7 +130,7 @@ const getUser = async (req, res) => {
             `SELECT user_id, username, role, student_id, counselor_id, created_at, updated_at
              FROM users_auth
              WHERE user_id = $1`,
-            [decoded.id]
+            [decoded.user_id]
         );
 
         // Fixed typo: result.rows instead of result.row

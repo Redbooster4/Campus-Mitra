@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import styles from "./styles/Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
+import api from "../api/api";
 
 const menuItems = [
   {
@@ -38,10 +39,16 @@ const menuItems = [
 
 export default function AdminDashboard() {
   const [admin, setAdmin] = useState(null);
+  const [analytics, setAnalytics] = useState({
+    totalApplications: 0,
+    totalQueries: 0,
+    pendingDocuments: 0,
+    totalStudents: 0,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("adminUser");
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
         setAdmin(JSON.parse(storedUser));
@@ -49,6 +56,18 @@ export default function AdminDashboard() {
         setAdmin(null);
       }
     }
+
+    const fetchAnalytics = async () => {
+      try {
+        const resp = await api.get("/admin/analytics/summary", { withCredentials: true });
+        if (resp.data?.success) {
+          setAnalytics(resp.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch analytics:", err);
+      }
+    };
+    fetchAnalytics();
   }, []);
 
   const displayName = admin?.username || "Admin";
@@ -96,9 +115,8 @@ export default function AdminDashboard() {
             </div>
             <h2 className={styles.aiTitle}>System Overview</h2>
             <p className={styles.aiDescription}>
-              Currently tracking 1,245 active student applications. Campus Mitra
-              has successfully resolved 8,430 queries this week, reducing manual
-              support workload by 74%.
+              Currently tracking <strong>{analytics.totalApplications}</strong> active student applications out of <strong>{analytics.totalStudents}</strong> registered students. 
+              Campus Mitra has successfully resolved <strong>{analytics.totalQueries}</strong> queries so far, drastically reducing manual support workload.
             </p>
 
             <button
@@ -125,7 +143,7 @@ export default function AdminDashboard() {
 
                 <div>
                   <strong>Document Verifications</strong>
-                  <span>42 pending student approvals</span>
+                  <span>{analytics.pendingDocuments} pending student approvals</span>
                 </div>
 
                 <ChevronRight size={17} />
