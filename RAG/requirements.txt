@@ -11,3 +11,5 @@ dotenv
 langchain-google-genai
 langchain-ollama
 python-dotenv
+flask
+flask_cors

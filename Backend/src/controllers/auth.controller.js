@@ -114,26 +114,15 @@ const loginUser = async (req, res) => {
 
 const getUser = async (req, res) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1];
+        const userId = req.user.user_id;
 
-        if (!token) {
-            return res.status(401).json({
-                success: false,
-                message: "No Token Provided"
-            });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        // Fixed table name & excluded password_hash from response
         const result = await pool.query(
             `SELECT user_id, username, role, student_id, counselor_id, created_at, updated_at
              FROM users_auth
              WHERE user_id = $1`,
-            [decoded.id]
+            [userId]
         );
 
-        // Fixed typo: result.rows instead of result.row
         if (result.rows.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -147,14 +136,16 @@ const getUser = async (req, res) => {
         });
 
     } catch (err) {
-        return res.status(401).json({
+        return res.status(500).json({
             success: false,
-            message: "Invalid or Expired Token"
+            message: "Internal server error"
         });
     }
 }
 
 const logoutUser = async (req, res) => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     return res.status(200).json({
         success: true,
         message: "Logout Success !!"

@@ -267,32 +267,24 @@ Never return markdown.
 Never explain outside JSON.
 """
 
-
 classifier = ChatGoogleGenerativeAI(
     model="gemini-3.5-flash-lite",
     temperature=0,
 ).with_structured_output(QuerySource)
 
-
 def classify_query(query: str) -> dict:
-
     messages = [
         ("system", CLASSIFIER_SYSTEM_PROMPT),
         ("human", query)
     ]
-
     try:
-
         result: QuerySource = classifier.invoke(messages)
-
         return {
             "source": result.source,
             "reasoning": result.reasoning,
             "confidence": 1.0
         }
-
     except Exception as e:
-
         return {
             "source": "HUMAN_ESCALATION",
             "reasoning": f"Classifier Error: {str(e)}",
