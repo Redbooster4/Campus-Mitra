@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from langchain_chroma import Chroma
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from get_embedding_function import get_embedding_function
 
 load_dotenv()

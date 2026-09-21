@@ -135,7 +135,7 @@ function Login() {
                     trailSize={0.1}
                     maxAge={250}
                     interpolate={5}
-                    color="#7F77DD"
+                    color="#fb923c"
                     gooeyFilter={{ id: "custom-goo-filter", strength: 2 }}
                     gooeyEnabled
                     gooStrength={2}/>

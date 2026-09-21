@@ -13,7 +13,7 @@ body,
   min-height: 100vh;
   display: flex;
   flex-direction: row;
-  background: #0e0c1a;
+  background: var(--bg);
   overflow: hidden;
 }
 .leftSection{
@@ -25,7 +25,7 @@ body,
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: #0c091b;
+  background: var(--bg);
 }
 .left{
   position: absolute;
@@ -46,13 +46,13 @@ body,
 }
 .left h1{
   margin: 0 0 0.5rem;
-  color: #eeedfe;
+  color: var(--text);
   font-size: 2.25rem;
   font-weight: 700;
 }
 .left p{
   margin: 0;
-  color: #594bf9;
+  color: var(--muted);
   font-size: 0.875rem;
 }
 
@@ -64,21 +64,21 @@ body,
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: #1a1556;
+  background: var(--card);
 }
 .box{
   width: 100%;
   max-width: 28rem;
 }
-.title{
+.title {
   margin: 0 0 0.25rem;
-  color: #eeedfe;
+  color: var(--text);
   font-size: 1.875rem;
   font-weight: 700;
 }
 .subtitle{
   margin: 0 0 2rem;
-  color: #594bf9;
+  color: var(--muted);
   font-size: 0.875rem;
 }
 .form{
@@ -90,17 +90,18 @@ body,
 .loginInput, .loginSelect{
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #594bf9;
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
-  background: #0e0c1a;
-  color: #eeedfe;
+  background: var(--bg);
+  color: var(--text);
   font-size: 0.875rem;
   outline: none;
+  transition: border-color 0.2s;
 }
 .loginInput:focus, .loginSelect:focus{
-  border-color: white;
+  border-color: var(--border);
 }
-.loginSelect{
+.loginSelect {
   cursor: pointer;
 }
 
@@ -110,14 +111,14 @@ body,
   margin-bottom: 1rem;
   border: none;
   border-radius: 0.75rem;
-  background: #594bf9;
-  color: #eeedfe;
+  background: var(--primary);
+  color: var(--white);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
 }
 .btn:hover{
-  background: #776bfc;
+  background: var(--primary-hover);
 }
 .btn:disabled{
   opacity: 0.6;
@@ -126,12 +127,12 @@ body,
 
 .switch{
   margin-top: 1.5rem;
-  color: #594bf9;
+  color: var(--muted);
   font-size: 0.875rem;
   text-align: center;
 }
 .switch span{
-  color: white;
+  color: var(--primary);
   font-weight: 500;
   cursor: pointer;
 }
@@ -152,8 +153,8 @@ body,
   width: 100%;
   gap: 1rem;
 }
-@media (max-width: 768px){
-  .leftSection{
+@media (max-width: 768px) {
+  .leftSection {
     display: none;
   }
   .rightSection{
@@ -161,13 +162,13 @@ body,
     width: 100%;
   }
 }
-@media (max-width: 600px){
-  .rightSection{
+@media (max-width: 600px) {
+  .rightSection {
     padding: 1.5rem;
   }
 }
-@media (max-width: 400px){
-  .rightSection{
+@media (max-width: 400px) {
+  .rightSection {
     padding: 1rem;
   }
   .btn{
