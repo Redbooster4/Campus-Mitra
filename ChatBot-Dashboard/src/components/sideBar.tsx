@@ -8,8 +8,9 @@ import { Menu, X } from "lucide-react";
 
 interface Links {
   label: string;
-  href: string;
+  href?: string;
   icon: React.JSX.Element | React.ReactNode;
+  onClick?: () => void;
 }
 
 interface SidebarContextProps {
@@ -185,25 +186,55 @@ export const SidebarLink = ({
   props?: LinkProps;
 }) => {
   const { open, animate } = useSidebar();
-  return (
-    <Link
-      to={link.href}
-      className={cn(
-        "flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-lg hover:bg-[var(--card-hover)] transition-colors",
-        className
-      )}
-      {...props}
-    >
+
+  const content = (
+    <>
       {link.icon}
+
       <motion.span
         animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
+          display: animate
+            ? open
+              ? "inline-block"
+              : "none"
+            : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
         className="text-[var(--muted)] group-hover/sidebar:text-[var(--text)] text-sm font-medium group-hover/sidebar:translate-x-1 transition-all duration-150 whitespace-pre inline-block !p-0 !m-0"
       >
         {link.label}
       </motion.span>
+    </>
+  );
+
+  // If onClick exists, behave like a button instead of navigating
+  if (link.onClick) {
+    return (
+      <button
+        type="button"
+        onClick={link.onClick}
+        className={cn(
+          "w-full flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-lg hover:bg-[var(--card-hover)] transition-colors text-left",
+          className
+        )}
+        {...props}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  // Otherwise behave normally as a navigation link
+  return (
+    <Link
+      to={link.href || "#"}
+      className={cn(
+        "flex items-center justify-start gap-3 group/sidebar py-2.5 px-2 rounded-lg hover:bg-[var(--card-hover)] transition-colors",
+        className
+      )}
+      {...props}
+    >
+      {content}
     </Link>
   );
 };

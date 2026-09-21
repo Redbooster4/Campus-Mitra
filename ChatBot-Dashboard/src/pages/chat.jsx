@@ -3,36 +3,13 @@ import { Sidebar, SidebarBody, SidebarLink, SidebarHistoryItem, SidebarText } fr
 import {
   Send,
   LayoutDashboard,
-  MessageSquare,
-  Activity,
+  Cog,
   User,
   Plus,
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
 import AnimatedLogo from "@/components/AnimatedLogo";
-
-const sidebarLinks = [
-  {
-    label: "Home",
-    href: "/home",
-    icon: <LayoutDashboard className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: <Activity className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Chatbot",
-    href: "/chat",
-    icon: <MessageSquare className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Profile",
-    href: "/profile",
-    icon: <User className={styles.sidebarIcon} />,
-  },
-];
+import ModalManager from "./modals/ModalManager";
 
 const initialSuggestions = [
   { label: "Course Recommendations", query: "Can you help me choose the right courses for next semester?" },
@@ -56,7 +33,27 @@ export default function Chat() {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
   const messagesEndRef = useRef(null);
+
+  const closeModal = () => setActiveModal(null);
+  const sidebarLinks = [
+  {
+    label: "Home",
+    onClick: ()=>setActiveModal("home"),
+    icon: <LayoutDashboard className={styles.sidebarIcon} />,
+  },
+  {
+    label: "Settings",
+    onClick: ()=>setActiveModal("settings"),
+    icon: <Cog className={styles.sidebarIcon} />,
+  },
+  {
+    label: "Profile",
+    onClick: ()=>setActiveModal("profile"),
+    icon: <User className={styles.sidebarIcon} />,
+  },
+];
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -84,7 +81,6 @@ export default function Chat() {
       ],
     },
   ]);
-
   const [activeSessionId, setActiveSessionId] = useState("session-1");
 
   const activeSession = sessions.find((s) => s.id === activeSessionId) || sessions[0];
@@ -241,7 +237,6 @@ export default function Chat() {
       </Sidebar>
 
       <main className={styles.mainLayout}>
-        {/* Simple Header */}
         <header className={styles.counselorHeader}>
           <div>
             <h2>Mitra</h2>
@@ -311,13 +306,13 @@ export default function Chat() {
             placeholder={`Ask Mitra about courses, housing, fees...`}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-          />
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}/>
+
           <button
             type="submit"
             className={styles.sendBtn}
             disabled={!inputValue.trim() || isTyping}
-            aria-label="Send message"
-          >
+            aria-label="Send message">
             <Send size={16} />
           </button>
         </form>
