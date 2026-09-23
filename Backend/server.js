@@ -4,6 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./src/routes/auth.routes.js");
+const chatRoutes = require("./src/routes/chat.routes.js");
 const app = express();
 app.use(express.json());
 app.use(cors({
@@ -13,6 +14,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use("/api/auth", authRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("/", (req, res) => {
     res.send("CampusMitra Backend API is running!");

@@ -1,12 +1,19 @@
+import os
 import json
 import sys
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(dotenv_path=env_path)
 load_dotenv()
 
+if os.getenv("GEMINI_API_KEY") and not os.getenv("GOOGLE_API_KEY"):
+    os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
+
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.5-flash-lite",
+    model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"),
+    google_api_key=os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"),
     temperature=0
 )
 

@@ -8,8 +8,35 @@ import {
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
 import AnimatedLogo from "@/components/AnimatedLogo";
+<<<<<<< HEAD
 import ModalManager from "./modals/ModalManager";
 import { useNavigate } from "react-router-dom";
+=======
+import api from "../api/api";
+
+const sidebarLinks = [
+  {
+    label: "Home",
+    href: "/home",
+    icon: <LayoutDashboard className={styles.sidebarIcon} />,
+  },
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: <Activity className={styles.sidebarIcon} />,
+  },
+  {
+    label: "Chatbot",
+    href: "/chat",
+    icon: <MessageSquare className={styles.sidebarIcon} />,
+  },
+  {
+    label: "Profile",
+    href: "/profile",
+    icon: <User className={styles.sidebarIcon} />,
+  },
+];
+>>>>>>> 7688cd0 (Added Latest Context)
 
 const initialSuggestions = [
   { label: "Course Recommendations", query: "Can you help me choose the right courses for next semester?" },
@@ -103,7 +130,7 @@ export default function Chat(){
     setActiveSessionId(newId);
   };
 
-  const handleSend = (textToSend) => {
+  const handleSend = async (textToSend) => {
     const query = textToSend || inputValue.trim();
     if (!query) return;
 
@@ -145,6 +172,7 @@ export default function Chat(){
         const data = await response.json();
         const responseText = data.answer || "Sorry, I couldn't understand that.";
 
+<<<<<<< HEAD
         const counselorMsg = {
           id: generateId() + 1,
           sender: "counselor",
@@ -178,6 +206,80 @@ export default function Chat(){
       }
     };
     fetchAIResponse();
+=======
+    try {
+      let responseText = "";
+      try {
+        const res = await api.post("/chat", {
+          query,
+          student_id: user?.student_id || user?.id || null,
+          language: "en"
+        });
+        responseText = res.data?.answer || res.data?.message;
+      } catch (backendErr) {
+        // Fallback directly to Python RAG service on port 5000 if backend proxy fails
+        console.warn("Backend proxy failed, trying direct RAG service:", backendErr);
+        const directRes = await fetch("http://localhost:5000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query,
+            student_id: user?.student_id || user?.id || null,
+            language: "en"
+          })
+        });
+        const directData = await directRes.json();
+        responseText = directData?.answer || directData?.message;
+      }
+
+      if (!responseText) {
+        responseText = humanResponses.default;
+      }
+
+      const counselorMsgId = Date.now() + 1;
+      const counselorMsgTime = getFormattedTime();
+
+      const counselorMsg = {
+        id: counselorMsgId,
+        sender: "counselor",
+        text: responseText,
+        time: counselorMsgTime,
+      };
+
+      setSessions((prevSessions) =>
+        prevSessions.map((s) => {
+          if (s.id === activeSessionId) {
+            return {
+              ...s,
+              messages: [...s.messages, counselorMsg],
+            };
+          }
+          return s;
+        })
+      );
+    } catch (err) {
+      console.error("Chat error:", err);
+      const counselorMsg = {
+        id: Date.now() + 1,
+        sender: "counselor",
+        text: "Sorry, I couldn't reach the admission assistant server. Please ensure the backend services are running.",
+        time: getFormattedTime(),
+      };
+      setSessions((prevSessions) =>
+        prevSessions.map((s) => {
+          if (s.id === activeSessionId) {
+            return {
+              ...s,
+              messages: [...s.messages, counselorMsg],
+            };
+          }
+          return s;
+        })
+      );
+    } finally {
+      setIsTyping(false);
+    }
+>>>>>>> 7688cd0 (Added Latest Context)
   };
 
   const handleReset=()=>{

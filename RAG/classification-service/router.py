@@ -6,16 +6,21 @@ from chromadb.utils import embedding_functions
 from classify import classify_query
 from answer_generator import generate_answer
 
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(dotenv_path=env_path)
 load_dotenv()
 
 POSTGRES_CONFIG = {
-    "host": os.getenv("POSTGRES_HOST"),
-    "port": os.getenv("POSTGRES_PORT"),
-    "database": os.getenv("POSTGRES_DB"),
-    "user": os.getenv("POSTGRES_USER"),
-    "password": os.getenv("POSTGRES_PASSWORD")
+    "host": os.getenv("POSTGRES_HOST", "localhost"),
+    "port": os.getenv("POSTGRES_PORT", 5432),
+    "database": os.getenv("POSTGRES_DB", "campus_mitra"),
+    "user": os.getenv("POSTGRES_USER", "postgres"),
+    "password": os.getenv("POSTGRES_PASSWORD", "")
 }
-CHROMA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "chroma_db_data"))
+
+# --- 1. Connect to Running Chroma HTTP Server ---
+CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
+CHROMA_PORT = int(os.getenv("CHROMA_PORT", 8000))
 
 try:
     ollama_ef = embedding_functions.OllamaEmbeddingFunction(
@@ -31,22 +36,23 @@ except Exception:
             return self.ef.embed_documents(input)
     ollama_ef = OllamaEmbeddingAdapter("nomic-embed-text")
 
-chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
-existing_collections = chroma_client.list_collections()
+# Connect to the HTTP Chroma server where n8n ingests chunks
+chroma_client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
 
-target_collection_name = "sbmp_final_year_project"
-if existing_collections:
-    for col in existing_collections:
-        if col.count() > 0:
-            target_collection_name = col.name
-            break
-    if not target_collection_name:
-        target_collection_name = existing_collections[0].name
+# Prefer the target collection, fallback to the one holding your chunks
+target_collection_name = os.getenv("CHROMA_COLLECTION", "7735b6b9-7ae8-495f-a0e8-d57e0b246703")
 
-knowledge_collection = chroma_client.get_or_create_collection(
-    name=target_collection_name,
-    embedding_function=ollama_ef
-)
+try:
+    knowledge_collection = chroma_client.get_collection(
+        name=target_collection_name,
+        embedding_function=ollama_ef
+    )
+except Exception:
+    # If not found yet, get or create it
+    knowledge_collection = chroma_client.get_or_create_collection(
+        name=target_collection_name,
+        embedding_function=ollama_ef
+    )
 
 
 def get_postgres_connection():
@@ -61,15 +67,15 @@ def query_postgres(student_id=None):
         conn = get_postgres_connection()
         cursor = conn.cursor()
 
+        # Check by 'id' or 'student_id' depending on your schema
         cursor.execute("""
             SELECT s.full_name, a.status, a.created_at
             FROM students s
-            JOIN applications a
-            ON s.student_id = a.student_id
-            WHERE s.student_id = %s
+            JOIN applications a ON (s.id = a.student_id OR s.student_id = a.student_id)
+            WHERE s.id = %s OR s.student_id = %s
             ORDER BY a.created_at DESC
             LIMIT 1
-        """, (student_id,))
+        """, (student_id, student_id))
 
         result = cursor.fetchone()
         documents = []
@@ -78,8 +84,7 @@ def query_postgres(student_id=None):
             cursor.execute("""
                 SELECT d.document_name, d.status
                 FROM documents d
-                JOIN applications a
-                ON d.application_id = a.application_id
+                JOIN applications a ON d.application_id = a.application_id
                 WHERE a.student_id = %s
             """, (student_id,))
 
@@ -109,9 +114,16 @@ def query_chromadb(query_text, n_results=3):
             n_results=n_results
         )
         if not results or not results.get("documents"):
+            print("[ChromaDB] No matching documents found for query.")
             return []
-        return results["documents"][0]
+        
+        docs = results["documents"][0]
+        print(f"[ChromaDB Retrieved {len(docs)} Chunks]:")
+        for i, chunk in enumerate(docs):
+            print(f"  Chunk {i+1} preview: {chunk[:120]}...")
+        return docs
     except Exception as e:
+        print(f"[ChromaDB Query Error]: {e}")
         return [f"ChromaDB query failed: {str(e)}"]
 
 
@@ -122,9 +134,15 @@ def log_chat(student_id, user_message, ai_reply, department_id=None):
 
         valid_student_id = None
         if student_id:
-            cursor.execute("SELECT 1 FROM students WHERE student_id = %s", (student_id,))
-            if cursor.fetchone():
-                valid_student_id = student_id
+            # Check against 'id' (standard PK) or 'student_id'
+            cursor.execute("""
+                SELECT id FROM students WHERE id = %s
+                UNION
+                SELECT student_id FROM students WHERE student_id = %s
+            """, (student_id, student_id))
+            row = cursor.fetchone()
+            if row:
+                valid_student_id = row[0]
 
         cursor.execute("""
             INSERT INTO chat_history
@@ -157,7 +175,6 @@ def escalate_to_human(query_text, student_id=None):
 
 
 def sanitize_text(val):
-    """Ensure output is always a clean string for JSON / React rendering."""
     if hasattr(val, "content"):
         val = val.content
 
@@ -182,6 +199,8 @@ def route_query(query_text, student_id=None, language="en"):
     classification = classify_query(query_text)
     source = classification.get("source")
 
+    print(f"\n[Router] Query: '{query_text}' | Route: {source}")
+
     if source == "POSTGRESQL":
         data = query_postgres(student_id)
 
@@ -195,18 +214,13 @@ def route_query(query_text, student_id=None, language="en"):
         }
 
     elif source == "HUMAN_ESCALATION":
-        data = escalate_to_human(
-            query_text,
-            student_id
-        )
+        data = escalate_to_human(query_text, student_id)
 
     elif source == "GREETING":
         data = {"message": "Hello! How can I help you with your admission query today?"}
 
     else:
-        data = {
-            "error": "Unknown routing source"
-        }
+        data = {"error": "Unknown routing source"}
 
     if source in ["HUMAN_ESCALATION", "GREETING"]:
         final_answer = data.get("message", "")
@@ -218,6 +232,10 @@ def route_query(query_text, student_id=None, language="en"):
         )
 
     clean_answer = sanitize_text(final_answer)
+
+    # Log standard queries to chat_history
+    if source not in ["HUMAN_ESCALATION"]:
+        log_chat(student_id, query_text, clean_answer)
 
     return {
         "source": source,
