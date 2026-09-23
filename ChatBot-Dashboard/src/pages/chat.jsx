@@ -44,13 +44,13 @@ const initialSuggestions = [
   { label: "Admission Deadlines & Fees", query: "What are the upcoming admission deadlines and fee structures?" },
 ];
 
-const humanResponses = {
-  course: "Choosing the right courses can feel overwhelming, but you don't have to do it alone! Based on your academic interests, I recommend balancing core requirements with electives that excite you. Would you like me to look at specific branch specializations or course syllabi with you?",
-  scholarship: "We have several merit-based and need-based financial aid programs available! Applications for the upcoming term are currently open. Should I guide you through the eligibility criteria or document submission process?",
-  housing: "Living on campus is a great way to experience university life! We offer single and shared dorms with 24/7 Wi-Fi, study lounges, and dining hall access. Are you interested in on-campus hostels or nearby off-campus options?",
-  admission: "Admission dates vary slightly by department, but key deadlines for the upcoming semester are approaching fast. Fees can be paid in flexible installments. What specific degree program are you looking into?",
-  default: "I hear you! As your campus counselor, I'm here to support you through every step of your college journey—whether it's managing study workload, navigating campus resources, or planning your career path. Tell me a bit more so I can help best!"
-};
+// const humanResponses = {
+//   course: "Choosing the right courses can feel overwhelming, but you don't have to do it alone! Based on your academic interests, I recommend balancing core requirements with electives that excite you. Would you like me to look at specific branch specializations or course syllabi with you?",
+//   scholarship: "We have several merit-based and need-based financial aid programs available! Applications for the upcoming term are currently open. Should I guide you through the eligibility criteria or document submission process?",
+//   housing: "Living on campus is a great way to experience university life! We offer single and shared dorms with 24/7 Wi-Fi, study lounges, and dining hall access. Are you interested in on-campus hostels or nearby off-campus options?",
+//   admission: "Admission dates vary slightly by department, but key deadlines for the upcoming semester are approaching fast. Fees can be paid in flexible installments. What specific degree program are you looking into?",
+//   default: "I hear you! As your campus counselor, I'm here to support you through every step of your college journey—whether it's managing study workload, navigating campus resources, or planning your career path. Tell me a bit more so I can help best!"
+// };
 
 const getFormattedTime = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
