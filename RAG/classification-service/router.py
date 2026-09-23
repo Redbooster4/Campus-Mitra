@@ -6,6 +6,7 @@ from chromadb.utils import embedding_functions
 from classify import classify_query
 from answer_generator import generate_answer
 
+# Load environment configuration
 env_path = os.path.join(os.path.dirname(__file__), ".env")
 load_dotenv(dotenv_path=env_path)
 load_dotenv()
@@ -36,11 +37,24 @@ except Exception:
             return self.ef.embed_documents(input)
     ollama_ef = OllamaEmbeddingAdapter("nomic-embed-text")
 
-# Connect to the HTTP Chroma server where n8n ingests chunks
 chroma_client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
 
-# Prefer the target collection, fallback to the one holding your chunks
-target_collection_name = os.getenv("CHROMA_COLLECTION", "7735b6b9-7ae8-495f-a0e8-d57e0b246703")
+# Determine target collection: prioritize .env, otherwise find collection with most chunks
+target_collection_name = os.getenv("CHROMA_COLLECTION")
+
+if not target_collection_name:
+    try:
+        collections = chroma_client.list_collections()
+        if collections:
+            # Sort collections by chunk count descending to target the complete dataset
+            collections.sort(key=lambda c: c.count(), reverse=True)
+            target_collection_name = collections[0].name
+            print(f"[ChromaDB] Auto-selected largest collection '{target_collection_name}' with {collections[0].count()} chunks.")
+        else:
+            target_collection_name = "campus_mitra_docs"
+    except Exception as e:
+        print(f"[ChromaDB] Error inspecting collections: {e}")
+        target_collection_name = "campus_mitra_docs"
 
 try:
     knowledge_collection = chroma_client.get_collection(
@@ -48,11 +62,12 @@ try:
         embedding_function=ollama_ef
     )
 except Exception:
-    # If not found yet, get or create it
     knowledge_collection = chroma_client.get_or_create_collection(
         name=target_collection_name,
         embedding_function=ollama_ef
     )
+
+print(f"[ChromaDB] Active collection: '{knowledge_collection.name}' | Total Chunks: {knowledge_collection.count()}")
 
 
 def get_postgres_connection():
@@ -67,7 +82,6 @@ def query_postgres(student_id=None):
         conn = get_postgres_connection()
         cursor = conn.cursor()
 
-        # Check by 'id' or 'student_id' depending on your schema
         cursor.execute("""
             SELECT s.full_name, a.status, a.created_at
             FROM students s
@@ -107,20 +121,31 @@ def query_postgres(student_id=None):
         return {"error": f"PostgreSQL query failed: {str(e)}"}
 
 
-def query_chromadb(query_text, n_results=3):
+def query_chromadb(query_text, n_results=5):
     try:
+        # nomic-embed-text requires the search_query prefix for optimal retrieval
+        search_prompt = f"search_query: {query_text.strip()}"
+
         results = knowledge_collection.query(
-            query_texts=[query_text],
-            n_results=n_results
+            query_texts=[search_prompt],
+            n_results=n_results,
+            include=["documents", "metadatas", "distances"]
         )
-        if not results or not results.get("documents"):
+
+        if not results or not results.get("documents") or not results["documents"][0]:
             print("[ChromaDB] No matching documents found for query.")
             return []
-        
+
         docs = results["documents"][0]
-        print(f"[ChromaDB Retrieved {len(docs)} Chunks]:")
-        for i, chunk in enumerate(docs):
-            print(f"  Chunk {i+1} preview: {chunk[:120]}...")
+        metas = results["metadatas"][0] if results.get("metadatas") else [{}] * len(docs)
+        dists = results["distances"][0] if results.get("distances") else [0.0] * len(docs)
+
+        print(f"\n[ChromaDB Retrieved {len(docs)} Chunks]:")
+        for i, (chunk, meta, dist) in enumerate(zip(docs, metas, dists)):
+            source_file = meta.get("file_name") or meta.get("source") or meta.get("fileName") or "Unknown file"
+            print(f"  [{i+1}] Source: {source_file} | Distance: {dist:.4f}")
+            print(f"      Preview: {chunk[:120].strip()}...\n")
+
         return docs
     except Exception as e:
         print(f"[ChromaDB Query Error]: {e}")
@@ -134,7 +159,6 @@ def log_chat(student_id, user_message, ai_reply, department_id=None):
 
         valid_student_id = None
         if student_id:
-            # Check against 'id' (standard PK) or 'student_id'
             cursor.execute("""
                 SELECT id FROM students WHERE id = %s
                 UNION
@@ -164,11 +188,7 @@ def log_chat(student_id, user_message, ai_reply, department_id=None):
 
 def escalate_to_human(query_text, student_id=None):
     reply = "ESCALATED: Forwarded to counselor."
-    log_chat(
-        student_id,
-        query_text,
-        reply
-    )
+    log_chat(student_id, query_text, reply)
     return {
         "message": "Your query has been forwarded to a counselor."
     }
@@ -233,7 +253,6 @@ def route_query(query_text, student_id=None, language="en"):
 
     clean_answer = sanitize_text(final_answer)
 
-    # Log standard queries to chat_history
     if source not in ["HUMAN_ESCALATION"]:
         log_chat(student_id, query_text, clean_answer)
 
