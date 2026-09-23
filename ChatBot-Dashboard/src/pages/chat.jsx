@@ -8,49 +8,15 @@ import {
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
 import AnimatedLogo from "@/components/AnimatedLogo";
-<<<<<<< HEAD
 import ModalManager from "./modals/ModalManager";
 import { useNavigate } from "react-router-dom";
-=======
 import api from "../api/api";
-
-const sidebarLinks = [
-  {
-    label: "Home",
-    href: "/home",
-    icon: <LayoutDashboard className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: <Activity className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Chatbot",
-    href: "/chat",
-    icon: <MessageSquare className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Profile",
-    href: "/profile",
-    icon: <User className={styles.sidebarIcon} />,
-  },
-];
->>>>>>> 7688cd0 (Added Latest Context)
 
 const initialSuggestions = [
   { label: "Course Recommendations", query: "Can you help me choose the right courses for next semester?" },
   { label: "Scholarships & Financial Aid", query: "What scholarship and financial aid options are available?" },
   { label: "Admission Deadlines & Fees", query: "What are the upcoming admission deadlines and fee structures?" },
 ];
-
-// const humanResponses = {
-//   course: "Choosing the right courses can feel overwhelming, but you don't have to do it alone! Based on your academic interests, I recommend balancing core requirements with electives that excite you. Would you like me to look at specific branch specializations or course syllabi with you?",
-//   scholarship: "We have several merit-based and need-based financial aid programs available! Applications for the upcoming term are currently open. Should I guide you through the eligibility criteria or document submission process?",
-//   housing: "Living on campus is a great way to experience university life! We offer single and shared dorms with 24/7 Wi-Fi, study lounges, and dining hall access. Are you interested in on-campus hostels or nearby off-campus options?",
-//   admission: "Admission dates vary slightly by department, but key deadlines for the upcoming semester are approaching fast. Fees can be paid in flexible installments. What specific degree program are you looking into?",
-//   default: "I hear you! As your campus counselor, I'm here to support you through every step of your college journey—whether it's managing study workload, navigating campus resources, or planning your career path. Tell me a bit more so I can help best!"
-// };
 
 const getFormattedTime = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -78,18 +44,20 @@ export default function Chat(){
   const messagesEndRef = useRef(null);
 
   const closeModal = () => setActiveModal(null);
+  
   const sidebarLinks=[
-  {
-    label: "Home",
-    onClick:()=>navigate("/home"),
-    icon: <LayoutDashboard className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Profile",
-    onClick: ()=>setActiveModal("profile"),
-    icon: <User className={styles.sidebarIcon}/>,
-  },
-];
+    {
+      label: "Home",
+      onClick:()=>navigate("/home"),
+      icon: <LayoutDashboard className={styles.sidebarIcon} />,
+    },
+    {
+      label: "Profile",
+      onClick: ()=>setActiveModal("profile"),
+      icon: <User className={styles.sidebarIcon}/>,
+    },
+  ];
+  
   const userName = user?.username || "Friend";
   const [sessions, setSessions] = useState([
     {
@@ -158,55 +126,7 @@ export default function Chat(){
 
     if (!textToSend) setInputValue("");
     setIsTyping(true);
-    const fetchAIResponse=async()=>{
-      try{
-        const response=await fetch("http://localhost:5000/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            query: query,
-            student_id: user?.student_id || null 
-          }),
-        });
-        
-        const data = await response.json();
-        const responseText = data.answer || "Sorry, I couldn't understand that.";
-
-<<<<<<< HEAD
-        const counselorMsg = {
-          id: generateId() + 1,
-          sender: "counselor",
-          text: responseText,
-          time: getFormattedTime(),
-        };
-
-        setSessions((prevSessions) =>
-          prevSessions.map((s) => {
-            if (s.id === activeSessionId) {
-              return { ...s, messages: [...s.messages, counselorMsg] };
-            }
-            return s;
-          })
-        );
-      } 
-      catch (error){
-        console.error("AI Fetch Error:", error);
-        const errorMsg = {
-          id: generateId() + 1,
-          sender: "counselor",
-          text: "I'm having trouble connecting to my brain right now. Please try again later!",
-          time: getFormattedTime(),
-        };
-        setSessions((prevSessions) =>
-          prevSessions.map((s) => s.id === activeSessionId ? { ...s, messages: [...s.messages, errorMsg] } : s)
-        );
-      } 
-      finally{
-        setIsTyping(false);
-      }
-    };
-    fetchAIResponse();
-=======
+    
     try {
       let responseText = "";
       try {
@@ -233,26 +153,20 @@ export default function Chat(){
       }
 
       if (!responseText) {
-        responseText = humanResponses.default;
+        responseText = "Sorry, I couldn't understand that.";
       }
 
-      const counselorMsgId = Date.now() + 1;
-      const counselorMsgTime = getFormattedTime();
-
       const counselorMsg = {
-        id: counselorMsgId,
+        id: generateId() + 1,
         sender: "counselor",
         text: responseText,
-        time: counselorMsgTime,
+        time: getFormattedTime(),
       };
 
       setSessions((prevSessions) =>
         prevSessions.map((s) => {
           if (s.id === activeSessionId) {
-            return {
-              ...s,
-              messages: [...s.messages, counselorMsg],
-            };
+            return { ...s, messages: [...s.messages, counselorMsg] };
           }
           return s;
         })
@@ -260,26 +174,17 @@ export default function Chat(){
     } catch (err) {
       console.error("Chat error:", err);
       const counselorMsg = {
-        id: Date.now() + 1,
+        id: generateId() + 1,
         sender: "counselor",
-        text: "Sorry, I couldn't reach the admission assistant server. Please ensure the backend services are running.",
+        text: "I'm having trouble connecting to my brain right now. Please try again later!",
         time: getFormattedTime(),
       };
       setSessions((prevSessions) =>
-        prevSessions.map((s) => {
-          if (s.id === activeSessionId) {
-            return {
-              ...s,
-              messages: [...s.messages, counselorMsg],
-            };
-          }
-          return s;
-        })
+        prevSessions.map((s) => s.id === activeSessionId ? { ...s, messages: [...s.messages, counselorMsg] } : s)
       );
     } finally {
       setIsTyping(false);
     }
->>>>>>> 7688cd0 (Added Latest Context)
   };
 
   const handleReset=()=>{
