@@ -1,15 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { Sidebar, SidebarBody, SidebarLink, SidebarHistoryItem, SidebarText } from "../components/sideBar";
 import {
   Send,
   LayoutDashboard,
-  Cog,
   User,
   Plus,
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import ModalManager from "./modals/ModalManager";
+import { useNavigate } from "react-router-dom";
 
 const initialSuggestions = [
   { label: "Course Recommendations", query: "Can you help me choose the right courses for next semester?" },
@@ -28,8 +28,22 @@ const humanResponses = {
 const getFormattedTime = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-export default function Chat() {
-  const [user, setUser] = useState(null);
+const generateId = () => Date.now();
+
+export default function Chat(){
+  const [user]=useState(() => {
+    const storedUser = localStorage.getItem("user");
+    if(storedUser){
+      try{
+        return JSON.parse(storedUser);
+      } 
+      catch{
+        return null;
+      }
+    }
+    return null;
+  });
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -37,35 +51,18 @@ export default function Chat() {
   const messagesEndRef = useRef(null);
 
   const closeModal = () => setActiveModal(null);
-  const sidebarLinks = [
+  const sidebarLinks=[
   {
     label: "Home",
-    onClick: ()=>setActiveModal("home"),
+    onClick:()=>navigate("/home"),
     icon: <LayoutDashboard className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Settings",
-    onClick: ()=>setActiveModal("settings"),
-    icon: <Cog className={styles.sidebarIcon} />,
   },
   {
     label: "Profile",
     onClick: ()=>setActiveModal("profile"),
-    icon: <User className={styles.sidebarIcon} />,
+    icon: <User className={styles.sidebarIcon}/>,
   },
 ];
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if(storedUser){
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch {
-        setUser(null);
-      }
-    }
-  }, []);
-
   const userName = user?.username || "Friend";
   const [sessions, setSessions] = useState([
     {
@@ -83,11 +80,11 @@ export default function Chat() {
   ]);
   const [activeSessionId, setActiveSessionId] = useState("session-1");
 
-  const activeSession = sessions.find((s) => s.id === activeSessionId) || sessions[0];
-  const messages = activeSession?.messages || [];
+  const activeSession = sessions.find((s) => s.id===activeSessionId)||sessions[0];
+  const messages = activeSession?.messages||[];
 
   const handleNewChat = () => {
-    const now = Date.now();
+    const now = generateId();
     const newId = `session-${now}`;
     const timeStr = getFormattedTime();
     const newSession = {
@@ -110,11 +107,9 @@ export default function Chat() {
     const query = textToSend || inputValue.trim();
     if (!query) return;
 
-    const userMsgId = Date.now();
     const userMsgTime = getFormattedTime();
-
-    const userMsg = {
-      id: userMsgId,
+    const userMsg={
+      id: generateId(),
       sender: "user",
       text: query,
       time: userMsgTime,
@@ -136,39 +131,57 @@ export default function Chat() {
 
     if (!textToSend) setInputValue("");
     setIsTyping(true);
+    const fetchAIResponse=async()=>{
+      try{
+        const response=await fetch("http://localhost:5000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            query: query,
+            student_id: user?.student_id || null 
+          }),
+        });
+        
+        const data = await response.json();
+        const responseText = data.answer || "Sorry, I couldn't understand that.";
 
-    setTimeout(() => {
-      let responseText = humanResponses.default;
-       
-      // AI RESPO
+        const counselorMsg = {
+          id: generateId() + 1,
+          sender: "counselor",
+          text: responseText,
+          time: getFormattedTime(),
+        };
 
-      const counselorMsgId = Date.now() + 1;
-      const counselorMsgTime = getFormattedTime();
-
-      const counselorMsg = {
-        id: counselorMsgId,
-        sender: "counselor",
-        text: responseText,
-        time: counselorMsgTime,
-      };
-
-      setSessions((prevSessions) =>
-        prevSessions.map((s) => {
-          if (s.id === activeSessionId) {
-            return {
-              ...s,
-              messages: [...s.messages, counselorMsg],
-            };
-          }
-          return s;
-        })
-      );
-      setIsTyping(false);
-    }, 1200);
+        setSessions((prevSessions) =>
+          prevSessions.map((s) => {
+            if (s.id === activeSessionId) {
+              return { ...s, messages: [...s.messages, counselorMsg] };
+            }
+            return s;
+          })
+        );
+      } 
+      catch (error){
+        console.error("AI Fetch Error:", error);
+        const errorMsg = {
+          id: generateId() + 1,
+          sender: "counselor",
+          text: "I'm having trouble connecting to my brain right now. Please try again later!",
+          time: getFormattedTime(),
+        };
+        setSessions((prevSessions) =>
+          prevSessions.map((s) => s.id === activeSessionId ? { ...s, messages: [...s.messages, errorMsg] } : s)
+        );
+      } 
+      finally{
+        setIsTyping(false);
+      }
+    };
+    fetchAIResponse();
   };
 
-  const handleReset = () => {
-    const resetId = Date.now();
+  const handleReset=()=>{
+    const resetId = generateId();
     const resetTime = getFormattedTime();
 
     setSessions((prevSessions) =>
@@ -191,7 +204,7 @@ export default function Chat() {
     );
   };
 
-  return (
+  return(
     <div className={styles.chatPage}>
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
         <SidebarBody>
@@ -206,18 +219,15 @@ export default function Chat() {
                 <SidebarLink key={idx} link={link} />
               ))}
             </div>
-
             <div className={styles.divider} />
-
             <div className={styles.historySection}>
               <div className={styles.historyHeader}>
                 <SidebarText className={styles.historyTitle}>Recent Chats</SidebarText>
                 <button
                   onClick={handleNewChat}
                   className={styles.newChatBtn}
-                  title="New Conversation"
-                >
-                  <Plus size={14} />
+                  title="New Conversation">
+                  <Plus size={14}/>
                 </button>
               </div>
 
@@ -274,7 +284,6 @@ export default function Chat() {
             </div>
           )}
 
-          {/* Quick Suggestions Pills */}
           {messages.length < 3 && !isTyping && (
             <div className={styles.suggestionsArea}>
               {initialSuggestions.map((item, idx) => (
@@ -292,14 +301,12 @@ export default function Chat() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Form */}
         <form
           className={styles.inputForm}
           onSubmit={(e) => {
             e.preventDefault();
             handleSend();
-          }}
-        >
+          }}>
           <input
             type="text"
             className={styles.chatInput}
@@ -317,6 +324,7 @@ export default function Chat() {
           </button>
         </form>
       </main>
+      <ModalManager activeModal={activeModal} onClose={closeModal} />
     </div>
   );
 }

@@ -36,7 +36,19 @@ const menuItems = [
 ];
 
 export default function AdminDashboard(){
-  const [admin, setAdmin] = useState(null);
+  const [admin]=useState(() => {
+    const storedUser = localStorage.getItem("user");
+    if(storedUser){
+      try{
+        return JSON.parse(storedUser);
+      } 
+      catch{
+        return null;
+      }
+    }
+    return null;
+  });
+  
   const [analytics, setAnalytics] = useState({
     totalApplications: 0,
     totalQueries: 0,
@@ -44,18 +56,9 @@ export default function AdminDashboard(){
     totalStudents: 0,
   });
   const navigate = useNavigate();
-  useEffect(() => {
-    const storedUser=localStorage.getItem("user");
-    if(storedUser){
-      try{
-        setAdmin(JSON.parse(storedUser));
-      }
-      catch{
-        setAdmin(null);
-      }
-    }
 
-    const fetchAnalytics = async () => {
+  useEffect(()=>{
+    const fetchAnalytics=async () => {
       try{
         const resp=await api.get("/admin/analytics/summary", { withCredentials: true });
         setAnalytics(resp.data.data);
@@ -114,7 +117,7 @@ export default function AdminDashboard(){
 
           <button className={styles.quickAction}>
             <div className={styles.quickIcon}>
-              <Users size={19} />
+              <Users size={19}/>
             </div>
             <div>
               <strong>Student Queries</strong>

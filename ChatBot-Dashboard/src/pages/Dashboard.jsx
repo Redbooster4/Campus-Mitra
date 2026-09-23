@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import StaggeredMenu from "../components/StaggeredMenu";
 import AnimatedLogo from "../components/AnimatedLogo";
 import {
@@ -43,24 +43,23 @@ const socialItems = [
 ];
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
+  const [user]=useState(() => {
+    const storedUser = localStorage.getItem("user");
+    if(storedUser){
+      try{
+        return JSON.parse(storedUser);
+      }
+      catch{
+        return null;
+      }
+    }
+    return null;
+  });
   const navigate = useNavigate();
   const handleChat = () => {
       navigate("/onboarding");
   };
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if(!storedUser) {
-      return;
-    }
-    try {
-      setUser(JSON.parse(storedUser));
-    }
-    catch {
-      setUser(null);
-    }
-  }, []);
   const displayName = user?.username || "Student";
   const handleAI=()=>{
     navigate("/chat");

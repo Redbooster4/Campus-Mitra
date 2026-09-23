@@ -1,15 +1,11 @@
-import {homeModal} from "./HomeModal.jsx";
-import {settingsModal} from "./SettingsModal";
-import {profileModal} from "./ProfileModal";
+import ProfileModal from "./ProfileModal";
 
 const MODAL_COMPONENTS={
-    home: homeModal,
-    settings: settingsModal,
-    profile: profileModal,
-}
+    profile: ProfileModal,
+};
 
-export function ModalManager({ activeModal, onClose}){
-    const modalComponent=MODAL_COMPONENTS[activeModal];
-    if(!modalComponent) return null;
-    return <modalComponent isOpen={true} onClose={onClose}/>;
+export default function ModalManager({ activeModal, onClose }) {
+    const ModalComponent=MODAL_COMPONENTS[activeModal];
+    if(!ModalComponent){return null;}
+    return <ModalComponent isOpen={!!activeModal} onClose={onClose} />;
 }
