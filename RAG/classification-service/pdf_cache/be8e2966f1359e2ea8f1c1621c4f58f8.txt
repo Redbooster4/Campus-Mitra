@@ -1,0 +1,94 @@
+Based on the document provided, here is the complete extraction of text, tables, dates, numbers, and key information:
+
+---
+
+### **Header Information**
+* **Organization:** राष्ट्रीय प्रत्यायन बोर्ड | NATIONAL BOARD OF ACCREDITATION
+* **Address:** 4th Floor, East Tower, NBCC Place, Bhisham Pitamah Marg, Pragati Vihar, Lodhi Road, New Delhi-110003
+* **Date:** 30-05-2023
+* **File No:** F. No. 28-156-2010-NBA
+
+---
+
+### **Recipient Information**
+**To,**
+The Principal,  
+Shri Bhagubhai Mafatlal Polytechnic,  
+Irla-Juhu Road, Natkkar Ram Ganesh Gadkari Marg,  
+Vile Parle (W), Mumbai-400056, Maharashtra.
+
+---
+
+### **Subject Line**
+**Subject:** Accreditation status of Diploma Engineering programs applied by Shri Bhagubhai Mafatlal Polytechnic, Irla-Juhu Road, Natkkar Ram Ganesh Gadkari Marg, Vile Parle (W), Mumbai-400056, Maharashtra.
+
+---
+
+### **Body Text & Context**
+Sir,
+
+1. This has reference to your application I.D. No. **5958-07/09/2021** and **5959-07/09/2021** seeking accreditation by National Board of Accreditation to Diploma Engineering programs offered by **Shri Bhagubhai Mafatlal Polytechnic, Irla-Juhu Road, Natkkar Ram Ganesh Gadkari Marg, Vile Parle (W), Mumbai-400056, Maharashtra**.
+2. An Expert Team conducted onsite evaluation of the programs from **10th to 12th March, 2023**. The report submitted by the Expert Team was considered by the concerned Committees constituted for the purpose in NBA. The Competent Authority in NBA has approved the following accreditation status to the programs as given in the table below:
+
+---
+
+### **Accreditation Table**
+
+| Sl. No. | Name of the Program(s) (Diploma) | Basis of Evaluation | Accreditation Status | Period of Validity | Remarks |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| (1) | (2) | (3) | (4) | (5) | (6) |
+| 1. | Computer Engineering | January 2019 Document | Accredited | Academic Years 2023-2024 to 2025-2026 i.e. upto 30-06-2026 | Accreditation status granted is valid for the period indicated in Col.5 or till the program has the approval of the Competent Authority, whichever is earlier |
+| 2. | Information Technology | | Accredited | | |
+| 3. | Mechanical Engineering | | Accredited | | |
+| 4. | Electrical Engineering | | Accredited (684 Marks awarded by the Visiting Team revised to 669 as per the observations made and indicated in the Annexure to this letter) | | |
+| 5. | Civil Engineering | | Accredited | | |
+| 6. | Chemical Engineering | | Accredited | | |
+| 7. | Plastics Engineering | | Accredited | | |
+
+*(Note: Contd.2/... is indicated at the bottom right of the table).*
+
+---
+
+### **Page 2 Content (Continuation Text)**
+
+3. It may be noted that only students who graduate during the validity period of accreditation, will be deemed to have graduated with an NBA accredited degree.
+4. The programs have been granted accreditation for 3 years. **Shri Bhagubhai Mafatlal Polytechnic, Irla-Juhu Road, Natkkar Ram Ganesh Gadkari Marg, Vile Parle (W), Mumbai-400056, Maharashtra** should submit the Compliance Report at least six months before the expiry of validity of accreditation mentioned above so as to be eligible for consideration by the concerned Committee in NBA for further processing of the accreditation status.
+5. The accreditation status awarded to the programs as indicated in the above table does not imply that the accreditation has been granted to **Shri Bhagubhai Mafatlal Polytechnic, Irla-Juhu Road, Natkkar Ram Ganesh Gadkari Marg, Vile Parle (W), Mumbai-400056, Maharashtra** as a whole. As such the institution should nowhere along with its name including on its letter head etc. write that it is accredited by NBA because it is program accreditation and not Institution accreditation. If such an instance comes to NBA's notice, this will be viewed seriously. Complete name of the program(s) accredited, level of program(s) and the period of validity of accreditation, as well as the Academic Year from which the accreditation is effective should be mentioned unambiguously whenever and wherever it is required to indicate the status of accreditation by NBA.
+6. The accreditation status of the above programs is subject to change on periodic review, if needed by the NBA. It is desired that the relevant information in respect of accredited programs as indicated in the table in paragraph 2, appears on the website and information bulletin of the Institute.
+7. The accreditation status awarded to the programs as indicated in table in paragraph 2 above is subject to maintenance of the current standards during the period of accreditation. If there are any changes in the status (major changes of faculty strength, organizational structure etc.), the same are required to be communicated to the NBA, with an appropriate explanatory note.
+8. A copy each of the Report of Chairman of the Visiting Team and Evaluators' Reports in respect of the above programs is enclosed.
+9. If the Institute is not satisfied with the decision of NBA, it may appeal within thirty days of receipt of this communication giving reasons for the same and by paying the requisite fee.
+
+---
+
+### **Sign-off and Enclosures**
+
+**Yours faithfully,**  
+*(Signed)*  
+**(Dr. Anil Kumar Nassa)**  
+Member Secretary  
+
+**Encls.:** 
+1. Copy of Report of Chairman of the Visiting Team.  
+2. Copy each of Expert Reports of the Visiting Team.  
+
+**Copy to:**
+1. **The Director,**  
+   Directorate of Technical Education,  
+   3, Mahapalika Marg, Post Box No.1967,  
+   Opp. Metro Cinema,  
+   Mumbai - 400 001.  
+2. **The Secretary,**  
+   Maharashtra State Board of Technical Education,  
+   4th floor, Govt. Polytechnic Building, 49,  
+   Kherwadi, Bandra (E), Mumbai- 400 051  
+3. Accreditation file  
+4. Master Accreditation file of the State  
+
+---
+
+### **Contact Details**
+* **Tel:** +91 11 2436 0620-22, 2436 0654; 
+* **Telefax:** +91 11 4308 4903  
+* **Website:** https://www.nbaind.org 
+* **Email:** membersecretary@nbaind.org

@@ -1,0 +1,69 @@
+Based on the provided document, here is the complete extraction of all text, categories, requirements, and key information:
+
+---
+
+### Documents to be attached along with “Application Form for Centralized Admission Process”
+
+**General Instructions:**
+* Candidates are required to carry **ALL Original Certificates/Documents** in support of their claim at the time of filling up of Application Form for Admission for scrutiny and verification at the Facilitation Center.
+* Candidates are required to scan the document in `.jpg` or `.gif` format (minimum 300 dpi resolution, file size up to 2 MB) and upload the scanned copies at the time of filling up the Application Form.
+* The Facilitation Center shall assist the candidate, free of cost, to scan and upload the documents.
+
+---
+
+### 10.1 For First Year of Post SSC Diploma Courses:
+
+| Sr. No. | Type of Candidate | Attested true copies of documents to be attached along with Application Form |
+| :--- | :--- | :--- |
+| **1.** | **All Candidates** | • Indian Nationality Certificate*<br>• VIII, IX Mark sheet / Proforma Z<br>• S.S.C. (Std.X) mark sheet<br>• School leaving certificate after passing S.S.C. (Std. X)<br>• HSC/ HSC Vocational mark sheet and Leaving Certificate, if applicable.<br>• Certificate of passing Intermediate Grade Drawing examination, if applicable. |
+| **2.** | **Type – B Candidates** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Domicile certificate** of candidate or of father/mother of candidate indicating that he/she is domiciled in the State of Maharashtra. |
+| **3.** | **Type – C Candidates** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certificate from the employer in the proforma – A stating that father/mother of the candidate who is a Central Government / Government of India undertaking employee is presently posted in Maharashtra. |
+| **4.** | **Type – D Candidates** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certificate from the employer in the proforma – B stating that father/mother of the candidate is a Maharashtra State Government / Maharashtra State Government undertaking employee.<br>**OR**<br>• Undertaking along with documentary evidences from the retired employee stating the place of settlement. |
+| **5.** | **Type - E Candidates**<br>(Maharashtra Karnataka disputed border area candidates) | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certificate stating that candidates belong to the disputed border area in proforma-G1.<br>• Certificate stating that the mother tongue of the candidate is Marathi in proforma-G2.<br>*(List of villages in Maharashtra Karnataka disputed border area is available on website.)* |
+| **6.** | **Backward class Candidates belonging to SC / ST** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Caste certificate |
+| **7.** | **Backward class Candidates belonging to VJ/ DT/ NT(A)/ NT(B)/ NT(C)/ NT(D) / OBC/ SBC categories** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Caste certificate<br>• Non-creamy layer certificate valid up to **31st March 2018** |
+| **8.** | **Ex-servicemen (Def1) / Active Defence servicemen (Def2)** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Defence Service Certificate Proforma – C.<br>• Domicile certificate of father/mother who is an Ex-service / active defence personnel domiciled in the state of Maharashtra. |
+| **9.** | **Active Defence servicemen (Non-Domiciled) (Def3)** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Defence Service Certificate Proforma – C and D/E.<br>• Certificate from the employer in the proforma – D stating that father/mother of the candidate who is an active defence service person is presently posted in Maharashtra.<br>**OR**<br>• Certificate from the employer in the proforma – E stating that father/mother of the candidate is an active defence service person and has retained the family in his previous place of posting in Maharashtra. |
+| **10.** | **Persons with Disability Candidates (P1/P2/P3)** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certificate in the proforma–F/F-1. |
+| **11.** | **Jammu & Kashmir Migrant candidates (J1/J2/J3)** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certificate of posting in case of defence and Government servants in proforma – J<br>• Certificate for stay in refugee camp for those staying in refugee camp in proforma – K<br>• Certificate stating that the candidate belongs to a displaced family in proforma – L |
+| **12.** | **Foreign Students/ NRI Children** | • Equivalence certificate from MSBSHSE<br>• Certificate / Proof of Foreign Student / Proof of NRI Children. |
+| **13.** | **Persons of Indian Origin** | • Equivalence certificate from MSBSHSE<br>• Proof of Persons of Indian origin status. |
+| **14.** | **Workers in Gulf Countries / Non-Resident Indian** | • Equivalence certificate from MSBSHSE<br>• Proof of Person having Workers in Gulf Countries / NRI status. |
+| **15.** | **NCC** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certification of representing Maharashtra at All India level<br>• Certificate of minimum 70% attendance in two years of N.C.C.<br>• N.C.C. `A’ certificate. |
+| **16.** | **Minority Candidate** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certificate of Religion or leaving certificate showing that the candidate belongs to any one of the Muslim, Buddhist, Christian, Sikh, Parsi, or Jain community.<br>• Domicile Certificate of candidate or Birth Certificate or School Leaving Certificate indicating Place of Birth in State of Maharashtra. |
+| **17.** | **TFWS Candidate** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Income certificate of financial year **2016-17** issued by competent authority stating that candidate's parents' annual income from all sources is less than **Rs. 6 Lakhs**. |
+
+---
+
+### 10.3 For Direct Second year of Post SSC Diploma Courses:
+
+| Sr. No. | Type of Candidate | Attested true copies of documents to be attached along with Application Form |
+| :--- | :--- | :--- |
+| **1.** | **All Candidates** | • Indian Nationality Certificate*<br>• SSC Mark sheet<br>• HSC Science / HSC Science with Vocational / HSC Science with Technical / ITI (2 year duration) Mark sheet<br>• Leaving certificate issued by the last institute. |
+| **2.** | **Type – B Candidates** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Domicile certificate** of candidate or of father/mother of candidate indicating that he/she is domiciled in the State of Maharashtra. |
+| **3.** | **Type – C Candidates** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certificate from the employer in the pro forma – A stating that father/mother of the candidate who is a Central Govt / Govt. of India undertaking employee is presently posted in Maharashtra. |
+| **4.** | **Type – D Candidates** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certificate from the employer in the pro forma – B stating that father/mother of the candidate who is a Maharashtra State Govt / Maharashtra State Government undertaking employee. |
+| **5.** | **Backward class candidates belonging to SC / ST categories** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Caste certificate issued by Executive Magistrate / Sub Divisional Officer. |
+| **6.** | **Backward class candidates belonging to VJ / DT / NT B / NT-C / NT-D / OBC/ SBC categories** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Caste certificate issued by Executive Magistrate / Sub Divisional Officer<br>• Non-creamy layer certificate issued by the competent authority valid up to **31st March 2018** |
+| **7.** | **Minority Candidate** | **In addition to the documents mentioned in Sr. No. 1 above:**<br>• Certificate of Religion or leaving certificate showing that the candidate belongs to any one of the Muslim, Buddhist, Christian, Sikh, Parsi, or Jain community.<br>• Domicile Certificate of candidate or Birth Certificate or School Leaving Certificate indicating Place of Birth in State of Maharashtra. |
+
+---
+
+### Special Notes & Clarifications:
+
+* **\*In lieu of the “Certificate of Indian Nationality” following documents will also be acceptable:**
+  * The School Leaving Certificate indicating the Nationality of hazel candidate as ‘Indian’.
+  * Indian Passport in the name of the candidate, issued by an appropriate authority.
+  * Birth Certificate of the Candidate indicating the place of birth in India.
+
+* **\*\* Domicile certificate:**
+  * Domicile certificate issued by the Maharashtra State’s appropriate authorities will be considered valid.
+  * The domicile certificate of the Mother of the candidate shall be supported with a marriage certificate and legal proof of change in name if any. Such candidates will be required to submit a birth certificate clearly mentioning the name of the mother.
+
+* **Caste Validity Certificate:**
+  * Candidates belonging to SC, VJ/DT (NT(A)), NT(B), NT(C), NT(D), OBC, and SBC categories should produce a **“Caste Validity Certificate”** issued by the Scrutiny Committee of the Social Welfare Department.
+  * Candidates belonging to the **ST category** should submit a **“Tribe Validity Certificate”** issued by the Scrutiny Committee of the Tribal Department at the time of claiming fee reimbursement. 
+  * If a candidate fails to produce the caste validity certificate by the concerned department, they shall be required to pay the fees applicable to the General Category candidate.
+
+* **Non-creamy layer certificate:**
+  * Backward class candidates belonging to **VJ / DT / NT B / NT-C / NT-D / OBC/ SBC** are required to produce a Non-creamy layer certificate issued by the competent authority valid up to **31st March 2020**.

@@ -28,3 +28,4 @@ eslint-plugin-react-hooks
 eslint-plugin-react-refresh
 globals
 vite
+chroma

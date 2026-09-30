@@ -169,6 +169,19 @@
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.messageBubble a {
+  color: #38bdf8;
+  text-decoration: underline;
+  word-break: break-all;
+  font-weight: 500;
+}
+
+.messageBubble a:hover {
+  color: #7dd3fc;
 }
 
 .userRow .messageBubble {

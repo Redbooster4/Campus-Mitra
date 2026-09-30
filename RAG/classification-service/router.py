@@ -121,7 +121,76 @@ def query_postgres(student_id=None):
         return {"error": f"PostgreSQL query failed: {str(e)}"}
 
 
-def query_chromadb(query_text, n_results=5):
+import re
+import hashlib
+import urllib.request
+from google import genai
+from google.genai import types
+
+PDF_CACHE_DIR = os.path.join(os.path.dirname(__file__), "pdf_cache")
+os.makedirs(PDF_CACHE_DIR, exist_ok=True)
+
+
+def get_pdf_content(pdf_url: str) -> str:
+    """Fetch and extract text content from a PDF URL (including scanned image PDFs) using cached Gemini multimodal extraction."""
+    try:
+        url_hash = hashlib.md5(pdf_url.encode()).hexdigest()
+        cache_file = os.path.join(PDF_CACHE_DIR, f"{url_hash}.txt")
+        if os.path.exists(cache_file):
+            with open(cache_file, "r", encoding="utf-8") as f:
+                return f.read()
+
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            return ""
+
+        client = genai.Client(api_key=api_key)
+        req = urllib.request.Request(pdf_url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            pdf_bytes = resp.read()
+
+        if not pdf_bytes:
+            return ""
+
+        prompt = (
+            "Extract all text, tables, dates, numbers, amounts, categories, requirements, and key information "
+            "from this document completely and accurately. Preserve tables and numerical figures."
+        )
+        response = client.models.generate_content(
+            model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite"),
+            contents=[
+                types.Part.from_bytes(data=pdf_bytes, mime_type="application/pdf"),
+                prompt
+            ]
+        )
+        extracted_text = response.text or ""
+        if extracted_text:
+            with open(cache_file, "w", encoding="utf-8") as f:
+                f.write(extracted_text)
+        return extracted_text
+    except Exception as e:
+        print(f"[PDF Extraction Error for {pdf_url}]: {e}")
+        return ""
+
+
+def extract_all_known_pdf_links():
+    try:
+        all_docs = knowledge_collection.get(include=["documents"])["documents"]
+        links = set()
+        for d in all_docs:
+            found = re.findall(r"(?:https?://[^\s\"')>]+\.pdf|/[^\s\"')>]+\.pdf)", d)
+            for f in found:
+                prefix = "https://sbmp.ac.in" if not f.startswith("http") else ""
+                slash = "" if f.startswith("/") or f.startswith("http") else "/"
+                links.add(prefix + slash + f)
+        return list(links)
+    except Exception as e:
+        return []
+
+ALL_PDF_LINKS = extract_all_known_pdf_links()
+
+
+def query_chromadb(query_text, n_results=15):
     try:
         # nomic-embed-text requires the search_query prefix for optimal retrieval
         search_prompt = f"search_query: {query_text.strip()}"
@@ -134,22 +203,86 @@ def query_chromadb(query_text, n_results=5):
 
         if not results or not results.get("documents") or not results["documents"][0]:
             print("[ChromaDB] No matching documents found for query.")
-            return []
+            return {"content": [], "pdf_links": []}
 
         docs = results["documents"][0]
         metas = results["metadatas"][0] if results.get("metadatas") else [{}] * len(docs)
         dists = results["distances"][0] if results.get("distances") else [0.0] * len(docs)
 
-        print(f"\n[ChromaDB Retrieved {len(docs)} Chunks]:")
-        for i, (chunk, meta, dist) in enumerate(zip(docs, metas, dists)):
-            source_file = meta.get("file_name") or meta.get("source") or meta.get("fileName") or "Unknown file"
-            print(f"  [{i+1}] Source: {source_file} | Distance: {dist:.4f}")
-            print(f"      Preview: {chunk[:120].strip()}...\n")
+        unique_content = []
+        pdf_links = []
+        seen = set()
 
-        return docs
+        for chunk, meta, dist in zip(docs, metas, dists):
+            clean_chunk = (chunk or "").strip()
+            if not clean_chunk or clean_chunk in seen:
+                continue
+            seen.add(clean_chunk)
+
+            # Check if chunk itself is a PDF link or URL
+            is_pdf_url = bool(re.search(r"(\.pdf|/cdn/uploads/)", clean_chunk, re.I)) and len(clean_chunk) < 350
+            if is_pdf_url:
+                url = clean_chunk if clean_chunk.startswith("http") else f"https://sbmp.ac.in{'' if clean_chunk.startswith('/') else '/'}{clean_chunk}"
+                if url not in pdf_links:
+                    pdf_links.append(url)
+            else:
+                unique_content.append(clean_chunk)
+
+            # Also check metadata for source file links
+            source_file = meta.get("file_name") or meta.get("source") or meta.get("fileName") or ""
+            if source_file and re.search(r"\.pdf", source_file, re.I):
+                url = source_file if source_file.startswith("http") else f"https://sbmp.ac.in{'' if source_file.startswith('/') else '/'}{source_file}"
+                if url not in pdf_links:
+                    pdf_links.append(url)
+
+        # Check if chunks or query match any known official PDF documents
+        combined_text = (query_text + " " + " ".join(unique_content[:3])).lower()
+        for link in ALL_PDF_LINKS:
+            if link in pdf_links:
+                continue
+            slug = link.split("/")[-1].replace(".pdf", "").replace("-", " ").replace("_", " ").lower()
+            slug_words = [w for w in slug.split() if len(w) > 3]
+            if not slug_words:
+                continue
+            c_matches = sum(1 for w in slug_words if w in combined_text)
+            if c_matches / len(slug_words) >= 0.5:
+                pdf_links.append(link)
+
+        # Rank PDF links by relevance to the user query and retrieved content
+        def score_link(link):
+            slug = link.split("/")[-1].replace(".pdf", "").replace("-", " ").replace("_", " ").lower()
+            slug_words = [w for w in slug.split() if len(w) > 2]
+            q_words = [w for w in query_text.lower().split() if len(w) > 2]
+            score = sum(3 for w in slug_words if w in q_words)
+            if unique_content:
+                c_text = " ".join(unique_content[:3]).lower()
+                score += sum(1 for w in slug_words if w in c_text)
+            return score
+
+        pdf_links.sort(key=score_link, reverse=True)
+
+        # For top relevant PDF links, fetch full content so Gemini has the complete document content
+        for link in pdf_links[:2]:
+            extracted = get_pdf_content(link)
+            if extracted:
+                doc_name = link.split("/")[-1].replace(".pdf", "").replace("-", " ").replace("_", " ")
+                unique_content.insert(0, f"=== FULL EXTRACTED CONTENT OF DOCUMENT ({doc_name}) ===\n{extracted}")
+
+        print(f"\n[ChromaDB Retrieved {len(unique_content)} Text Chunks & {len(pdf_links)} PDF Links]")
+        for i, chunk in enumerate(unique_content[:3]):
+            print(f"  [Text {i+1}] Preview: {chunk[:100].strip()}...")
+        for j, link in enumerate(pdf_links):
+            print(f"  [PDF Link {j+1}] {link}")
+
+        return {
+            "content": unique_content[:6],
+            "pdf_links": pdf_links
+        }
     except Exception as e:
         print(f"[ChromaDB Query Error]: {e}")
-        return [f"ChromaDB query failed: {str(e)}"]
+        return {"content": [f"ChromaDB query failed: {str(e)}"], "pdf_links": []}
+
+
 
 
 def log_chat(student_id, user_message, ai_reply, department_id=None):

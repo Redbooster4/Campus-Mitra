@@ -10,3 +10,5 @@ pip install -r ./requirements.txt
 
 cd classification-service
 python api.py
+
+chroma run --path /home/ronit/Projects/Campus-Mitra/RAG/chroma_data --port 8000

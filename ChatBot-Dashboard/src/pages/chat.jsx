@@ -3,40 +3,15 @@ import { Sidebar, SidebarBody, SidebarLink, SidebarHistoryItem, SidebarText } fr
 import {
   Send,
   LayoutDashboard,
+  Activity,
   User,
   Plus,
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
 import AnimatedLogo from "@/components/AnimatedLogo";
-<<<<<<< HEAD
 import ModalManager from "./modals/ModalManager";
 import { useNavigate } from "react-router-dom";
-=======
 import api from "../api/api";
-
-const sidebarLinks = [
-  {
-    label: "Home",
-    href: "/home",
-    icon: <LayoutDashboard className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: <Activity className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Chatbot",
-    href: "/chat",
-    icon: <MessageSquare className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Profile",
-    href: "/profile",
-    icon: <User className={styles.sidebarIcon} />,
-  },
-];
->>>>>>> 7688cd0 (Added Latest Context)
 
 const initialSuggestions = [
   { label: "Course Recommendations", query: "Can you help me choose the right courses for next semester?" },
@@ -56,6 +31,56 @@ const getFormattedTime = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
 const generateId = () => Date.now();
+
+const renderMessageContent = (content) => {
+  if (typeof content !== "string") return content;
+
+  // Pattern matches [Label](url) or standalone http(s) urls
+  const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s)]+)/g;
+  const elements = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = linkRegex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      elements.push(content.substring(lastIndex, match.index));
+    }
+
+    if (match[1] && match[2]) {
+      // [Label](url)
+      elements.push(
+        <a
+          key={match.index}
+          href={match[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {match[1]}
+        </a>
+      );
+    } else if (match[3]) {
+      // Standalone URL
+      elements.push(
+        <a
+          key={match.index}
+          href={match[3]}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {match[3]}
+        </a>
+      );
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < content.length) {
+    elements.push(content.substring(lastIndex));
+  }
+
+  return elements.length > 0 ? elements : content;
+};
 
 export default function Chat(){
   const [user]=useState(() => {
@@ -78,18 +103,23 @@ export default function Chat(){
   const messagesEndRef = useRef(null);
 
   const closeModal = () => setActiveModal(null);
-  const sidebarLinks=[
-  {
-    label: "Home",
-    onClick:()=>navigate("/home"),
-    icon: <LayoutDashboard className={styles.sidebarIcon} />,
-  },
-  {
-    label: "Profile",
-    onClick: ()=>setActiveModal("profile"),
-    icon: <User className={styles.sidebarIcon}/>,
-  },
-];
+  const sidebarLinks = [
+    {
+      label: "Home",
+      onClick: () => navigate("/home"),
+      icon: <LayoutDashboard className={styles.sidebarIcon} />,
+    },
+    {
+      label: "Dashboard",
+      onClick: () => navigate("/dashboard"),
+      icon: <Activity className={styles.sidebarIcon} />,
+    },
+    {
+      label: "Profile",
+      onClick: () => setActiveModal("profile"),
+      icon: <User className={styles.sidebarIcon} />,
+    },
+  ];
   const userName = user?.username || "Friend";
   const [sessions, setSessions] = useState([
     {
@@ -158,55 +188,6 @@ export default function Chat(){
 
     if (!textToSend) setInputValue("");
     setIsTyping(true);
-    const fetchAIResponse=async()=>{
-      try{
-        const response=await fetch("http://localhost:5000/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            query: query,
-            student_id: user?.student_id || null 
-          }),
-        });
-        
-        const data = await response.json();
-        const responseText = data.answer || "Sorry, I couldn't understand that.";
-
-<<<<<<< HEAD
-        const counselorMsg = {
-          id: generateId() + 1,
-          sender: "counselor",
-          text: responseText,
-          time: getFormattedTime(),
-        };
-
-        setSessions((prevSessions) =>
-          prevSessions.map((s) => {
-            if (s.id === activeSessionId) {
-              return { ...s, messages: [...s.messages, counselorMsg] };
-            }
-            return s;
-          })
-        );
-      } 
-      catch (error){
-        console.error("AI Fetch Error:", error);
-        const errorMsg = {
-          id: generateId() + 1,
-          sender: "counselor",
-          text: "I'm having trouble connecting to my brain right now. Please try again later!",
-          time: getFormattedTime(),
-        };
-        setSessions((prevSessions) =>
-          prevSessions.map((s) => s.id === activeSessionId ? { ...s, messages: [...s.messages, errorMsg] } : s)
-        );
-      } 
-      finally{
-        setIsTyping(false);
-      }
-    };
-    fetchAIResponse();
-=======
     try {
       let responseText = "";
       try {
@@ -279,7 +260,6 @@ export default function Chat(){
     } finally {
       setIsTyping(false);
     }
->>>>>>> 7688cd0 (Added Latest Context)
   };
 
   const handleReset=()=>{
@@ -368,7 +348,7 @@ export default function Chat(){
               }`}
             >
               <div className={styles.messageBubble}>
-                {msg.text}
+                {renderMessageContent(msg.text)}
                 <span className={styles.timeStamp}>{msg.time}</span>
               </div>
             </div>
