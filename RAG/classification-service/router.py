@@ -190,10 +190,16 @@ def extract_all_known_pdf_links():
 ALL_PDF_LINKS = extract_all_known_pdf_links()
 
 
-def query_chromadb(query_text, n_results=15):
+def query_chromadb(query_text, n_results=50):
     try:
+        q_lower = query_text.lower()
+        is_faculty_query = any(w in q_lower for w in ["teacher", "teachers", "faculty", "professor", "professors", "lecturer", "staff", "hod"])
+
         # nomic-embed-text requires the search_query prefix for optimal retrieval
-        search_prompt = f"search_query: {query_text.strip()}"
+        if is_faculty_query:
+            search_prompt = f"search_query: {query_text.strip()} faculty lecturer teachers staff department"
+        else:
+            search_prompt = f"search_query: {query_text.strip()}"
 
         results = knowledge_collection.query(
             query_texts=[search_prompt],
@@ -235,6 +241,12 @@ def query_chromadb(query_text, n_results=15):
                 if url not in pdf_links:
                     pdf_links.append(url)
 
+        # For faculty queries, ensure the official faculty list document is prioritized
+        if is_faculty_query:
+            faculty_pdf = "https://sbmp.ac.in/cdn/uploads/2023-2024.pdf"
+            if faculty_pdf not in pdf_links:
+                pdf_links.insert(0, faculty_pdf)
+
         # Check if chunks or query match any known official PDF documents
         combined_text = (query_text + " " + " ".join(unique_content[:3])).lower()
         for link in ALL_PDF_LINKS:
@@ -275,7 +287,7 @@ def query_chromadb(query_text, n_results=15):
             print(f"  [PDF Link {j+1}] {link}")
 
         return {
-            "content": unique_content[:6],
+            "content": unique_content[:20],
             "pdf_links": pdf_links
         }
     except Exception as e:
@@ -348,6 +360,14 @@ def sanitize_text(val):
     return str(val)
 
 
+OUT_OF_SCOPE_RESPONSES = {
+    "en": "I am Campus-Mitra, the SBMP College Assistant. I can only assist with queries related to SBMP college admissions, eligibility, fees, courses, campus facilities, and student records.",
+    "hi": "मैं कैंपस-मित्र (SBMP कॉलेज सहायक) हूँ। मैं केवल SBMP कॉलेज प्रवेश, पात्रता, शुल्क, पाठ्यक्रम, परिसर सुविधाओं और छात्र रिकॉर्ड से संबंधित प्रश्नों में आपकी सहायता कर सकता हूँ।",
+    "mr": "मी कॅम्पस-मित्र (SBMP कॉलेज सहाय्यक) आहे. मी फक्त SBMP कॉलेज प्रवेश, पात्रता, फी, अभ्यासक्रम, महाविद्यालयीन सुविधा आणि विद्यार्थी नोंदींशी संबंधित प्रश्नांची उत्तरे देऊ शकतो.",
+    "gu": "હું કેમ્પસ-મિત્ર (SBMP કોલેજ સહાયક) છું. હું માત્ર SBMP કોલેજ પ્રવેશ, પાત્રતા, ફી, અભ્યાસક્રમો અને વિદ્યાર્થી રેકોર્ડ સંબંધિત પ્રશ્નોમાં મદદ કરી શકું છું."
+}
+
+
 def route_query(query_text, student_id=None, language="en"):
     classification = classify_query(query_text)
     source = classification.get("source")
@@ -372,10 +392,13 @@ def route_query(query_text, student_id=None, language="en"):
     elif source == "GREETING":
         data = {"message": "Hello! How can I help you with your admission query today?"}
 
+    elif source == "OUT_OF_SCOPE":
+        data = {"message": OUT_OF_SCOPE_RESPONSES.get(language, OUT_OF_SCOPE_RESPONSES["en"])}
+
     else:
         data = {"error": "Unknown routing source"}
 
-    if source in ["HUMAN_ESCALATION", "GREETING"]:
+    if source in ["HUMAN_ESCALATION", "GREETING", "OUT_OF_SCOPE"]:
         final_answer = data.get("message", "")
     else:
         final_answer = generate_answer(
