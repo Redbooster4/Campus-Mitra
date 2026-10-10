@@ -281,6 +281,25 @@
   cursor: not-allowed;
 }
 
+.disclaimer {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 0.65rem;
+  line-height: 1.4;
+}
+
+.disclaimerLink {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+.disclaimerLink:hover {
+  color: var(--primary-hover);
+}
+
 @media (max-width: 640px) {
   .mainLayout {
     padding: 1rem 0.75rem;

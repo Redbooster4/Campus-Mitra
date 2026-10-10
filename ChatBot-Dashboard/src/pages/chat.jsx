@@ -405,6 +405,19 @@ export default function Chat(){
             <Send size={16} />
           </button>
         </form>
+
+        <p className={styles.disclaimer}>
+          Campus Mitra can make mistakes. The information provided may not be completely accurate — please verify with the{" "}
+          <a
+            href="https://sbmp.ac.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.disclaimerLink}
+          >
+            official website
+          </a>
+          .
+        </p>
       </main>
       <ModalManager activeModal={activeModal} onClose={closeModal} />
     </div>
