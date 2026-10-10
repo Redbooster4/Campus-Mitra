@@ -53,5 +53,37 @@ def chat():
             "answer": "Sorry, an internal error occurred. Please try again or contact support."
         }), 500
 
+@app.route("/feedback", methods=["POST"])
+def feedback():
+    try:
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"error": "Invalid or missing JSON payload."}), 400
+
+        feedback_type = data.get("feedback")  # 'up' or 'down'
+        message_id = data.get("message_id")
+        query_text = data.get("query")
+        response_text = data.get("response")
+        reason = data.get("reason", "")
+        note = data.get("note", "")
+        student_id = data.get("student_id")
+
+        logger.info(
+            f"Feedback recorded: {feedback_type.upper() if feedback_type else 'NONE'} | "
+            f"MsgID: {message_id} | Student: {student_id} | Reason: {reason} | Note: {note}"
+        )
+
+        return jsonify({
+            "status": "success",
+            "message": "Feedback received and recorded successfully."
+        }), 200
+
+    except Exception as e:
+        logger.exception(f"Unhandled error in /feedback endpoint: {str(e)}")
+        return jsonify({
+            "error": "Internal server error occurred while recording feedback.",
+            "details": str(e)
+        }), 500
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

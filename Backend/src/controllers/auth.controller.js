@@ -144,8 +144,6 @@ const getUser = async (req, res) => {
 }
 
 const logoutUser = async (req, res) => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
     return res.status(200).json({
         success: true,
         message: "Logout Success !!"

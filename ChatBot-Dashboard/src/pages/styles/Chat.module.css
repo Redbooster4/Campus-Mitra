@@ -171,6 +171,14 @@
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.messageText {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .userRow .messageBubble {
@@ -179,12 +187,203 @@
   color: var(--white);
 }
 
+.messageFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 0.35rem;
+}
+
+.userRow .messageFooter {
+  justify-content: flex-end;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
 .timeStamp {
-  display: block;
   font-size: 0.68rem;
-  margin-top: 0.3rem;
   opacity: 0.75;
-  text-align: right;
+}
+
+/* Feedback Actions */
+.feedbackActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.feedbackBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 3px 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.feedbackBtn:hover {
+  background: var(--card-hover);
+  color: var(--white);
+  border-color: var(--border);
+}
+
+.feedbackActiveUp {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #4ade80 !important;
+  border-color: rgba(34, 197, 94, 0.35) !important;
+}
+
+.feedbackActiveDown {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
+.copiedIcon {
+  color: #4ade80;
+}
+
+.feedbackNotice {
+  font-size: 0.72rem;
+  color: #4ade80;
+  margin-top: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  animation: fadeIn 0.25s ease;
+}
+
+.feedbackNoticeDown {
+  color: var(--orange-light);
+}
+
+/* Detailed Feedback Popover / Card */
+.feedbackDetailCard {
+  margin-top: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.feedbackDetailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.feedbackCloseBtn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.feedbackCloseBtn:hover {
+  color: var(--white);
+}
+
+.reasonTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.reasonTag {
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reasonTag:hover {
+  border-color: var(--primary);
+  color: var(--text);
+}
+
+.reasonTagSelected {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.feedbackNoteInput {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.feedbackNoteInput:focus {
+  border-color: var(--primary);
+}
+
+.feedbackDetailFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.feedbackSubmitBtn {
+  background: var(--primary);
+  color: var(--white);
+  font-size: 0.72rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.feedbackSubmitBtn:hover {
+  background: var(--primary-hover);
+}
+
+.feedbackSkipBtn {
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.72rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.feedbackSkipBtn:hover {
+  color: var(--white);
+  border-color: var(--border-hover);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Typing Indicator */
@@ -282,4 +481,4 @@
   .messageRow {
     max-width: 90%;
   }
-}
+}
