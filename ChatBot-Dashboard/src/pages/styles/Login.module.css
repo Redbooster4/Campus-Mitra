@@ -115,10 +115,12 @@ body,
   color: var(--white);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition:all 0.3s ease;
 }
 .btn:hover{
   background: var(--primary-hover);
+  transform:translateY(-2px);
+  box-shadow:0 4px 15px rgba(249, 115, 22, 0.3);
 }
 .btn:disabled{
   opacity: 0.6;

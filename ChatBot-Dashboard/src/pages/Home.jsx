@@ -1,21 +1,9 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StaggeredMenu from '../components/StaggeredMenu';
 import AnimatedLogo from '../components/AnimatedLogo'; 
 import { ArrowRight, MessageSquare, ShieldCheck, Zap } from 'lucide-react';
 import styles from './styles/Home.module.css';
-
-const menuItems = [
-  { label: 'Home', ariaLabel: 'Go to Home', link: '/home' },
-  { label: 'About', ariaLabel: 'About the portal', link: '/about' },
-  { label: 'Login', ariaLabel: 'Login In', link: '/login' },
-];
-
-const socialItems = [
-  { label: 'Twitter', link: 'https://twitter.com' },
-  { label: 'Instagram', link: 'https://instagram.com' },
-  { label: 'LinkedIn', link: 'https://linkedin.com' }
-];
+import { HOME_MENU_ITEMS, SOCIAL_ITEMS } from '../constants/navigation';
 
 export default function Home(){
   const navigate=useNavigate();
@@ -24,21 +12,15 @@ export default function Home(){
    window.open("http://sbmp.ac.in/", "_blank");
   }
   function handleChat(){
-    const token = localStorage.getItem("token");
-    if(token){
-      navigate("/dashboard");
-    }
-    else{
-      navigate("/login");
-    } 
+    navigate("/dashboard");
   }
   
   return (
     <div className={styles.wrapper}>
       <StaggeredMenu
         position="left"
-        items={menuItems}
-        socialItems={socialItems}
+        items={HOME_MENU_ITEMS}
+        socialItems={SOCIAL_ITEMS}
         displaySocials
         displayItemNumbering
         menuButtonColor="var(--text)"

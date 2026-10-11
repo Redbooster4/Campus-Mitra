@@ -1,176 +1,192 @@
 import { useState } from "react";
-import StaggeredMenu from "../components/StaggeredMenu";
-import AnimatedLogo from "../components/AnimatedLogo";
-import {
-  ArrowUpRight,
-  Bell,
-  Bot,
-  FileText,
-  MessageSquare,
-  UserRound,
-  ChevronRight,
-} from "lucide-react";
-import styles from "./styles/Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
+import { ArrowUpRight, Bot, Sparkles, ChevronRight, UserRound, PhoneCall } from "lucide-react";
+import DashboardLayout from "../components/layout/DashboardLayout";
+import styles from "./styles/Dashboard.module.css";
 
-const menuItems = [
-  {
-    label: "Home",
-    ariaLabel: "Go to home",
-    link: "/home",
-  },
-  {
-    label: "Applications",
-    ariaLabel: "View applications",
-    link: "/application",
-  },
-  {
-    label: "Chatbot",
-    ariaLabel: "Chat with AI counselor",
-    link: "/chat",
-  },
-  {
-    label: "Profile",
-    ariaLabel: "View profile",
-    link: "/profile",
-  },
-];
-
-const socialItems = [
-  { label: "Twitter", link: "https://twitter.com" },
-  { label: "Instagram", link: "https://instagram.com" },
-  { label: "LinkedIn", link: "https://linkedin.com" },
+const PROMPT_CHIPS=[
+  "Check my branch cut-off eligibility",
+  "Calculate fees & scholarship concessions",
+  "Hostel, mess & campus facilities",
+  "List of mandatory CAP admission documents",
 ];
 
 export default function Dashboard() {
+  const navigate=useNavigate();
+  const [query, setQuery]=useState("");
+
   const [user]=useState(() => {
-    const storedUser = localStorage.getItem("user");
-    if(storedUser){
-      try{
-        return JSON.parse(storedUser);
-      }
-      catch{
-        return null;
-      }
+    try {
+      const stored=localStorage.getItem("user");
+      return stored ? JSON.parse(stored):null;
+    } catch {
+      return null;
     }
-    return null;
   });
-  const navigate = useNavigate();
-  const handleChat = () => {
-      navigate("/onboarding");
+
+  const [academicProfile]=useState(() => {
+    try {
+      const stored=localStorage.getItem("studentAcademicProfile");
+      const parsed=stored ? JSON.parse(stored):null;
+      return {
+        entrancePercentile:parsed?.entrancePercentile || "96.42",
+        targetBranch:parsed?.targetBranch || "Computer Engineering",
+        category:parsed?.category || "General / Open",
+      };
+    } catch {
+      return {
+        entrancePercentile:"96.42",
+        targetBranch:"Computer Engineering",
+        category:"General / Open",
+      };
+    }
+  });
+
+  const [preferredLanguage]=useState(() => {
+    try {
+      return localStorage.getItem("preferredLanguage") || "English";
+    } catch {
+      return "English";
+    }
+  });
+
+  const handleLaunch=(text) => {
+    const q=typeof text === "string" ? text:query.trim();
+    if (q) {
+      navigate("/chat", { state:{ initialQuery:q } });
+    } else {
+      navigate("/chat");
+    }
   };
 
-  const displayName = user?.username || "Student";
-  const handleAI=()=>{
-    navigate("/chat");
-  }
+  return (
+    <DashboardLayout
+      displayName={user?.username || "Student"}
+      subtitle="Your centralized AI counseling center. Have questions about cutoffs, fees, or documents? Mitra is ready."
+    >
+      <div className={`${styles.card} ${styles.aiHeroCard}`}>
+        <div className={styles.aiGlow} />
 
-  return(
-    <div className={styles.dashboard}>
-      <StaggeredMenu
-        position="left"
-        items={menuItems}
-        socialItems={socialItems}
-        displaySocials
-        displayItemNumbering
-        menuButtonColor="var(--text)"
-        openMenuButtonColor="var(--text)"
-        changeMenuColorOnOpen
-        colors={["var(--border)", "var(--primary)"]}
-        logoUrl={
-          <div className={styles.logo}>
-            <AnimatedLogo />
+        <div>
+          <h2 className={styles.aiHeroTitle}>What would you like to explore today?</h2>
+          <p className={styles.aiHeroDesc}>
+            Get instant, personalized guidance on cutoffs, seat matrices, scholarships, and admission procedures.
+          </p>
+
+          <form
+            className={styles.queryLauncher}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLaunch();
+            }}
+          >
+            <input
+              type="text"
+              className={styles.queryInput}
+              placeholder="Ask Mitra about cutoffs, fees, branch comparisons..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <button type="submit" className={styles.querySubmitBtn} aria-label="Ask AI Counselor">
+              <ArrowUpRight size={18} />
+            </button>
+          </form>
+
+          <div className={styles.promptChips}>
+            {PROMPT_CHIPS.map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                className={styles.promptChip}
+                onClick={() => handleLaunch(chip)}
+              >
+                <Sparkles size={14} />
+                <span>{chip}</span>
+              </button>
+            ))}
           </div>
-        }
-        accentColor="var(--primary)"
-      />
+        </div>
 
-      <main className={styles.main}>
-        <header className={styles.header}>
-          <div className={styles.topPanel}> 
-            <h1>Welcome back, <span>{displayName}</span></h1>
+        <button type="button" className={styles.primaryButton} onClick={() => handleLaunch()}>
+          <Bot size={18} />
+          <span>Start Counseling with Mitra</span>
+          <ArrowUpRight size={16} />
+        </button>
+      </div>
+
+      <div className={styles.sideStack}>
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <div className={styles.cardIcon}>
+              <UserRound size={18} />
+            </div>
+            <h3 className={styles.cardTitle}>Academic Snapshot</h3>
+          </div>
+
+          <div className={styles.snapshotGrid}>
+            <div className={styles.snapshotItem}>
+              <span>Target Branch</span>
+              <strong>{academicProfile.targetBranch}</strong>
+            </div>
+            <div className={styles.snapshotItem}>
+              <span>Percentile</span>
+              <strong>{String(academicProfile.entrancePercentile).replace(/%$/, "")}%</strong>
+            </div>
+            <div className={styles.snapshotItem}>
+              <span>Category</span>
+              <strong>{academicProfile.category}</strong>
+            </div>
+            <div className={styles.snapshotItem}>
+              <span>AI Language</span>
+              <strong>{preferredLanguage}</strong>
+            </div>
           </div>
 
           <button
-            className={styles.notificationButton}
-            aria-label="Notifications">
-            <Bell size={20}/>
-            <span className={styles.notificationDot}/>
+            type="button"
+            className={styles.outlineActionBtn}
+            onClick={() => navigate("/profile")}
+          >
+            <span>Manage Profile & Preferences</span>
+            <ChevronRight size={15} />
           </button>
-        </header>
+        </div>
 
-        <section className={styles.contentGrid}>
-          <div className={`${styles.card} ${styles.aiCard}`}>
-            <div className={styles.aiGlow} />
-            <div className={styles.aiIcon}>
-              <Bot size={25} />
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <div className={styles.cardIcon}>
+              <Bot size={18} />
             </div>
-            <h2 className={styles.aiTitle}>
-              Your admission questions, answered.
-            </h2>
-            <p className={styles.aiDescription}>
-              Get help with courses, eligibility, cut-offs, documents,
-              fees, and everything else related to your admission.
-            </p>
-
-            <button className={styles.primaryButton} onClick={handleChat}>
-              Chat with AI Counselor
-              <ArrowUpRight size={16} />
-            </button>
+            <h3 className={styles.cardTitle}>Support & Services</h3>
           </div>
 
-          <div className={`${styles.card} ${styles.quickCard}`}>
-            <div className={styles.cardHeader}>
-              <div>
-                <h2 className={styles.cardTitle}>
-                  What would you like to do?
-                </h2>
-              </div>
-            </div>
+          <button type="button" className={styles.quickActionItem} onClick={() => handleLaunch()}>
+            <span className={styles.cardIcon}>
+              <Bot size={18} />
+            </span>
+            <span>
+              <strong>Instant AI Session</strong>
+              <span>24/7 personalized answers</span>
+            </span>
+            <ChevronRight size={16} />
+          </button>
 
-            <div className={styles.quickActions}>
-              <button className={styles.quickAction}>
-                <div className={styles.quickIcon}>
-                  <FileText size={19} />
-                </div>
-
-                <div>
-                  <strong>My Application</strong>
-                  <span>Track your admission</span>
-                </div>
-
-                <ChevronRight size={17} />
-              </button>
-
-              <button className={styles.quickAction}>
-                <div className={styles.quickIcon}>
-                  <MessageSquare size={19} />
-                </div>
-
-                <div onClick={handleAI}>
-                  <strong>Ask AI Counselor</strong>
-                  <span>Get instant guidance</span>
-                </div>
-
-                <ChevronRight size={17} />
-              </button>
-
-              <button className={styles.quickAction}>
-                <div className={styles.quickIcon}>
-                  <UserRound size={19} />
-                </div>
-
-                <div>
-                  <strong>My Profile</strong>
-                  <span>Manage your information</span>
-                </div>
-
-                <ChevronRight size={17} />
-              </button>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+          <button
+            type="button"
+            className={styles.quickActionItem}
+            onClick={() => handleLaunch("I would like to request 1-on-1 counseling guidance.")}
+          >
+            <span className={styles.cardIcon}>
+              <PhoneCall size={18} />
+            </span>
+            <span>
+              <strong>1-on-1 Counselor Callback</strong>
+              <span>Ask Mitra to schedule staff callback</span>
+            </span>
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+    </DashboardLayout>
   );
 }

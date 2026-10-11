@@ -91,6 +91,8 @@ body{
 }
 .btnPrimary:hover{
   background: var(--primary-hover);
+  transform:translateY(-2px);
+  box-shadow:0 4px 15px rgba(249, 115, 22, 0.3);
 }
 .btnSecondary{
   background: var(--card);
@@ -100,6 +102,8 @@ body{
 .btnSecondary:hover{
   border-color: var(--primary);
   color: var(--orange-light);
+  transform:translateY(-2px);
+  box-shadow:0 4px 15px rgba(255, 255, 255, 0.05);
 }
 
 .grid{
@@ -116,12 +120,13 @@ body{
   border: 1px solid var(--border);
   border-radius: var(--radius);
   text-align: left;
-  transition: var(--transition);
+  transition:all 0.3s ease;
 }
 
 .card:hover{
   border-color: var(--primary);
-  transform: translateY(-3px);
+  transform:translateY(-5px);
+  box-shadow:0 8px 25px rgba(249, 115, 22, 0.15);
 }
 
 .icon{

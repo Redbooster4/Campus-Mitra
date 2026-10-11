@@ -5,7 +5,6 @@ import api from '../api/api.js';
 import AnimatedLogo from "../components/AnimatedLogo.jsx";
 import styles from "./styles/Login.module.css";
 
-// npm install three @react-three/fiber @react-three/drei axios react-router-dom tailwindcss @tailwindcss/vite gsap
 function Login() {
     const [data, setData] = useState({
         username: "",
@@ -53,8 +52,11 @@ function Login() {
                 else if(user?.role === "Counselor" && !user?.counselor_id){
                     navigate("/onboarding/counselor-profile");
                 }
+                else if(user?.role === "Admin"){
+                    navigate("/admin");
+                }
                 else{
-                    navigate("/home");
+                    navigate("/dashboard");
                 }
             } catch(err){
             console.log("Login Error Occured: ", err);
@@ -114,19 +116,6 @@ function Login() {
             setLoading(false);
         } 
     }
-    async function handleLogout(){
-        try{
-            await api.post("/auth/logout", {}, { withCredentials: true });
-        }
-        catch(err){
-            console.log("Logout Error Occured: ", err);
-        }
-        finally{
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            navigate("/home", {replace: true});
-        }
-    }
     return (
         <div className={styles.container}>
             <div className={styles.leftSection}>
@@ -166,22 +155,12 @@ function Login() {
                                 value={data.username}
                                 onChange={handleChange}
                                 className={styles.loginInput}
-                                style={{
-                                    background: "#0E0C1A",
-                                    border: "1px solid #594bf9",
-                                    color: "#EEEDFE",
-                                }}
                             />
                             <select
                                 name="role"
                                 value={data.role}
                                 onChange={handleChange}
-                                className={styles.loginSelect}
-                                style={{
-                                    background: "#0E0C1A",
-                                    border: "1px solid #594bf9",
-                                    color: "#EEEDFE",
-                                }}>
+                                className={styles.loginSelect}>
                                 <option value="" disabled hidden>
                                     Select your role
                                 </option>
@@ -197,16 +176,9 @@ function Login() {
                                 value={data.password}
                                 onChange={handleChange}
                                 className={styles.loginInput}
-                                style={{
-                                    background: "#0E0C1A",
-                                    border: "1px solid #594bf9",
-                                    color: "#EEEDFE",
-                                }}
                             />
                             <button 
                                 className={styles.btn}
-                                onMouseEnter={e => e.target.style.background="#776bfc"}
-                                onMouseLeave={e => e.target.style.background="#594bf9"}
                                 onClick={handleRegisterInitiate}
                                 disabled={loading}>
                                 Register
@@ -235,8 +207,6 @@ function Login() {
                             />
                             <button 
                                 className={styles.btn}
-                                onMouseEnter={e => e.target.style.background="#776bfc"}
-                                onMouseLeave={e => e.target.style.background="#594bf9"}
                                 onClick={handleLogin}
                                 disabled={loading}>
                                 {loading?"Loading...":"Login"}

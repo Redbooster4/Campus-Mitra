@@ -16,18 +16,20 @@ import {
   QuestionnaireTitle,
 } from "@/components/ui/questionnaire"
 import "./styles/Onboarding.css"
-// Where are you in your education journey ?
-// High school graduate
-// Which program are you exploring ?
-// Still exploring 
-// What field interests you most?
-// Design & Arts
-// When are you hoping to start?
-// Within a year
-// How did you hear about us?
-// Friend or family
 
 const items = [
+  {
+    name:"language",
+    required:false,
+    prompt:"What is your preferred language?",
+    description:"Choose the language for the chatbot.",
+    choices:[
+      { value:"English", label:"English" },
+      { value:"Hindi", label:"Hindi" },
+      { value:"Marathi", label:"Marathi" },
+      { value:"Gujarati", label:"Gujarati" },
+    ],
+  },
   {
     name:"journey",
     required:false,
@@ -97,10 +99,13 @@ export default function Onboarding(){
 
   function handleSubmit(event) {
     event.preventDefault();
-    //console.log("Form submitted!"); 
     const answers = new FormData(event.currentTarget);
     const formDataObj = Object.fromEntries(answers.entries());
-    //console.log("Captured Answers:", formDataObj);
+    
+    if (formDataObj.language) {
+      localStorage.setItem("preferredLanguage", formDataObj.language);
+    }
+    
     navigate("/preview", {state: {preview: formDataObj}});
   }
 
@@ -158,7 +163,7 @@ export default function Onboarding(){
           <QuestionnairePrevious className="back-btn"/>
           <QuestionnaireSkip className="skip-btn"/>
           <QuestionnaireNext className="next-btn"/>
-          <QuestionnaireSubmit/>
+          <QuestionnaireSubmit className="submit-btn next-btn"/>
         </QuestionnaireActions>
       </Questionnaire>
     </div>

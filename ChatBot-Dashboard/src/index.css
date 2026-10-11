@@ -20,6 +20,15 @@
 
   --radius: 12px;
   --font-sans: "Geist Variable", sans-serif;
+
+  --sidebar:#121212;
+  --sidebar-foreground:#f4f4f5;
+  --sidebar-primary:#f97316;
+  --sidebar-primary-foreground:#ffffff;
+  --sidebar-accent:#1e1e1e;
+  --sidebar-accent-foreground:#ffffff;
+  --sidebar-border:#27272a;
+  --sidebar-ring:#f97316;
 }
 *,
 *::before,

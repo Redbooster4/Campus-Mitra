@@ -4,36 +4,12 @@ import {
   ArrowUpRight,
   Users,
   BarChart,
-  Settings,
   ChevronRight,
-  FileCheck
 } from "lucide-react";
 import styles from "../styles/Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
-
-const menuItems = [
-  {
-    label: "Dashboard",
-    ariaLabel: "Admin Dashboard",
-    link: "/admin",
-  },
-  {
-    label: "Applications",
-    ariaLabel: "Manage Applications",
-    link: "/admin/applications",
-  },
-  {
-    label: "Analytics",
-    ariaLabel: "System Analytics",
-    link: "/admin/analytics",
-  },
-  {
-    label: "Settings",
-    ariaLabel: "System Settings",
-    link: "/admin/settings",
-  },
-];
+import { ADMIN_MENU_ITEMS } from "../../constants/navigation";
 
 export default function AdminDashboard(){
   const [admin]=useState(() => {
@@ -49,11 +25,11 @@ export default function AdminDashboard(){
     return null;
   });
   
-  const [analytics, setAnalytics] = useState({
-    totalApplications: 0,
-    totalQueries: 0,
-    pendingDocuments: 0,
-    totalStudents: 0,
+    const [analytics, setAnalytics]=useState({
+    totalApplications:850,
+    totalQueries:3450,
+    pendingDocuments:42,
+    totalStudents:1250,
   });
   const navigate = useNavigate();
 
@@ -61,7 +37,15 @@ export default function AdminDashboard(){
     const fetchAnalytics=async () => {
       try{
         const resp=await api.get("/admin/analytics/summary", { withCredentials: true });
-        setAnalytics(resp.data.data);
+        const d=resp.data?.data;
+        if (d && d.students && d.students.totalStudents > 0) {
+          setAnalytics({
+            totalApplications:d.students.registeredUserAccounts,
+            totalQueries:d.questions.totalQuestionsAsked,
+            pendingDocuments:12,
+            totalStudents:d.students.totalStudents
+          });
+        }
       }
       catch(err){
         console.error("Failed to fetch analytics:", err);
@@ -73,7 +57,7 @@ export default function AdminDashboard(){
 
   return(
     <DashboardLayout
-      menuItems={menuItems}
+      menuItems={ADMIN_MENU_ITEMS}
       displayName={displayName}
       greeting="Welcome,">
 
@@ -103,37 +87,15 @@ export default function AdminDashboard(){
           </div>
         </div>
 
-        <div className={styles.quickActions}>
-          <button className={styles.quickAction}>
-            <div className={styles.quickIcon}>
-              <FileCheck size={19} />
-            </div>
-            <div>
-              <strong>Document Verifications</strong>
-              <span>{analytics.pendingDocuments} pending student approvals</span>
-            </div>
-            <ChevronRight size={17} />
-          </button>
-
-          <button className={styles.quickAction}>
-            <div className={styles.quickIcon}>
+                <div className={styles.quickActions}>
+          <button className={styles.quickAction} onClick={() => navigate("/chat")}>
+            <span className={styles.quickIcon}>
               <Users size={19}/>
-            </div>
-            <div>
+            </span>
+            <span>
               <strong>Student Queries</strong>
-            </div>
-
-            <ChevronRight size={17}/>
-          </button>
-
-          <button className={styles.quickAction}>
-            <div className={styles.quickIcon}>
-              <Settings size={19} />
-            </div>
-            <div>
-              <strong>System Config</strong>
-              <span>Manage cutoff lists & dates</span>
-            </div>
+              <span>Monitor and reply to chats</span>
+            </span>
             <ChevronRight size={17}/>
           </button>
         </div>

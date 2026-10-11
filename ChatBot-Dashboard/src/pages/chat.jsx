@@ -1,23 +1,70 @@
-import { useState, useRef } from "react";
-import { Sidebar, SidebarBody, SidebarLink, SidebarHistoryItem, SidebarText } from "../components/sideBar";
+import { useState, useRef, useEffect } from "react";
 import {
   Send,
+  Home,
   LayoutDashboard,
-  Activity,
   User,
-  Plus,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import ModalManager from "./modals/ModalManager";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
+import MessageRenderer from "@/components/MessageRenderer";
+import GlideSelect from "@/components/GlideSelect";
+import PeekRating from "@/components/PeekRating";
 
-const initialSuggestions = [
-  { label: "Course Recommendations", query: "Can you help me choose the right courses for next semester?" },
-  { label: "Scholarships & Financial Aid", query: "What scholarship and financial aid options are available?" },
-  { label: "Admission Deadlines & Fees", query: "What are the upcoming admission deadlines and fee structures?" },
+const languages=[
+  { value:"English", label:"English", tag:"EN" },
+  { value:"Hindi", label:"Hindi", tag:"हिन्दी" },
+  { value:"Marathi", label:"Marathi", tag:"मराठी" },
+  { value:"Gujarati", label:"Gujarati", tag:"ગુજરાતી" },
 ];
+
+const translations={
+  English:{
+    initialMsg:(name) => `Hey ${name}! I'm Mitra, your campus counselor and academic advisor. What's on your mind today?`,
+    newChatMsg:(name) => `Hey ${name}! How can I help you in this new session?`,
+    resetMsg:(name) => `Fresh start! How can I help you today, ${name}?`,
+    suggestions:[
+      { label:"Course Recommendations", query:"Can you help me choose the right courses for next semester?" },
+      { label:"Scholarships & Financial Aid", query:"What scholarship and financial aid options are available?" },
+      { label:"Admission Deadlines & Fees", query:"What are the upcoming admission deadlines and fee structures?" },
+    ]
+  },
+  Hindi:{
+    initialMsg:(name) => `नमस्ते ${name}! मैं मित्रा हूँ, आपका कैंपस काउंसलर और शैक्षणिक सलाहकार। आज मैं आपकी क्या मदद कर सकता हूँ?`,
+    newChatMsg:(name) => `नमस्ते ${name}! इस नए सत्र में मैं आपकी क्या मदद कर सकता हूँ?`,
+    resetMsg:(name) => `नई शुरुआत! आज मैं आपकी क्या मदद कर सकता हूँ, ${name}?`,
+    suggestions:[
+      { label:"पाठ्यक्रम सुझाव", query:"क्या आप मुझे अगले सेमेस्टर के लिए सही कोर्स चुनने में मदद कर सकते हैं?" },
+      { label:"छात्रवृत्ति और वित्तीय सहायता", query:"कौन सी छात्रवृत्ति और वित्तीय सहायता विकल्प उपलब्ध हैं?" },
+      { label:"प्रवेश समय सीमा और फीस", query:"आगामी प्रवेश की समय सीमा और फीस संरचना क्या है?" },
+    ]
+  },
+  Marathi:{
+    initialMsg:(name) => `नमस्कार ${name}! मी मित्रा आहे, तुमचा कॅम्पस समुपदेशक आणि शैक्षणिक सल्लागार. आज मी तुमची काय मदत करू शकतो?`,
+    newChatMsg:(name) => `नमस्कार ${name}! या नवीन सत्रात मी तुमची काय मदत करू शकतो?`,
+    resetMsg:(name) => `नवीन सुरुवात! आज मी तुमची काय मदत करू शकतो, ${name}?`,
+    suggestions:[
+      { label:"अभ्यासक्रम शिफारसी", query:"पुढील सत्रासाठी योग्य अभ्यासक्रम निवडण्यासाठी तुम्ही मला मदत करू शकता का?" },
+      { label:"शिष्यवृत्ती आणि आर्थिक मदत", query:"कोणते शिष्यवृत्ती आणि आर्थिक मदतीचे पर्याय उपलब्ध आहेत?" },
+      { label:"प्रवेश अंतिम मुदत आणि फी", query:"आगामी प्रवेशाची अंतिम मुदत आणि फी संरचना काय आहे?" },
+    ]
+  },
+  Gujarati:{
+    initialMsg:(name) => `નમસ્તે ${name}! હું મિત્રા છું, તમારો કેમ્પસ કાઉન્સેલર અને શૈક્ષણિક સલાહકાર. આજે હું તમારી શું મદદ કરી શકું?`,
+    newChatMsg:(name) => `નમસ્તે ${name}! આ નવા સત્રમાં હું તમારી શું મદદ કરી શકું?`,
+    resetMsg:(name) => `નવી શરૂઆત! આજે હું તમારી શું મદદ કરી શકું, ${name}?`,
+    suggestions:[
+      { label:"કોર્સ ભલામણો", query:"શું તમે મને આગલા સેમેસ્ટર માટે યોગ્ય કોર્સ પસંદ કરવામાં મદદ કરી શકો છો?" },
+      { label:"શિષ્યવૃત્તિ અને નાણાકીય સહાય", query:"કયા શિષ્યવૃત્તિ અને નાણાકીય સહાયના વિકલ્પો ઉપલબ્ધ છે?" },
+      { label:"પ્રવેશની અંતિમ તારીખ અને ફી", query:"આગામી પ્રવેશની અંતિમ તારીખ અને ફી માળખું શું છે?" },
+    ]
+  }
+};
 
 const humanResponses = {
   course: "Choosing the right courses can feel overwhelming, but you don't have to do it alone! Based on your academic interests, I recommend balancing core requirements with electives that excite you. Would you like me to look at specific branch specializations or course syllabi with you?",
@@ -31,56 +78,6 @@ const getFormattedTime = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
 const generateId = () => Date.now();
-
-const renderMessageContent = (content) => {
-  if (typeof content !== "string") return content;
-
-  // Pattern matches [Label](url) or standalone http(s) urls
-  const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s)]+)/g;
-  const elements = [];
-  let lastIndex = 0;
-  let match;
-
-  while ((match = linkRegex.exec(content)) !== null) {
-    if (match.index > lastIndex) {
-      elements.push(content.substring(lastIndex, match.index));
-    }
-
-    if (match[1] && match[2]) {
-      // [Label](url)
-      elements.push(
-        <a
-          key={match.index}
-          href={match[2]}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {match[1]}
-        </a>
-      );
-    } else if (match[3]) {
-      // Standalone URL
-      elements.push(
-        <a
-          key={match.index}
-          href={match[3]}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {match[3]}
-        </a>
-      );
-    }
-
-    lastIndex = match.index + match[0].length;
-  }
-
-  if (lastIndex < content.length) {
-    elements.push(content.substring(lastIndex));
-  }
-
-  return elements.length > 0 ? elements : content;
-};
 
 export default function Chat(){
   const [user]=useState(() => {
@@ -96,69 +93,67 @@ export default function Chat(){
     return null;
   });
   const navigate = useNavigate();
+  const location=useLocation();
+  const initialHandledRef=useRef(false);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
+  const [isCollapsed, setIsCollapsed]=useState(false);
+  const [language, setLanguage]=useState(() => localStorage.getItem("preferredLanguage") || "English");
+  const [feedbackRatings, setFeedbackRatings]=useState(() => {
+    const saved=localStorage.getItem("chatFeedbackRatings");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return {};
+      }
+    }
+    return {};
+  });
   const messagesEndRef = useRef(null);
 
-  const closeModal = () => setActiveModal(null);
-  const sidebarLinks = [
-    {
-      label: "Home",
-      onClick: () => navigate("/home"),
-      icon: <LayoutDashboard className={styles.sidebarIcon} />,
-    },
-    {
-      label: "Dashboard",
-      onClick: () => navigate("/dashboard"),
-      icon: <Activity className={styles.sidebarIcon} />,
-    },
-    {
-      label: "Profile",
-      onClick: () => setActiveModal("profile"),
-      icon: <User className={styles.sidebarIcon} />,
-    },
-  ];
-  const userName = user?.username || "Friend";
-  const [sessions, setSessions] = useState([
-    {
-      id: "session-1",
-      title: "Course Guidance",
-      messages: [
-        {
-          id: 1,
-          sender: "counselor",
-          text: `Hey ${userName}! I'm Mitra, your campus counselor and academic advisor. What's on your mind today?`,
-          time: "10:30 AM",
-        },
-      ],
-    },
-  ]);
-  const [activeSessionId, setActiveSessionId] = useState("session-1");
-
-  const activeSession = sessions.find((s) => s.id===activeSessionId)||sessions[0];
-  const messages = activeSession?.messages||[];
-
-  const handleNewChat = () => {
-    const now = generateId();
-    const newId = `session-${now}`;
-    const timeStr = getFormattedTime();
-    const newSession = {
-      id: newId,
-      title: "New Conversation",
-      messages: [
-        {
-          id: now,
-          sender: "counselor",
-          text: `Hey ${userName}! How can I help you in this new session?`,
-          time: timeStr,
-        },
-      ],
-    };
-    setSessions((prev) => [newSession, ...prev]);
-    setActiveSessionId(newId);
+  const handleFeedback=(msgId, score) => {
+    setFeedbackRatings((prev) => {
+      const updated={ ...prev, [msgId]:score };
+      localStorage.setItem("chatFeedbackRatings", JSON.stringify(updated));
+      return updated;
+    });
   };
+
+  const closeModal = () => setActiveModal(null);
+  const userName = user?.username || "Friend";
+
+  const [messages, setMessages]=useState(() => {
+    const defaultLang=localStorage.getItem("preferredLanguage") || "English";
+    const t=translations[defaultLang] || translations.English;
+    return [
+      {
+        id:"msg-init",
+        sender:"counselor",
+        text:t.initialMsg(userName),
+        type:"initialMsg",
+        time:"10:30 AM",
+      },
+    ];
+  });
+
+  const handleLanguageChange=(newLang) => {
+    setLanguage(newLang);
+    localStorage.setItem("preferredLanguage", newLang);
+    const t=translations[newLang] || translations.English;
+    setMessages((prev) =>
+      prev.map((m) => {
+        if (m.type === "initialMsg") return { ...m, text:t.initialMsg(userName) };
+        if (m.type === "resetMsg") return { ...m, text:t.resetMsg(userName) };
+        return m;
+      })
+    );
+  };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior:"smooth" });
+  }, [messages, isTyping]);
 
   const handleSend = async (textToSend) => {
     const query = textToSend || inputValue.trim();
@@ -172,42 +167,28 @@ export default function Chat(){
       time: userMsgTime,
     };
 
-    setSessions((prevSessions) =>
-      prevSessions.map((s) => {
-        if (s.id === activeSessionId) {
-          const updatedTitle = s.title === "New Conversation" ? query.slice(0, 22) + "..." : s.title;
-          return {
-            ...s,
-            title: updatedTitle,
-            messages: [...s.messages, userMsg],
-          };
-        }
-        return s;
-      })
-    );
-
+    setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputValue("");
     setIsTyping(true);
+
     try {
       let responseText = "";
       try {
         const res = await api.post("/chat", {
           query,
           student_id: user?.student_id || user?.id || null,
-          language: "en"
+          language:"en",
         });
         responseText = res.data?.answer || res.data?.message;
-      } catch (backendErr) {
-        // Fallback directly to Python RAG service on port 5000 if backend proxy fails
-        console.warn("Backend proxy failed, trying direct RAG service:", backendErr);
+      } catch {
         const directRes = await fetch("http://localhost:5000/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             query,
             student_id: user?.student_id || user?.id || null,
-            language: "en"
-          })
+            language:"en",
+          }),
         });
         const directData = await directRes.json();
         responseText = directData?.answer || directData?.message;
@@ -217,208 +198,261 @@ export default function Chat(){
         responseText = humanResponses.default;
       }
 
-      const counselorMsgId = Date.now() + 1;
-      const counselorMsgTime = getFormattedTime();
-
       const counselorMsg = {
-        id: counselorMsgId,
+        id:generateId(),
         sender: "counselor",
         text: responseText,
-        time: counselorMsgTime,
+        time:getFormattedTime(),
       };
 
-      setSessions((prevSessions) =>
-        prevSessions.map((s) => {
-          if (s.id === activeSessionId) {
-            return {
-              ...s,
-              messages: [...s.messages, counselorMsg],
-            };
-          }
-          return s;
-        })
-      );
+      setMessages((prev) => [...prev, counselorMsg]);
     } catch (err) {
       console.error("Chat error:", err);
       const counselorMsg = {
-        id: Date.now() + 1,
+        id:generateId(),
         sender: "counselor",
-        text: "Sorry, I couldn't reach the admission assistant server. Please ensure the backend services are running.",
+        text: "Sorry, I couldn't reach the admission assistant server. Please check that backend services are running.",
         time: getFormattedTime(),
       };
-      setSessions((prevSessions) =>
-        prevSessions.map((s) => {
-          if (s.id === activeSessionId) {
-            return {
-              ...s,
-              messages: [...s.messages, counselorMsg],
-            };
-          }
-          return s;
-        })
-      );
+      setMessages((prev) => [...prev, counselorMsg]);
     } finally {
       setIsTyping(false);
     }
   };
 
-  const handleReset=()=>{
+  const handleSendRef=useRef(handleSend);
+  useEffect(() => {
+    handleSendRef.current=handleSend;
+  });
+
+  useEffect(() => {
+    const initialQuery=location.state?.initialQuery;
+    if (initialQuery && !initialHandledRef.current) {
+      initialHandledRef.current=true;
+      navigate(location.pathname, { replace:true, state:{} });
+      handleSendRef.current(initialQuery);
+    }
+  }, [location.state?.initialQuery, location.pathname, navigate]);
+
+  const handleReset=() => {
     const resetId = generateId();
     const resetTime = getFormattedTime();
 
-    setSessions((prevSessions) =>
-      prevSessions.map((s) => {
-        if (s.id === activeSessionId) {
-          return {
-            ...s,
-            messages: [
-              {
-                id: resetId,
-                sender: "counselor",
-                text: `Fresh start! How can I help you today, ${userName}?`,
-                time: resetTime,
-              },
-            ],
-          };
-        }
-        return s;
-      })
-    );
+    setMessages([
+      {
+        id:resetId,
+        sender:"counselor",
+        text:(translations[language] || translations.English).resetMsg(userName),
+        type:"resetMsg",
+        time:resetTime,
+      },
+    ]);
   };
 
-  return(
+  return (
     <div className={styles.chatPage}>
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
-        <SidebarBody>
-          <div className={styles.sidebarWrapper}>
-            <div className={styles.brandContainer}>
-              <div className={styles.logo}><AnimatedLogo/></div>
-              <SidebarText className={styles.logoText}>Campus Mitra</SidebarText>
-            </div>
-
-            <div className={styles.navSection}>
-              {sidebarLinks.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
-              ))}
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.historySection}>
-              <div className={styles.historyHeader}>
-                <SidebarText className={styles.historyTitle}>Recent Chats</SidebarText>
-                <button
-                  onClick={handleNewChat}
-                  className={styles.newChatBtn}
-                  title="New Conversation">
-                  <Plus size={14}/>
-                </button>
+      <aside className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed:""}`}>
+        <div className={styles.sidebarHeader}>
+          {!isCollapsed && (
+            <div className={styles.brandGroup}>
+              <div className={styles.logoWrapper}>
+                <AnimatedLogo />
               </div>
-
-              <div className={styles.historyList}>
-                {sessions.map((session) => (
-                  <SidebarHistoryItem
-                    key={session.id}
-                    title={session.title}
-                    isActive={session.id === activeSessionId}
-                    onClick={() => setActiveSessionId(session.id)}
-                  />
-                ))}
+              <div className={styles.brandText}>
+                <span className={styles.brandName}>Campus Mitra</span>
+                <span className={styles.brandBadge}>AI Counselor</span>
               </div>
             </div>
-          </div>
-        </SidebarBody>
-      </Sidebar>
-
-      <main className={styles.mainLayout}>
-        <header className={styles.counselorHeader}>
-          <div>
-            <h2>Mitra</h2>
-            <p className={styles.subtitle}>Senior Academic Advisor & Student Counselor</p>
-          </div>
-          <button className={styles.actionBtn} onClick={handleReset}>
-            Reset
+          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className={styles.collapseBtn}
+            title={isCollapsed ? "Expand sidebar":"Collapse sidebar"}
+            aria-label={isCollapsed ? "Expand sidebar":"Collapse sidebar"}
+          >
+            {isCollapsed ? <PanelLeftOpen size={18} />:<PanelLeftClose size={18} />}
           </button>
-        </header>
-
-        <div className={styles.messagesContainer}>
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`${styles.messageRow} ${
-                msg.sender === "user" ? styles.userRow : styles.counselorRow
-              }`}
-            >
-              <div className={styles.messageBubble}>
-                {renderMessageContent(msg.text)}
-                <span className={styles.timeStamp}>{msg.time}</span>
-              </div>
-            </div>
-          ))}
-
-          {isTyping && (
-            <div className={`${styles.messageRow} ${styles.counselorRow}`}>
-              <div className={styles.messageBubble}>
-                <div className={styles.typingIndicator}>
-                  <div className={styles.dot} />
-                  <div className={styles.dot} />
-                  <div className={styles.dot} />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {messages.length < 3 && !isTyping && (
-            <div className={styles.suggestionsArea}>
-              {initialSuggestions.map((item, idx) => (
-                <button
-                  key={idx}
-                  className={styles.suggestionChip}
-                  onClick={() => handleSend(item.query)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
         </div>
 
-        <form
-          className={styles.inputForm}
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}>
-          <input
-            type="text"
-            className={styles.chatInput}
-            placeholder={`Ask Mitra about courses, housing, fees...`}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}/>
-
+        <div className={styles.sidebarBody}>
+          <span className={styles.navSectionTitle}>Navigation</span>
           <button
-            type="submit"
-            className={styles.sendBtn}
-            disabled={!inputValue.trim() || isTyping}
-            aria-label="Send message">
-            <Send size={16} />
-          </button>
-        </form>
-
-        <p className={styles.disclaimer}>
-          Campus Mitra can make mistakes. The information provided may not be completely accurate — please verify with the{" "}
-          <a
-            href="https://sbmp.ac.in"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.disclaimerLink}
+            onClick={() => navigate("/home")}
+            className={styles.navButton}
+            title="Home"
           >
-            official website
-          </a>
-          .
-        </p>
-      </main>
+            <Home className={styles.navIcon} />
+            <span className={styles.navLabel}>Home</span>
+          </button>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className={styles.navButton}
+            title="Dashboard"
+          >
+            <LayoutDashboard className={styles.navIcon} />
+            <span className={styles.navLabel}>Dashboard</span>
+          </button>
+          <button
+            onClick={() => setActiveModal("profile")}
+            className={styles.navButton}
+            title="Profile"
+          >
+            <User className={styles.navIcon} />
+            <span className={styles.navLabel}>Profile</span>
+          </button>
+        </div>
+
+        <div className={styles.sidebarFooter}>
+          <div className={styles.userCard} title={`${userName} (${user?.role || "Student"})`}>
+            <div className={styles.userAvatar}>
+              {userName.charAt(0).toUpperCase()}
+            </div>
+            <div className={styles.userInfo}>
+              <span className={styles.userName}>{userName}</span>
+              <span className={styles.userRole}>{user?.role || "Student"}</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div className={styles.chatMainArea}>
+        <main className={styles.mainLayout}>
+          <header className={styles.counselorHeader}>
+            <div>
+              <h2>Mitra</h2>
+              <p className={styles.subtitle}>Senior Academic Advisor & Student Counselor</p>
+            </div>
+            <div className={styles.headerActions}>
+              <GlideSelect
+                options={languages}
+                value={language}
+                onChange={(val) => handleLanguageChange(val)}
+                ariaLabel="Select counseling language"
+                showTags
+                accentColor="var(--primary)"
+                surfaceColor="var(--card)"
+                highlightColor="var(--card-hover)"
+                textColor="var(--text)"
+                size="md"
+                radius={10}
+                menuWidth={180}
+                placement="bottom"
+                align="right"
+                popDuration={180}
+                glideDuration={240}
+                rememberPosition
+              />
+              <button className={styles.actionBtn} onClick={handleReset}>
+                Reset
+              </button>
+            </div>
+          </header>
+
+          <div className={styles.messagesContainer}>
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`${styles.messageRow} ${
+                  msg.sender === "user" ? styles.userRow:styles.counselorRow
+                }`}
+              >
+                <div className={styles.messageBubble}>
+                  <MessageRenderer text={msg.text} />
+                  <span className={styles.timeStamp}>{msg.time}</span>
+                </div>
+
+                {msg.sender === "counselor" && msg.type !== "initialMsg" && msg.type !== "resetMsg" && (
+                  <div className={styles.feedbackContainer}>
+                    <span className={styles.feedbackLabel}>
+                      {feedbackRatings[msg.id] ? "Feedback recorded:":"Rate this response:"}
+                    </span>
+                    <PeekRating
+                      value={feedbackRatings[msg.id] || 0}
+                      onChange={(score) => handleFeedback(msg.id, score)}
+                      labels={["Poor", "Fair", "Good", "Helpful", "Exceptional"]}
+                      size={16}
+                      lift={4}
+                      activeColor="var(--primary)"
+                      idleColor="#52525b"
+                      tipColor="var(--card)"
+                      tipTextColor="var(--text)"
+                      ariaLabel="Rate response feedback"
+                    />
+                    {feedbackRatings[msg.id] > 0 && (
+                      <span className={styles.feedbackThankYou}>• Thanks!</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {isTyping && (
+              <div className={`${styles.messageRow} ${styles.counselorRow}`}>
+                <div className={styles.messageBubble}>
+                  <div className={styles.typingIndicator}>
+                    <div className={styles.dot} />
+                    <div className={styles.dot} />
+                    <div className={styles.dot} />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {messages.length < 3 && !isTyping && (
+              <div className={styles.suggestionsArea}>
+                {(translations[language] || translations.English).suggestions.map((item, idx) => (
+                  <button
+                    key={idx}
+                    className={styles.suggestionChip}
+                    onClick={() => handleSend(item.query)}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          <form
+            className={styles.inputForm}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}>
+            <input
+              type="text"
+              className={styles.chatInput}
+              placeholder="Ask Mitra about courses, housing, fees..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}/>
+
+            <button
+              type="submit"
+              className={styles.sendBtn}
+              disabled={!inputValue.trim() || isTyping}
+              aria-label="Send message">
+              <Send size={16} />
+            </button>
+          </form>
+
+          <p className={styles.disclaimer}>
+            Campus Mitra can make mistakes. Please verify with the{" "}
+            <a
+              href="https://sbmp.ac.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.disclaimerLink}
+            >
+              official website
+            </a>
+            .
+          </p>
+        </main>
+      </div>
+
       <ModalManager activeModal={activeModal} onClose={closeModal} />
     </div>
   );

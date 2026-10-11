@@ -123,11 +123,11 @@ function QuestionnaireChoice({
       <span
         aria-hidden="true"
         data-slot="questionnaire-choice-indicator"
-        className="pointer-events-none relative flex size-4 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-full border-2 border-indigo-400 bg-white transition-all duration-200"
+        className="pointer-events-none relative flex size-4 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-full border-2 border-border bg-card transition-all duration-200"
       >
         <span
           data-slot="questionnaire-choice-indicator-dot"
-          className="hidden size-2 rounded-full bg-indigo-600"
+          className="hidden size-2 rounded-full bg-primary"
         />
 
         <CheckIcon
@@ -146,7 +146,7 @@ function QuestionnaireChoice({
 
       <QuestionnairePrimitive.ChoiceShortcut
         data-slot="questionnaire-choice-shortcut"
-        className="pointer-events-none ms-auto hidden size-5 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-md border border-indigo-200 bg-white font-mono text-[0.625rem] leading-none font-medium text-indigo-500 group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 group-data-[shortcut]/questionnaire-choice:inline-flex"
+        className="pointer-events-none ms-auto hidden size-5 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-md border border-border bg-card font-mono text-[0.625rem] leading-none font-medium text-muted-foreground group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 group-data-[shortcut]/questionnaire-choice:inline-flex"
       />
     </QuestionnairePrimitive.Choice>
   )
@@ -177,7 +177,7 @@ function QuestionnaireInput({
       <QuestionnairePrimitive.Input
         data-slot="questionnaire-input"
         className={cn(
-          "h-8 min-h-11 w-full min-w-0 rounded-lg border border-indigo-400 bg-transparent px-2.5 py-1 text-base transition-[color,box-shadow,background-color] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 sm:min-h-0 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+          "h-8 min-h-11 w-full min-w-0 rounded-lg border border-border bg-transparent px-2.5 py-1 text-base transition-[color,box-shadow,background-color] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 sm:min-h-0 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
           "selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground",
           className
         )}
