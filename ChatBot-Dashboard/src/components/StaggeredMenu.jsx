@@ -1,6 +1,7 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import './StaggeredMenu.css';
+import BrandLogos from './BrandLogos';
 
 export const StaggeredMenu = ({
   position = 'right',
@@ -10,7 +11,7 @@ export const StaggeredMenu = ({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = '/src/assets/logos/reactbits-gh-white.svg',
+  logoUrl = null,
   menuButtonColor = '#fff',
   openMenuButtonColor = '#fff',
   accentColor = '#5227FF',
@@ -559,6 +560,10 @@ export const StaggeredMenu = ({
   ]);
 
   const renderLogo = () => {
+    if (logoUrl === null || logoUrl === undefined) {
+      return <BrandLogos />;
+    }
+
     if (React.isValidElement(logoUrl)) {
       return logoUrl;
     }

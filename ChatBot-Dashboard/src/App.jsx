@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import Preview from "./pages/Preview";
-import Chat from "./pages/chat";
+import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Analytics from "./pages/admin/Analytics";

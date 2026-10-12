@@ -61,3 +61,14 @@ CREATE TABLE users_auth(
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
+CREATE TABLE chat_feedback(
+	feedback_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	student_id UUID REFERENCES students(student_id) ON DELETE SET NULL,
+	chat_id UUID REFERENCES chat_history(chat_id) ON DELETE CASCADE,
+	rating INTEGER NOT NULL CHECK (rating >=1 AND rating <=5),
+	user_message TEXT,
+	ai_reply TEXT,
+	created_at TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX idx_chat_feedback_rating ON chat_feedback(rating);
+CREATE INDEX idx_chat_feedback_created_at ON chat_feedback(created_at);

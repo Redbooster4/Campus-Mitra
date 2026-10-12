@@ -120,7 +120,7 @@ export default function Dashboard() {
             <div className={styles.cardIcon}>
               <UserRound size={18} />
             </div>
-            <h3 className={styles.cardTitle}>Academic Snapshot</h3>
+            <h3 className={styles.cardTitle}>Current Profile</h3>
           </div>
 
           <div className={styles.snapshotGrid}>

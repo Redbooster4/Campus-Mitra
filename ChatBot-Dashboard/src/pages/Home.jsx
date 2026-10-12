@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import StaggeredMenu from '../components/StaggeredMenu';
-import AnimatedLogo from '../components/AnimatedLogo'; 
 import { ArrowRight, MessageSquare, ShieldCheck, Zap } from 'lucide-react';
 import styles from './styles/Home.module.css';
 import { HOME_MENU_ITEMS, SOCIAL_ITEMS } from '../constants/navigation';
+import MaskedHeading from '../components/MaskedHeading';
+import video from '../assets/SBMP INTRO.mp4';
+import poster from '../assets/poster.png';
 
 export default function Home(){
   const navigate=useNavigate();
@@ -27,21 +29,25 @@ export default function Home(){
         openMenuButtonColor="var(--text)"
         changeMenuColorOnOpen
         colors={["var(--border)", "var(--primary)"]}
-        logoUrl={
-          <div className={styles.logo}>
-            <AnimatedLogo />
-          </div>
-        }
         accentColor="var(--primary)"
       />
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Navigate your future <br className="hide-mobile"/>
-          <span className={styles.gradient}>
-            with confidence.
-          </span>
-        </h1>
+        <MaskedHeading
+          text="Navigate Your Future With Confidence"
+          mediaType="video"
+          src={video}
+          poster={poster}
+          fillScale={1.25}
+          parallax={26}
+          reveal="rise"
+          trigger="view"
+          drift={18}
+          stagger={0.09}
+          align="center"
+          weight={1000}
+          textScale={0.125}
+        />
         <p className={styles.description}>
           The intelligent, AI-powered admission and counselling portal for SVKM's Shri Bhagubhai Mafatlal Polytechnic. Get personalized guidance, instant document verification, and real-time status updates.
         </p>

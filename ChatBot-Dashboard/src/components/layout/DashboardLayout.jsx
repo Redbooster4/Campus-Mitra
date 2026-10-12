@@ -1,6 +1,5 @@
 import { useState } from "react";
 import StaggeredMenu from "../StaggeredMenu";
-import AnimatedLogo from "../AnimatedLogo";
 import { Bell } from "lucide-react";
 import styles from "../../pages/styles/Dashboard.module.css";
 import modalStyles from "../../pages/styles/Modal.module.css";
@@ -28,11 +27,6 @@ export default function DashboardLayout({
         openMenuButtonColor="var(--text)"
         changeMenuColorOnOpen
         colors={["var(--border)", "var(--primary)"]}
-        logoUrl={
-          <div className={styles.logo}>
-            <AnimatedLogo />
-          </div>
-        }
         accentColor="var(--primary)"
       />
       <div className={styles.bg} />

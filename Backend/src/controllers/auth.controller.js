@@ -1,25 +1,25 @@
 const pool = require("../config/db");
 const jwt = require("jsonwebtoken");
 
-const registerUser = async (req, res) => {
+const registerUser=async(req, res) => {
     try {
         const { username, password, role, student_id, counselor_id } = req.body;
 
-        if (!username || !password || !role) {
+        if(!username || !password || !role) {
             return res.status(400).json({
                 success: false,
-                message: "Fill all required fields (username, password, role)."
+                message: "Fill all required fields(username, password, role)."
             });
         }
         const result = await pool.query(
-            `INSERT INTO users_auth (
+            `INSERT INTO users_auth(
                 username,
                 password_hash,
                 role,
                 student_id,
                 counselor_id
             )
-            VALUES (
+            VALUES(
                 $1,
                 crypt($2, gen_salt('bf')),
                 $3, $4, $5
@@ -51,25 +51,22 @@ const registerUser = async (req, res) => {
             token,
             user
         });
-
-    } catch (error) {
+    } 
+    catch(error){
         console.error("Register Error:", error);
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
 
-const loginUser = async (req, res) => {
+const loginUser=async(req, res) => {
     try {
-        const { username, password } = req.body;
-
-        if (!username || !password) {
+        const { username, password }=req.body;
+        if(!username || !password){
             return res.status(400).json({
                 success: false,
                 message: "Username and password are required."
             });
         }
-
-        // Fixed table name: users -> users_auth
         const result = await pool.query(
             `SELECT
                 user_id,
@@ -82,7 +79,7 @@ const loginUser = async (req, res) => {
             [username, password]
         );
 
-        if (result.rows.length === 0) {
+        if(result.rows.length === 0) {
             return res.status(401).json({
                 success: false,
                 message: "Invalid Username or Password"
@@ -106,13 +103,13 @@ const loginUser = async (req, res) => {
             user
         });
 
-    } catch (error) {
+    } catch(error) {
         console.error("Login Error:", error);
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
 
-const getUser = async (req, res) => {
+const getUser=async(req, res) => {
     try {
         const userId = req.user.user_id;
 
@@ -123,7 +120,7 @@ const getUser = async (req, res) => {
             [userId]
         );
 
-        if (result.rows.length === 0) {
+        if(result.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "User Not Found"
@@ -135,7 +132,7 @@ const getUser = async (req, res) => {
             user: result.rows[0]
         });
 
-    } catch (err) {
+    } catch(err) {
         return res.status(500).json({
             success: false,
             message: "Internal server error"
@@ -143,7 +140,7 @@ const getUser = async (req, res) => {
     }
 }
 
-const logoutUser = async (req, res) => {
+const logoutUser=async(req, res) => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     return res.status(200).json({
@@ -152,4 +149,4 @@ const logoutUser = async (req, res) => {
     });
 };
 
-module.exports = { registerUser, loginUser, getUser, logoutUser };
+module.exports={ registerUser, loginUser, getUser, logoutUser };

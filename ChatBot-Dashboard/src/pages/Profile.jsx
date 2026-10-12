@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StaggeredMenu from "../components/StaggeredMenu";
-import AnimatedLogo from "../components/AnimatedLogo";
 import {
   ArrowLeft,
   Sparkles,
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import styles from "./styles/Profile.module.css";
 import { STUDENT_MENU_ITEMS, SOCIAL_ITEMS } from "../constants/navigation";
+import SquishSwitch from '../components/SquishSwitch';
 
 export default function Profile() {
   const navigate=useNavigate();
@@ -32,19 +32,21 @@ export default function Profile() {
 
   const [academicData, setAcademicData]=useState(() => {
     const saved=localStorage.getItem("studentAcademicProfile");
-    if (saved) {
-      try {
+    if(saved){
+      try{
         return JSON.parse(saved);
-      } catch {
+      } 
+      catch(err) {
+        console.log(err);
       }
     }
-    return {
-      sscPercentage:"88.40",
-      hscPercentage:"85.20",
-      entranceExam:"MHT-CET",
-      entrancePercentile:"96.42",
-      targetBranch:"Computer Engineering",
-      category:"General / Open",
+    return{
+      sscPercentage:"",
+      hscPercentage:"",
+      entranceExam:"",
+      entrancePercentile:"",
+      targetBranch:"",
+      category:"",
     };
   });
 
@@ -55,7 +57,8 @@ export default function Profile() {
       try {
         const parsed=JSON.parse(saved);
         return { ...parsed, language:savedLang };
-      } catch {
+      } catch (err) {
+        console.error("Failed to parse counseling preferences", err);
       }
     }
     return {
@@ -119,11 +122,6 @@ export default function Profile() {
         openMenuButtonColor="var(--text)"
         changeMenuColorOnOpen
         colors={["var(--border)", "var(--primary)"]}
-        logoUrl={
-          <div className={styles.logo}>
-            <AnimatedLogo />
-          </div>
-        }
         accentColor="var(--primary)"
       />
 
@@ -144,9 +142,6 @@ export default function Profile() {
             <div className={styles.userMeta}>
               <h1>{displayName}</h1>
               <p>{displayEmail}</p>
-              <span className={styles.roleBadge}>
-                {user?.role || "Enrolled Candidate"} • ID #{user?.student_id || user?.id || "MITRA-2026"}
-              </span>
             </div>
           </div>
 
@@ -158,19 +153,28 @@ export default function Profile() {
 
         <div className={styles.parentToggleCard}>
           <div className={styles.parentToggleInfo}>
-            <h3>Parent / Guardian View Mode</h3>
+            <h3>Parent/Guardian View Mode</h3>
             <p>
-              Switch on to see verified fee structure, official grievance helpline, and hostel accommodation notes.
+              Switch on to see verified fee structure and official grievance helpline.
             </p>
           </div>
-          <label className={styles.toggleSwitch} aria-label="Toggle Parent Mode">
-            <input
-              type="checkbox"
-              checked={parentMode}
-              onChange={(e) => setParentMode(e.target.checked)}
-            />
-            <span className={styles.toggleSlider} />
-          </label>
+          <SquishSwitch
+            checked={parentMode}
+            onChange={(checked) => setParentMode(typeof checked === 'boolean' ? checked : Boolean(checked?.target?.checked))}
+            label="Parent mode"
+            trackColor="#27272a"
+            trackOnColor="#f5f5f5"
+            width={76}
+            height={38}
+            radius={19}
+            speed={50}
+            stretch={36}
+            hoverScale={1.035}
+            colorDuration={320}
+            disabled={false}
+            thumbColor="#4e4e51"
+            thumbOnColor="#27272a"
+          />
         </div>
 
         {parentMode && (
@@ -194,7 +198,7 @@ export default function Profile() {
                   <PhoneCall size={14} style={{ marginRight:6, verticalAlign:"middle" }} />
                   +91 (022) 2854-5566 (Admin Desk)
                   <br />
-                  Office hours: Mon – Sat (9:30 AM to 5:00 PM)
+                  Office hours: Mon - Sat (9:30 AM to 5:00 PM)
                 </p>
               </div>
             </div>
@@ -215,26 +219,26 @@ export default function Profile() {
 
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
-                <label htmlFor="sscPercentage">Class 10th (SSC) %</label>
+                <label htmlFor="sscPercentage">Class 10th (SSC)%</label>
                 <input
                   id="sscPercentage"
                   name="sscPercentage"
                   type="text"
                   value={academicData.sscPercentage}
                   onChange={handleAcademicChange}
-                  placeholder="e.g. 88.40"
+                  placeholder="e.g. 96.5"
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="hscPercentage">Class 12th (HSC) %</label>
+                <label htmlFor="hscPercentage">Class 12th (HSC)%</label>
                 <input
                   id="hscPercentage"
                   name="hscPercentage"
                   type="text"
                   value={academicData.hscPercentage}
                   onChange={handleAcademicChange}
-                  placeholder="e.g. 85.20"
+                  placeholder="e.g. 87.20"
                 />
               </div>
 
