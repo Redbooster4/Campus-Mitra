@@ -18,6 +18,10 @@ llm = ChatGoogleGenerativeAI(
 )
 
 LANGUAGE_NAMES = {
+    "english": "English",
+    "hindi": "Hindi",
+    "marathi": "Marathi",
+    "gujarati": "Gujarati",
     "en": "English",
     "hi": "Hindi",
     "mr": "Marathi",
@@ -41,7 +45,13 @@ Rules:
 - Do not use outside knowledge to answer off-topic questions (e.g., coding, general trivia, cooking, or unrelated subjects). If a query is outside the scope of SBMP college, politely state (in {language_name}) that you can only assist with SBMP college-related matters.
 - If structured data and knowledge documents are both provided, use only the specific data points that directly answer the query.
 
-IMPORTANT: You must respond ONLY in {language_name}, regardless of the language of the user query or the retrieved data. Translate any retrieved information into {language_name} in your answer.
+CRITICAL LANGUAGE REQUIREMENT:
+You MUST respond strictly and entirely in {language_name}.
+- If {language_name} is Hindi, write the response in Hindi using the Devanagari script.
+- If {language_name} is Marathi, write the response in Marathi using the Devanagari script.
+- If {language_name} is Gujarati, write the response in Gujarati using the Gujarati script.
+- If {language_name} is English, write the response in English.
+Translate any retrieved information and facts into {language_name}. Do NOT output English when {language_name} is not English (except for official names and URLs).
 """
 
 def format_rag_dict(rag_dict):
@@ -81,8 +91,10 @@ def format_context(retrieved_data):
         return "\n\n".join(formatted_parts)
     return str(retrieved_data)
 
-def generate_answer(user_query, retrieved_data, language="en"):
-    language_name = LANGUAGE_NAMES.get(language, "English")
+def generate_answer(user_query, retrieved_data, language="English"):
+    norm_lang = str(language).lower().strip()
+    language_name = LANGUAGE_NAMES.get(norm_lang, "English")
+    print(f"[Answer Generator] Query Language: '{language}' -> Target Language: '{language_name}'")
     system_prompt = SYSTEM_PROMPT_TEMPLATE.format(language_name=language_name)
     context_text = format_context(retrieved_data)
 
@@ -93,7 +105,7 @@ User Query:
 Retrieved Data Context:
 {context_text}
 
-Provide a direct, concise, and on-point answer to the specific question asked in {language_name}. Do not include unnecessary background or unrequested details.
+Provide a direct, concise, and on-point answer to the specific question asked strictly in {language_name}. Do not include unnecessary background or unrequested details.
 """
 
     response = llm.invoke([

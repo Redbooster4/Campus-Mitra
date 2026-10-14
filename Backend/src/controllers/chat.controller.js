@@ -14,6 +14,9 @@ const chatWithMitra = async(req, res) => {
         }
 
         const sid=student_id || req.user?.student_id || req.user?.id || null;
+        const selectedLanguage = language || "English";
+
+        console.log(`[Backend Chat] Query: "${prompt.trim()}" | Language: "${selectedLanguage}" | Student ID: ${sid}`);
 
         const ragResponse=await fetch(`${RAG_SERVICE_URL}/chat`, {
             method: "POST",
@@ -23,7 +26,7 @@ const chatWithMitra = async(req, res) => {
             body: JSON.stringify({
                 query: prompt.trim(),
                 student_id: sid,
-                language: language || "en"
+                language: selectedLanguage
             })
         });
 

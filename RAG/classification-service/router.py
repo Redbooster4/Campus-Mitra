@@ -338,11 +338,46 @@ def log_chat(student_id, user_message, ai_reply, department_id=None):
         return None
 
 
-def escalate_to_human(query_text, student_id=None):
-    reply = "ESCALATED: Forwarded to counselor."
+LANGUAGE_MAP = {
+    "english": "en",
+    "en": "en",
+    "hindi": "hi",
+    "hi": "hi",
+    "marathi": "mr",
+    "mr": "mr",
+    "gujarati": "gu",
+    "gu": "gu",
+}
+
+OUT_OF_SCOPE_RESPONSES = {
+    "en": "I am Campus-Mitra, the SBMP College Assistant. I can only assist with queries related to SBMP college admissions, eligibility, fees, courses, campus facilities, and student records.",
+    "hi": "मैं कैंपस-मित्र (SBMP कॉलेज सहायक) हूँ। मैं केवल SBMP कॉलेज प्रवेश, पात्रता, शुल्क, पाठ्यक्रम, परिसर सुविधाओं और छात्र रिकॉर्ड से संबंधित प्रश्नों में आपकी सहायता कर सकता हूँ।",
+    "mr": "मी कॅम्पस-मित्र (SBMP कॉलेज सहाय्यक) आहे. मी फक्त SBMP कॉलेज प्रवेश, पात्रता, फी, अभ्यासक्रम, महाविद्यालयीन सुविधा आणि विद्यार्थी नोंदींशी संबंधित प्रश्नांची उत्तरे देऊ शकतो.",
+    "gu": "હું કેમ્પસ-મિત્ર (SBMP કોલેજ સહાયક) છું. હું માત્ર SBMP કોલેજ પ્રવેશ, પાત્રતા, ફી, અભ્યાસક્રમો અને વિદ્યાર્થી રેકોર્ડ સંબંધિત પ્રશ્નોમાં મદદ કરી શકું છું."
+}
+
+GREETING_RESPONSES = {
+    "en": "Hello! How can I help you with your admission query today?",
+    "hi": "नमस्ते! आज मैं आपकी प्रवेश संबंधी क्या मदद कर सकता हूँ?",
+    "mr": "नमस्कार! आज मी आपल्या प्रवेश संबंधित काय मदत करू शकतो?",
+    "gu": "નમસ્તે! આજે હું આપની પ્રવેશ સંબંધી શું મદદ કરી શકું?"
+}
+
+HUMAN_ESCALATION_RESPONSES = {
+    "en": "Your query has been forwarded to a counselor.",
+    "hi": "आपका प्रश्न काउंसलर को भेज दिया गया है।",
+    "mr": "तुमचा प्रश्न समुपदेशकाकडे पाठवला गेला आहे.",
+    "gu": "તમારો પ્રશ્ન કાઉન્સેલરને મોકલી દેવામાં આવ્યો છે."
+}
+
+
+def escalate_to_human(query_text, student_id=None, language="English"):
+    lang_code = LANGUAGE_MAP.get(str(language).lower().strip(), "en")
+    msg = HUMAN_ESCALATION_RESPONSES.get(lang_code, HUMAN_ESCALATION_RESPONSES["en"])
+    reply = f"ESCALATED: {msg}"
     chat_id = log_chat(student_id, query_text, reply)
     return {
-        "message": "Your query has been forwarded to a counselor.",
+        "message": msg,
         "chat_id": chat_id
     }
 
@@ -368,19 +403,12 @@ def sanitize_text(val):
     return str(val)
 
 
-OUT_OF_SCOPE_RESPONSES = {
-    "en": "I am Campus-Mitra, the SBMP College Assistant. I can only assist with queries related to SBMP college admissions, eligibility, fees, courses, campus facilities, and student records.",
-    "hi": "मैं कैंपस-मित्र (SBMP कॉलेज सहायक) हूँ। मैं केवल SBMP कॉलेज प्रवेश, पात्रता, शुल्क, पाठ्यक्रम, परिसर सुविधाओं और छात्र रिकॉर्ड से संबंधित प्रश्नों में आपकी सहायता कर सकता हूँ।",
-    "mr": "मी कॅम्पस-मित्र (SBMP कॉलेज सहाय्यक) आहे. मी फक्त SBMP कॉलेज प्रवेश, पात्रता, फी, अभ्यासक्रम, महाविद्यालयीन सुविधा आणि विद्यार्थी नोंदींशी संबंधित प्रश्नांची उत्तरे देऊ शकतो.",
-    "gu": "હું કેમ્પસ-મિત્ર (SBMP કોલેજ સહાયક) છું. હું માત્ર SBMP કોલેજ પ્રવેશ, પાત્રતા, ફી, અભ્યાસક્રમો અને વિદ્યાર્થી રેકોર્ડ સંબંધિત પ્રશ્નોમાં મદદ કરી શકું છું."
-}
-
-
-def route_query(query_text, student_id=None, language="en"):
+def route_query(query_text, student_id=None, language="English"):
+    lang_code = LANGUAGE_MAP.get(str(language).lower().strip(), "en")
     classification = classify_query(query_text)
     source = classification.get("source")
 
-    print(f"\n[Router] Query: '{query_text}' | Route: {source}")
+    print(f"\n[Router] Query: '{query_text}' | Route: {source} | Language: {language} ({lang_code})")
 
     if source == "POSTGRESQL":
         data = query_postgres(student_id)
@@ -395,13 +423,13 @@ def route_query(query_text, student_id=None, language="en"):
         }
 
     elif source == "HUMAN_ESCALATION":
-        data = escalate_to_human(query_text, student_id)
+        data = escalate_to_human(query_text, student_id, language=language)
 
     elif source == "GREETING":
-        data = {"message": "Hello! How can I help you with your admission query today?"}
+        data = {"message": GREETING_RESPONSES.get(lang_code, GREETING_RESPONSES["en"])}
 
     elif source == "OUT_OF_SCOPE":
-        data = {"message": OUT_OF_SCOPE_RESPONSES.get(language, OUT_OF_SCOPE_RESPONSES["en"])}
+        data = {"message": OUT_OF_SCOPE_RESPONSES.get(lang_code, OUT_OF_SCOPE_RESPONSES["en"])}
 
     else:
         data = {"error": "Unknown routing source"}

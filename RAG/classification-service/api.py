@@ -35,7 +35,7 @@ def chat():
             }), 400
 
         student_id = data.get("student_id")
-        language = data.get("language", "en")
+        language = data.get("language") or "English"
 
         logger.info(f"Incoming query: '{query_text}' | Student ID: {student_id} | Language: {language}")
 
