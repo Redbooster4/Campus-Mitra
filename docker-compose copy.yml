@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./Backend
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
+      - DB_NAME=sbmp-final-year-project
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - JWT_SECRET=bee211679ea91ed6d312998fa686b17faeb8c0bbff8af8b691984888ea1ddfd8e0e66f011f1c6853c570212095f3f83270e2dcbde209121f17f6a07150e4defd
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build: ./ChatBot-Dashboard
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
