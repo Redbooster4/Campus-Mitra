@@ -16,9 +16,13 @@ path_to_your_chroma_db_folder/
 
 # Environment Variables
 .env
+.env.*
 .env.local
 .env.*.local
 *.env
+**/.env
+**/.env.*
+Backend/.env
 
 # Python Caches & Environments
 __pycache__/
