@@ -6,7 +6,6 @@ import {
   User,
   PanelLeftClose,
   PanelLeftOpen,
-  Languages,
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
 import AnimatedLogo from "@/components/AnimatedLogo";
@@ -333,44 +332,6 @@ export default function Chat(){
             <User className={styles.navIcon} />
             <span className={styles.navLabel}>Profile</span>
           </button>
-
-          <span className={styles.navSectionTitle}>Language</span>
-          {!isCollapsed ? (
-            <div className={styles.sidebarLangWrapper}>
-              <GlideSelect
-                options={languages}
-                value={language}
-                onChange={(val) => handleLanguageChange(val)}
-                ariaLabel="Select counseling language"
-                showTags
-                accentColor="var(--primary)"
-                surfaceColor="var(--card)"
-                highlightColor="var(--card-hover)"
-                textColor="var(--text)"
-                size="md"
-                radius={10}
-                menuWidth={210}
-                placement="bottom"
-                align="left"
-                popDuration={180}
-                glideDuration={240}
-                rememberPosition
-              />
-            </div>
-          ) : (
-            <button
-              onClick={() => {
-                const idx = languages.findIndex((l) => l.value === language);
-                const nextLang = languages[(idx + 1) % languages.length].value;
-                handleLanguageChange(nextLang);
-              }}
-              className={styles.navButton}
-              title={`Language: ${language} (Click to switch)`}
-            >
-              <Languages className={styles.navIcon} />
-              <span className={styles.navLabel}>{language}</span>
-            </button>
-          )}
         </div>
 
         <div className={styles.sidebarFooter}>
