@@ -14,3 +14,7 @@ source .venv/bin/activate
 pip install -r ./requirements.txt
 cd classification-service
 python api.py
+
+
+./run-service.sh
+To run all the above commands
