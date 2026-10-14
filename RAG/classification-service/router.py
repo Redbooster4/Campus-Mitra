@@ -304,19 +304,21 @@ def log_chat(student_id, user_message, ai_reply, department_id=None):
 
         valid_student_id = None
         if student_id:
-            cursor.execute("""
-                SELECT id FROM students WHERE id = %s
-                UNION
-                SELECT student_id FROM students WHERE student_id = %s
-            """, (student_id, student_id))
-            row = cursor.fetchone()
-            if row:
-                valid_student_id = row[0]
+            try:
+                cursor.execute("""
+                    SELECT student_id FROM students WHERE student_id = %s
+                """, (str(student_id),))
+                row = cursor.fetchone()
+                if row:
+                    valid_student_id = row[0]
+            except Exception:
+                conn.rollback()
 
         cursor.execute("""
             INSERT INTO chat_history
             (student_id, department_id, user_message, ai_reply)
             VALUES (%s, %s, %s, %s)
+            RETURNING chat_id
         """, (
             valid_student_id,
             department_id,
@@ -324,18 +326,24 @@ def log_chat(student_id, user_message, ai_reply, department_id=None):
             ai_reply
         ))
 
+        row = cursor.fetchone()
+        chat_id = str(row[0]) if row else None
+
         conn.commit()
         cursor.close()
         conn.close()
+        return chat_id
     except Exception as e:
         print(f"[Error logging chat]: {e}")
+        return None
 
 
 def escalate_to_human(query_text, student_id=None):
     reply = "ESCALATED: Forwarded to counselor."
-    log_chat(student_id, query_text, reply)
+    chat_id = log_chat(student_id, query_text, reply)
     return {
-        "message": "Your query has been forwarded to a counselor."
+        "message": "Your query has been forwarded to a counselor.",
+        "chat_id": chat_id
     }
 
 
@@ -409,13 +417,17 @@ def route_query(query_text, student_id=None, language="en"):
 
     clean_answer = sanitize_text(final_answer)
 
+    chat_id = None
     if source not in ["HUMAN_ESCALATION"]:
-        log_chat(student_id, query_text, clean_answer)
+        chat_id = log_chat(student_id, query_text, clean_answer)
+    else:
+        chat_id = data.get("chat_id")
 
     return {
         "source": source,
         "confidence": classification.get("confidence", None),
         "reasoning": classification.get("reasoning", ""),
         "answer": clean_answer,
-        "retrieved_data": data
+        "retrieved_data": data,
+        "chat_id": chat_id
     }

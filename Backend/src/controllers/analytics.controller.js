@@ -27,12 +27,27 @@ const getAnalyticsSummary = async (req, res) => {
             ORDER BY question_count DESC;
         `;
 
-        const [statsResult, deptResult] = await Promise.all([
+        const feedbackStatsQuery = `
+            SELECT
+                COUNT(*)::int AS total_feedback,
+                COALESCE(ROUND(AVG(rating)::numeric, 2), 0) AS average_rating,
+                COUNT(*) FILTER (WHERE rating >= 4)::int AS positive_feedback_count,
+                COUNT(*) FILTER (WHERE rating = 5)::int AS count_5_star,
+                COUNT(*) FILTER (WHERE rating = 4)::int AS count_4_star,
+                COUNT(*) FILTER (WHERE rating = 3)::int AS count_3_star,
+                COUNT(*) FILTER (WHERE rating = 2)::int AS count_2_star,
+                COUNT(*) FILTER (WHERE rating = 1)::int AS count_1_star
+            FROM chat_feedback;
+        `;
+
+        const [statsResult, deptResult, feedbackResult] = await Promise.all([
             pool.query(statsQuery),
-            pool.query(departmentBreakdownQuery)
+            pool.query(departmentBreakdownQuery),
+            pool.query(feedbackStatsQuery)
         ]);
 
         const stats = statsResult.rows[0];
+        const feedbackStats = feedbackResult.rows[0];
 
         return res.status(200).json({
             success: true,
@@ -48,6 +63,18 @@ const getAnalyticsSummary = async (req, res) => {
                     guestQuestions: stats.guest_questions_count,
                     questionsLast24Hours: stats.questions_last_24h,
                     questionsLast7Days: stats.questions_last_7d
+                },
+                feedback: {
+                    totalFeedback: feedbackStats.total_feedback,
+                    averageRating: Number(feedbackStats.average_rating),
+                    positiveFeedbackCount: feedbackStats.positive_feedback_count,
+                    breakdown: [
+                        { stars: 5, label: "Exceptional (5★)", count: feedbackStats.count_5_star },
+                        { stars: 4, label: "Helpful (4★)", count: feedbackStats.count_4_star },
+                        { stars: 3, label: "Good (3★)", count: feedbackStats.count_3_star },
+                        { stars: 2, label: "Fair (2★)", count: feedbackStats.count_2_star },
+                        { stars: 1, label: "Poor (1★)", count: feedbackStats.count_1_star }
+                    ]
                 },
                 departmentBreakdown: deptResult.rows
             }
@@ -258,8 +285,77 @@ const getStudentChatHistory = async (req, res) => {
     }
 };
 
+/**
+ * GET /api/admin/analytics/feedback
+ * Provides aggregated feedback statistics and recent feedback submissions
+ */
+const getFeedbackAnalytics = async (req, res) => {
+    try {
+        const statsQuery = `
+            SELECT
+                COUNT(*)::int AS total_feedback,
+                COALESCE(ROUND(AVG(rating)::numeric, 2), 0) AS average_rating,
+                COUNT(*) FILTER (WHERE rating >= 4)::int AS positive_feedback_count,
+                COUNT(*) FILTER (WHERE rating = 5)::int AS count_5_star,
+                COUNT(*) FILTER (WHERE rating = 4)::int AS count_4_star,
+                COUNT(*) FILTER (WHERE rating = 3)::int AS count_3_star,
+                COUNT(*) FILTER (WHERE rating = 2)::int AS count_2_star,
+                COUNT(*) FILTER (WHERE rating = 1)::int AS count_1_star
+            FROM chat_feedback;
+        `;
+
+        const recentQuery = `
+            SELECT
+                f.feedback_id,
+                f.rating,
+                f.user_message,
+                f.ai_reply,
+                f.created_at,
+                f.student_id,
+                s.full_name AS student_name,
+                s.email AS student_email
+            FROM chat_feedback f
+            LEFT JOIN students s ON f.student_id = s.student_id
+            ORDER BY f.created_at DESC
+            LIMIT 50;
+        `;
+
+        const [statsResult, recentResult] = await Promise.all([
+            pool.query(statsQuery),
+            pool.query(recentQuery)
+        ]);
+
+        const stats = statsResult.rows[0];
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                totalFeedback: stats.total_feedback,
+                averageRating: Number(stats.average_rating),
+                positiveFeedbackCount: stats.positive_feedback_count,
+                ratingBreakdown: [
+                    { stars: 5, label: "5 Stars", count: stats.count_5_star },
+                    { stars: 4, label: "4 Stars", count: stats.count_4_star },
+                    { stars: 3, label: "3 Stars", count: stats.count_3_star },
+                    { stars: 2, label: "2 Stars", count: stats.count_2_star },
+                    { stars: 1, label: "1 Star", count: stats.count_1_star },
+                ],
+                recentFeedback: recentResult.rows
+            }
+        });
+    } catch (error) {
+        console.error("[Feedback Analytics Error]:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to retrieve feedback analytics",
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     getAnalyticsSummary,
     getChatLogs,
-    getStudentChatHistory
+    getStudentChatHistory,
+    getFeedbackAnalytics
 };

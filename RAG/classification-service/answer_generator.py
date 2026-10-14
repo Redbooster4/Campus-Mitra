@@ -30,16 +30,16 @@ You are the SBMP Admission Assistant for Shri Bhagubhai Mafatlal Polytechnic and
 Answer ONLY using the provided data.
 
 Rules:
+- Be strictly on point and concise. Provide ONLY the direct answer to the specific question asked. Do not include unnecessary details, broad overviews, or background information.
+- Do not dump entire documents, schedules, full tables, or unrelated rules. Extract and present only the exact facts or figures requested.
 - Do not make up information.
-- When answering queries about documents, notices, academic calendars, fee structures, syllabi, vacancy positions, or college policies:
-  1. In-Chat Content: Present the key information, schedules, dates, rules, eligibility criteria, or fee figures directly in the chat message in a clear, well-structured, and readable format (use bullet points or neat sections).
-  2. Official PDF Link: Whenever official document or PDF links are provided in the data, ALWAYS include the link(s) formatted as Markdown links: [Document Title](URL) so the user can easily view or download the complete official document.
-  3. ALWAYS provide BOTH the extracted text content in the chat AND the official PDF download link when both are available.
-  4. If only the PDF link is available in the retrieved data, state clearly what the document is, provide the PDF link, and invite the user to check the document or ask specific questions about it.
-- If the required information is not present or an error is stated in retrieved data, clearly explain what is missing (in {language_name}).
+- Official Document / PDF Links:
+  - If official document or PDF links are provided in the data, give the direct answer first, and then include the relevant Markdown link: [Document Title](URL) for the user's reference.
+  - Do NOT dump the full text of the document when a link is available.
+  - If only the PDF link is available in the retrieved data, state briefly what the document is and provide the link.
+- If the required information is not present or an error is stated in retrieved data, state clearly and concisely what is missing (in {language_name}).
 - Do not use outside knowledge to answer off-topic questions (e.g., coding, general trivia, cooking, or unrelated subjects). If a query is outside the scope of SBMP college, politely state (in {language_name}) that you can only assist with SBMP college-related matters.
-- If structured data and knowledge documents are both provided, use both.
-- Give a concise and helpful answer.
+- If structured data and knowledge documents are both provided, use only the specific data points that directly answer the query.
 
 IMPORTANT: You must respond ONLY in {language_name}, regardless of the language of the user query or the retrieved data. Translate any retrieved information into {language_name} in your answer.
 """
@@ -93,7 +93,7 @@ User Query:
 Retrieved Data Context:
 {context_text}
 
-Generate a helpful answer in {language_name}.
+Provide a direct, concise, and on-point answer to the specific question asked in {language_name}. Do not include unnecessary background or unrequested details.
 """
 
     response = llm.invoke([
@@ -101,4 +101,21 @@ Generate a helpful answer in {language_name}.
         ("human", prompt)
     ])
 
-    return response.content
+    raw_content = response.content
+    if isinstance(raw_content, str):
+        return raw_content
+    if isinstance(raw_content, list):
+        parts = []
+        for item in raw_content:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, dict):
+                parts.append(item.get("text", "") or str(item))
+            elif hasattr(item, "text"):
+                parts.append(getattr(item, "text"))
+            else:
+                parts.append(str(item))
+        return "\n".join(parts)
+    if isinstance(raw_content, dict):
+        return raw_content.get("text", "") or raw_content.get("content", "") or str(raw_content)
+    return str(raw_content)

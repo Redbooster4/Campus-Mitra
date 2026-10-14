@@ -111,14 +111,32 @@ export default function Chat(){
     }
     return {};
   });
+  const [feedbackStatus, setFeedbackStatus] = useState({});
   const messagesEndRef = useRef(null);
 
-  const handleFeedback=(msgId, score) => {
+  const handleFeedback = async (msg, score) => {
+    const msgId = typeof msg === "object" ? msg.id : msg;
     setFeedbackRatings((prev) => {
-      const updated={ ...prev, [msgId]:score };
+      const updated = { ...prev, [msgId]: score };
       localStorage.setItem("chatFeedbackRatings", JSON.stringify(updated));
       return updated;
     });
+
+    setFeedbackStatus((prev) => ({ ...prev, [msgId]: "submitting" }));
+
+    try {
+      await api.post("/chat/feedback", {
+        rating: score,
+        user_message: msg?.userMessage || null,
+        ai_reply: msg?.text || null,
+        chat_id: msg?.chatId || null,
+        student_id: user?.student_id || user?.id || null,
+      });
+      setFeedbackStatus((prev) => ({ ...prev, [msgId]: "saved" }));
+    } catch (err) {
+      console.warn("Feedback backend sync error, saved locally:", err);
+      setFeedbackStatus((prev) => ({ ...prev, [msgId]: "error" }));
+    }
   };
 
   const closeModal = () => setActiveModal(null);
@@ -173,13 +191,27 @@ export default function Chat(){
 
     try {
       let responseText = "";
+      let chatId = null;
+      const parseResponse = (raw) => {
+        if (typeof raw === "string") return raw;
+        if (!raw) return "";
+        if (Array.isArray(raw)) {
+          return raw.map((item) => parseResponse(item)).filter(Boolean).join("\n\n");
+        }
+        if (typeof raw === "object") {
+          return raw.text || raw.answer || raw.message || raw.content || JSON.stringify(raw);
+        }
+        return String(raw);
+      };
+
       try {
         const res = await api.post("/chat", {
           query,
           student_id: user?.student_id || user?.id || null,
           language:"en",
         });
-        responseText = res.data?.answer || res.data?.message;
+        responseText = parseResponse(res.data?.answer || res.data?.message);
+        chatId = res.data?.chat_id || null;
       } catch {
         const directRes = await fetch("http://localhost:5000/chat", {
           method: "POST",
@@ -191,7 +223,8 @@ export default function Chat(){
           }),
         });
         const directData = await directRes.json();
-        responseText = directData?.answer || directData?.message;
+        responseText = parseResponse(directData?.answer || directData?.message);
+        chatId = directData?.chat_id || null;
       }
 
       if (!responseText) {
@@ -199,10 +232,12 @@ export default function Chat(){
       }
 
       const counselorMsg = {
-        id:generateId(),
+        id: generateId(),
         sender: "counselor",
         text: responseText,
-        time:getFormattedTime(),
+        time: getFormattedTime(),
+        chatId: chatId,
+        userMessage: query,
       };
 
       setMessages((prev) => [...prev, counselorMsg]);
@@ -368,7 +403,7 @@ export default function Chat(){
                     </span>
                     <PeekRating
                       value={feedbackRatings[msg.id] || 0}
-                      onChange={(score) => handleFeedback(msg.id, score)}
+                      onChange={(score) => handleFeedback(msg, score)}
                       labels={["Poor", "Fair", "Good", "Helpful", "Exceptional"]}
                       size={16}
                       lift={4}
@@ -378,8 +413,14 @@ export default function Chat(){
                       tipTextColor="var(--text)"
                       ariaLabel="Rate response feedback"
                     />
-                    {feedbackRatings[msg.id] > 0 && (
+                    {feedbackStatus[msg.id] === "submitting" && (
+                      <span className={styles.feedbackThankYou}>• Saving...</span>
+                    )}
+                    {(feedbackStatus[msg.id] === "saved" || (!feedbackStatus[msg.id] && feedbackRatings[msg.id] > 0)) && (
                       <span className={styles.feedbackThankYou}>• Thanks!</span>
+                    )}
+                    {feedbackStatus[msg.id] === "error" && (
+                      <span className={styles.feedbackThankYou} style={{ color: "#f59e0b" }}>• Saved locally</span>
                     )}
                   </div>
                 )}

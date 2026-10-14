@@ -72,3 +72,4 @@ CREATE TABLE chat_feedback(
 );
 CREATE INDEX idx_chat_feedback_rating ON chat_feedback(rating);
 CREATE INDEX idx_chat_feedback_created_at ON chat_feedback(created_at);
+

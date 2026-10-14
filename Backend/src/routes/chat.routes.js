@@ -17,6 +17,6 @@ const optionalAuth = (req, res, next) => {
     next();
 };
 router.post("/", optionalAuth, chatWithMitra);
-router.post("/feedback", submitFeedback);
+router.post("/feedback", optionalAuth, submitFeedback);
 
 module.exports = router;
