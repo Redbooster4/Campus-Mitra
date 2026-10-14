@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
 import AnimatedLogo from "@/components/AnimatedLogo";
-import ModalManager from "./modals/ModalManager";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
 import MessageRenderer from "@/components/MessageRenderer";
@@ -97,7 +96,6 @@ export default function Chat(){
   const initialHandledRef=useRef(false);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [activeModal, setActiveModal] = useState(null);
   const [isCollapsed, setIsCollapsed]=useState(false);
   const [language, setLanguage]=useState(() => localStorage.getItem("preferredLanguage") || "English");
   const [feedbackRatings, setFeedbackRatings]=useState(() => {
@@ -139,7 +137,6 @@ export default function Chat(){
     }
   };
 
-  const closeModal = () => setActiveModal(null);
   const userName = user?.username || "Friend";
 
   const [messages, setMessages]=useState(() => {
@@ -328,7 +325,7 @@ export default function Chat(){
             <span className={styles.navLabel}>Dashboard</span>
           </button>
           <button
-            onClick={() => setActiveModal("profile")}
+            onClick={() => navigate("/profile")}
             className={styles.navButton}
             title="Profile"
           >
@@ -493,8 +490,6 @@ export default function Chat(){
           </p>
         </main>
       </div>
-
-      <ModalManager activeModal={activeModal} onClose={closeModal} />
     </div>
   );
 }

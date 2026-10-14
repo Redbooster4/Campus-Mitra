@@ -1,7 +1,7 @@
+require("dotenv").config();
 const express = require("express");
 const pool = require("./src/config/db.js");
 const cors = require("cors");
-require("dotenv").config();
 
 const authRoutes = require("./src/routes/auth.routes.js");
 const chatRoutes = require("./src/routes/chat.routes.js");

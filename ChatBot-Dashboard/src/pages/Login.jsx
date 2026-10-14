@@ -47,7 +47,7 @@ function Login() {
 
                 const user = resp.data?.user;
                 if(user?.role === "Student" && !user?.student_id){
-                    navigate("/onboarding/student-profile");
+                    navigate("/onboarding");
                 }
                 else if(user?.role === "Counselor" && !user?.counselor_id){
                     navigate("/onboarding/counselor-profile");
