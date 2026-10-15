@@ -1,9 +1,4 @@
 const pool = require("../config/db");
-
-/**
- * GET /api/admin/analytics/summary
- * Provides aggregated metrics for students and chat activity
- */
 const getAnalyticsSummary = async (req, res) => {
     try {
         const statsQuery = `
@@ -14,7 +9,9 @@ const getAnalyticsSummary = async (req, res) => {
                 (SELECT COUNT(DISTINCT student_id)::int FROM chat_history WHERE student_id IS NOT NULL) AS active_students_count,
                 (SELECT COUNT(*)::int FROM chat_history WHERE student_id IS NULL) AS guest_questions_count,
                 (SELECT COUNT(*)::int FROM chat_history WHERE created_at >= NOW() - INTERVAL '24 HOURS') AS questions_last_24h,
-                (SELECT COUNT(*)::int FROM chat_history WHERE created_at >= NOW() - INTERVAL '7 DAYS') AS questions_last_7d;
+                (SELECT COUNT(*)::int FROM chat_history WHERE created_at >= NOW() - INTERVAL '7 DAYS') AS questions_last_7d,
+                (SELECT COUNT(*)::int FROM students WHERE callback_requested = TRUE) AS pending_callbacks_count,
+                (SELECT COUNT(*)::int FROM chat_history WHERE needs_followup = TRUE) AS queries_needing_followup;
         `;
 
         const departmentBreakdownQuery = `
@@ -25,6 +22,16 @@ const getAnalyticsSummary = async (req, res) => {
             LEFT JOIN departments d ON c.department_id = d.department_id
             GROUP BY d.name
             ORDER BY question_count DESC;
+        `;
+
+        const branchBreakdownQuery = `
+            SELECT 
+                COALESCE(target_branch, 'Undeclared') AS branch_name,
+                COUNT(student_id)::int AS student_count
+            FROM students
+            WHERE target_branch IS NOT NULL AND target_branch != ''
+            GROUP BY target_branch
+            ORDER BY student_count DESC;
         `;
 
         const feedbackStatsQuery = `
@@ -40,9 +47,10 @@ const getAnalyticsSummary = async (req, res) => {
             FROM chat_feedback;
         `;
 
-        const [statsResult, deptResult, feedbackResult] = await Promise.all([
+        const [statsResult, deptResult, branchResult, feedbackResult] = await Promise.all([
             pool.query(statsQuery),
             pool.query(departmentBreakdownQuery),
+            pool.query(branchBreakdownQuery),
             pool.query(feedbackStatsQuery)
         ]);
 
@@ -57,6 +65,10 @@ const getAnalyticsSummary = async (req, res) => {
                     totalStudents: stats.total_students,
                     registeredUserAccounts: stats.total_student_accounts,
                     activeStudentsAskingQuestions: stats.active_students_count
+                },
+                followups: {
+                    pendingCallbacks: stats.pending_callbacks_count,
+                    queriesNeedingFollowup: stats.queries_needing_followup
                 },
                 questions: {
                     totalQuestionsAsked: stats.total_questions_asked,
@@ -76,7 +88,8 @@ const getAnalyticsSummary = async (req, res) => {
                         { stars: 1, label: "Poor (1★)", count: feedbackStats.count_1_star }
                     ]
                 },
-                departmentBreakdown: deptResult.rows
+                departmentBreakdown: deptResult.rows,
+                branchDemandBreakdown: branchResult.rows
             }
         });
     } catch (error) {
@@ -89,10 +102,6 @@ const getAnalyticsSummary = async (req, res) => {
     }
 };
 
-/**
- * GET /api/admin/analytics/chats
- * Provides paginated, searchable, and filterable questions and answers
- */
 const getChatLogs = async (req, res) => {
     try {
         const {
@@ -102,7 +111,11 @@ const getChatLogs = async (req, res) => {
             student_id,
             department_id,
             startDate,
-            endDate
+            endDate,
+            needs_followup,
+            callback_requested,
+            target_branch,
+            followup_status
         } = req.query;
 
         const parsedPage = Math.max(1, parseInt(page, 10) || 1);
@@ -114,7 +127,7 @@ const getChatLogs = async (req, res) => {
         let paramIndex = 1;
 
         if (search && search.trim() !== "") {
-            conditions.push(`(c.user_message ILIKE $${paramIndex} OR c.ai_reply ILIKE $${paramIndex})`);
+            conditions.push(`(c.user_message ILIKE $${paramIndex} OR c.ai_reply ILIKE $${paramIndex} OR s.full_name ILIKE $${paramIndex} OR s.phone ILIKE $${paramIndex})`);
             params.push(`%${search.trim()}%`);
             paramIndex++;
         }
@@ -143,28 +156,53 @@ const getChatLogs = async (req, res) => {
             paramIndex++;
         }
 
+        if (needs_followup === "true" || needs_followup === "1") {
+            conditions.push(`c.needs_followup = TRUE`);
+        }
+
+        if (callback_requested === "true" || callback_requested === "1") {
+            conditions.push(`s.callback_requested = TRUE`);
+        }
+
+        if (target_branch) {
+            conditions.push(`s.target_branch ILIKE $${paramIndex}`);
+            params.push(`%${target_branch.trim()}%`);
+            paramIndex++;
+        }
+
+        if (followup_status) {
+            conditions.push(`s.followup_status = $${paramIndex}`);
+            params.push(followup_status);
+            paramIndex++;
+        }
+
         const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
         // Query total count for pagination metadata
         const countQuery = `
             SELECT COUNT(*)::int AS total
             FROM chat_history c
+            LEFT JOIN students s ON c.student_id = s.student_id
             ${whereClause}
         `;
-
-        // Query chats with student and department metadata
         const dataQuery = `
             SELECT
                 c.chat_id,
                 c.user_message AS question,
                 c.ai_reply AS answer,
+                c.needs_followup,
                 c.created_at,
                 c.department_id,
                 d.name AS department_name,
                 c.student_id,
                 s.full_name AS student_name,
                 s.email AS student_email,
-                s.phone AS student_phone
+                s.phone AS student_phone,
+                s.target_branch,
+                s.entrance_score,
+                s.callback_requested,
+                s.followup_status,
+                s.notes AS counselor_notes
             FROM chat_history c
             LEFT JOIN students s ON c.student_id = s.student_id
             LEFT JOIN departments d ON c.department_id = d.department_id
@@ -185,6 +223,7 @@ const getChatLogs = async (req, res) => {
             chat_id: row.chat_id,
             question: row.question,
             answer: row.answer,
+            needs_followup: Boolean(row.needs_followup),
             created_at: row.created_at,
             department: row.department_id
                 ? {
@@ -197,7 +236,12 @@ const getChatLogs = async (req, res) => {
                       student_id: row.student_id,
                       full_name: row.student_name,
                       email: row.student_email,
-                      phone: row.student_phone
+                      phone: row.student_phone,
+                      target_branch: row.target_branch,
+                      entrance_score: row.entrance_score,
+                      callback_requested: Boolean(row.callback_requested),
+                      followup_status: row.followup_status,
+                      counselor_notes: row.counselor_notes
                   }
                 : null
         }));
@@ -223,11 +267,6 @@ const getChatLogs = async (req, res) => {
         });
     }
 };
-
-/**
- * GET /api/admin/analytics/students/:student_id/chats
- * Provides all questions and answers asked by a specific student
- */
 const getStudentChatHistory = async (req, res) => {
     try {
         const { student_id } = req.params;
@@ -241,7 +280,10 @@ const getStudentChatHistory = async (req, res) => {
 
         // Fetch student details
         const studentQuery = `
-            SELECT student_id, full_name, email, phone, category, created_at
+            SELECT 
+                student_id, full_name, email, phone, category,
+                target_branch, entrance_score, callback_requested,
+                followup_status, notes, created_at, updated_at
             FROM students
             WHERE student_id = $1;
         `;
@@ -260,6 +302,7 @@ const getStudentChatHistory = async (req, res) => {
                 c.chat_id,
                 c.user_message AS question,
                 c.ai_reply AS answer,
+                c.needs_followup,
                 c.created_at,
                 d.name AS department_name
             FROM chat_history c
@@ -280,6 +323,45 @@ const getStudentChatHistory = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Failed to retrieve student chat history",
+            error: error.message
+        });
+    }
+};
+
+/**
+ * PATCH /api/admin/analytics/students/:student_id/followup
+ * Update the counselor follow-up stage and notes for an applicant
+ */
+const updateStudentFollowup = async (req, res) => {
+    try {
+        const { student_id } = req.params;
+        const { followup_status, notes, callback_requested } = req.body;
+
+        const result = await pool.query(
+            `UPDATE students
+             SET followup_status = COALESCE($1, followup_status),
+                 notes = COALESCE($2, notes),
+                 callback_requested = COALESCE($3, callback_requested),
+                 updated_at = NOW()
+             WHERE student_id = $4
+             RETURNING student_id, full_name, phone, target_branch, followup_status, notes, callback_requested`,
+            [followup_status || null, notes !== undefined ? notes : null, callback_requested !== undefined ? Boolean(callback_requested) : null, student_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: "Student not found" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Student follow-up status updated successfully",
+            student: result.rows[0]
+        });
+    } catch (error) {
+        console.error("[Update Followup Error]:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to update student follow-up",
             error: error.message
         });
     }
@@ -313,7 +395,10 @@ const getFeedbackAnalytics = async (req, res) => {
                 f.created_at,
                 f.student_id,
                 s.full_name AS student_name,
-                s.email AS student_email
+                s.email AS student_email,
+                s.phone AS student_phone,
+                s.target_branch,
+                s.callback_requested
             FROM chat_feedback f
             LEFT JOIN students s ON f.student_id = s.student_id
             ORDER BY f.created_at DESC
@@ -357,5 +442,6 @@ module.exports = {
     getAnalyticsSummary,
     getChatLogs,
     getStudentChatHistory,
+    updateStudentFollowup,
     getFeedbackAnalytics
 };

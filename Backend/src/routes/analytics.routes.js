@@ -4,6 +4,7 @@ const {
     getAnalyticsSummary,
     getChatLogs,
     getStudentChatHistory,
+    updateStudentFollowup,
     getFeedbackAnalytics
 } = require("../controllers/analytics.controller");
 const verifyToken = require("../middleware/auth.middleware");
@@ -24,5 +25,8 @@ router.get("/chats", getChatLogs);
 
 // 4. Student-specific Q&A history
 router.get("/students/:student_id/chats", getStudentChatHistory);
+
+// 5. Update Student Follow-up Status & Notes
+router.patch("/students/:student_id/followup", updateStudentFollowup);
 
 module.exports = router;

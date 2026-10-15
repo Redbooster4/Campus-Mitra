@@ -1,0 +1,505 @@
+{
+  "info": {
+    "_postman_id": "campus-mitra-api-collection",
+    "name": "Campus-Mitra-API",
+    "description": "Complete updated API endpoints collection for Campus-Mitra (Node.js Backend & Python RAG Service)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "ragUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZDdjY2JmMWQtZDhhNy00ZjZhLWJjYWItMjM0OGY3MGNjZDAyIiwicm9sZSI6IlN0dWRlbnQiLCJmdWxsX25hbWUiOiJkZW1vIiwiaWF0IjoxNzkyMDU0NjU2LCJleHAiOjE3OTIxNDEwNTZ9.9di4zz50SjeJICMvFotYX_5tk52CB4WimJwz3THJOMA",
+      "type": "string"
+    },
+    {
+      "key": "studentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "chatId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Rohan Sharma\",\n  \"phone_number\": \"9876543210\",\n  \"email\": \"rohan.sharma@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"Student\",\n  \"target_branch\": \"Computer Engineering\",\n  \"entrance_score\": \"96.42\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Rohan Sharma\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Student Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Rohan Sharma\",\n  \"phone_number\": \"9876543210\",\n  \"email\": \"rohan.sharma@example.com\",\n  \"target_branch\": \"Artificial Intelligence & Data Science\",\n  \"entrance_score\": \"97.10\",\n  \"category\": \"OBC\",\n  \"callback_requested\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Chat Query with Mitra",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"What are the cutoff percentiles for Computer Engineering?\",\n  \"language\": \"English\",\n  \"student_id\": \"{{studentId}}\",\n  \"needs_followup\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Chat Feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"user_message\": \"What are the cutoff percentiles for Computer Engineering?\",\n  \"ai_reply\": \"Cutoff for Computer Engineering was 96.5 percentile in CAP Round 1.\",\n  \"student_id\": \"{{studentId}}\",\n  \"chat_id\": \"{{chatId}}\",\n  \"callback_requested\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chat/feedback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "feedback"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Request Counselor Callback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\",\n  \"full_name\": \"Rohan Sharma\",\n  \"target_branch\": \"Computer Engineering\",\n  \"notes\": \"Student requested guidance on CAP Round 1 cutoff concessions.\",\n  \"student_id\": \"{{studentId}}\",\n  \"chat_id\": \"{{chatId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chat/request-callback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "request-callback"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Analytics",
+      "item": [
+        {
+          "name": "Analytics KPI Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/analytics/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "analytics",
+                "summary"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Feedback Analytics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/analytics/feedback",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "analytics",
+                "feedback"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Chat Logs (Filterable)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/analytics/chats?page=1&limit=20&needs_followup=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "analytics",
+                "chats"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "needs_followup",
+                  "value": "true"
+                },
+                {
+                  "key": "callback_requested",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "target_branch",
+                  "value": "Computer",
+                  "disabled": true
+                },
+                {
+                  "key": "followup_status",
+                  "value": "Pending",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "cutoff",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Student Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/analytics/students/:student_id/chats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "analytics",
+                "students",
+                ":student_id",
+                "chats"
+              ],
+              "variable": [
+                {
+                  "key": "student_id",
+                  "value": "{{studentId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Student Followup Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"followup_status\": \"Contacted\",\n  \"notes\": \"Called student. Scheduled for campus counseling session tomorrow.\",\n  \"callback_requested\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/analytics/students/:student_id/followup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "analytics",
+                "students",
+                ":student_id",
+                "followup"
+              ],
+              "variable": [
+                {
+                  "key": "student_id",
+                  "value": "{{studentId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "RAG Python Service",
+      "item": [
+        {
+          "name": "RAG Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{ragUrl}}/health",
+              "host": [
+                "{{ragUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Direct RAG Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"What are the hostel and mess facilities?\",\n  \"language\": \"English\",\n  \"student_id\": null\n}"
+            },
+            "url": {
+              "raw": "{{ragUrl}}/chat",
+              "host": [
+                "{{ragUrl}}"
+              ],
+              "path": [
+                "chat"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Backend Root Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:3000/",
+              "host": [
+                "http://localhost:3000"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

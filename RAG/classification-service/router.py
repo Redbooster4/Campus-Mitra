@@ -297,7 +297,7 @@ def query_chromadb(query_text, n_results=50):
 
 
 
-def log_chat(student_id, user_message, ai_reply, department_id=None):
+def log_chat(student_id, user_message, ai_reply, department_id=None, needs_followup=False):
     try:
         conn = get_postgres_connection()
         cursor = conn.cursor()
@@ -314,16 +314,21 @@ def log_chat(student_id, user_message, ai_reply, department_id=None):
             except Exception:
                 conn.rollback()
 
+        msg_lower = (user_message or "").lower()
+        if any(kw in msg_lower for kw in ["call me", "callback", "contact me", "talk to counselor", "human counselor", "reach me", "visit campus"]):
+            needs_followup = True
+
         cursor.execute("""
             INSERT INTO chat_history
-            (student_id, department_id, user_message, ai_reply)
-            VALUES (%s, %s, %s, %s)
+            (student_id, department_id, user_message, ai_reply, needs_followup)
+            VALUES (%s, %s, %s, %s, %s)
             RETURNING chat_id
         """, (
             valid_student_id,
             department_id,
             user_message,
-            ai_reply
+            ai_reply,
+            needs_followup
         ))
 
         row = cursor.fetchone()
@@ -375,7 +380,7 @@ def escalate_to_human(query_text, student_id=None, language="English"):
     lang_code = LANGUAGE_MAP.get(str(language).lower().strip(), "en")
     msg = HUMAN_ESCALATION_RESPONSES.get(lang_code, HUMAN_ESCALATION_RESPONSES["en"])
     reply = f"ESCALATED: {msg}"
-    chat_id = log_chat(student_id, query_text, reply)
+    chat_id = log_chat(student_id, query_text, reply, needs_followup=True)
     return {
         "message": msg,
         "chat_id": chat_id

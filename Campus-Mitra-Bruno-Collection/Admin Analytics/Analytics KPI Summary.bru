@@ -1,0 +1,24 @@
+meta {
+  name: Analytics KPI Summary
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/admin/analytics/summary
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Summary returns 200 with followups & branch stats", function() {
+    expect(res.getStatus()).to.equal(200);
+    const body = res.getBody();
+    expect(body.data).to.have.property('followups');
+    expect(body.data).to.have.property('branchDemandBreakdown');
+  });
+}

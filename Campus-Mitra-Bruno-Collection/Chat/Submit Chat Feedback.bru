@@ -1,0 +1,36 @@
+meta {
+  name: Submit Chat Feedback
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/chat/feedback
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "rating": 5,
+    "user_message": "What are the cutoff percentiles for Computer Engineering?",
+    "ai_reply": "Cutoff for Computer Engineering was 96.5 percentile in CAP Round 1.",
+    "student_id": "{{studentId}}",
+    "chat_id": "{{chatId}}",
+    "callback_requested": true
+  }
+}
+
+tests {
+  test("Feedback returns 201 Created", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+}

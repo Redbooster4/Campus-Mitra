@@ -1,0 +1,37 @@
+meta {
+  name: Update Student Profile
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/auth/profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "full_name": "Rohan Sharma",
+    "phone_number": "9876543210",
+    "email": "rohan.sharma@example.com",
+    "target_branch": "Artificial Intelligence & Data Science",
+    "entrance_score": "97.10",
+    "category": "OBC",
+    "callback_requested": true
+  }
+}
+
+tests {
+  test("Profile update returns 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

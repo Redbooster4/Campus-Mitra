@@ -1,0 +1,19 @@
+meta {
+  name: Student Chat History
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/admin/analytics/students/:student_id/chats
+  body: none
+  auth: bearer
+}
+
+params:path {
+  student_id: {{studentId}}
+}
+
+auth:bearer {
+  token: {{token}}
+}

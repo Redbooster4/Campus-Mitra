@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { chatWithMitra, submitFeedback } = require("../controllers/chat.controller");
+const { chatWithMitra, submitFeedback, requestCallback } = require("../controllers/chat.controller");
 const jwt = require("jsonwebtoken");
 
 const optionalAuth = (req, res, next) => {
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
+    if(authHeader && authHeader.startsWith("Bearer ")) {
         const token = authHeader.split(" ")[1];
         try{
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -18,5 +18,6 @@ const optionalAuth = (req, res, next) => {
 };
 router.post("/", optionalAuth, chatWithMitra);
 router.post("/feedback", optionalAuth, submitFeedback);
+router.post("/request-callback", optionalAuth, requestCallback);
 
 module.exports = router;
