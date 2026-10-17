@@ -3,7 +3,7 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--overlay-bg);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -12,14 +12,14 @@
 }
 
 .modalContent {
-  background-color: var(--card, #151515);
-  color: var(--text, #f4f4f5);
+  background-color: var(--card);
+  color: var(--text);
   padding: 2rem;
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   width: 90%;
   max-width: 400px;
-  border: 1px solid var(--border, #27272a);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px var(--shadow-color);
 }
 
 .modalTitle {
@@ -30,13 +30,13 @@
 
 .modalDescription {
   margin-bottom: 2rem;
-  color: var(--muted, #a1a1aa);
+  color: var(--muted);
 }
 
 .primaryButton {
   width: 100%;
-  background-color: var(--primary, #f97316);
-  color: #ffffff;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
@@ -46,7 +46,7 @@
 }
 
 .primaryButton:hover {
-  background-color: var(--primary-hover, #fb923c);
+  background-color: var(--primary-hover);
 }
 .buttonGroup {
   display: flex;
@@ -57,8 +57,8 @@
 .dangerButton {
   width: 100%;
   background-color: transparent;
-  color: #ef4444;
-  border: 1px solid #ef4444;
+  color: var(--danger);
+  border: 1px solid var(--danger);
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
   cursor: pointer;
@@ -67,7 +67,7 @@
 }
 
 .dangerButton:hover {
-  background-color: #ef4444;
-  color: #ffffff;
+  background-color: var(--danger);
+  color: var(--danger-foreground);
 }
 

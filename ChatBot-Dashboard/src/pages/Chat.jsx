@@ -14,6 +14,7 @@ import api from "../api/api";
 import MessageRenderer from "@/components/MessageRenderer";
 import GlideSelect from "@/components/GlideSelect";
 import PeekRating from "@/components/PeekRating";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const languages=[
   { value:"English", label:"English", tag:"EN" },
@@ -377,6 +378,7 @@ export default function Chat(){
               <button className={styles.actionBtn} onClick={handleReset}>
                 Reset
               </button>
+              <ThemeToggle />
             </div>
           </header>
 
@@ -405,7 +407,7 @@ export default function Chat(){
                       size={16}
                       lift={4}
                       activeColor="var(--primary)"
-                      idleColor="#52525b"
+                      idleColor="var(--muted)"
                       tipColor="var(--card)"
                       tipTextColor="var(--text)"
                       ariaLabel="Rate response feedback"
@@ -417,7 +419,7 @@ export default function Chat(){
                       <span className={styles.feedbackThankYou}>• Thanks!</span>
                     )}
                     {feedbackStatus[msg.id] === "error" && (
-                      <span className={styles.feedbackThankYou} style={{ color: "#f59e0b" }}>• Saved locally</span>
+                      <span className={styles.feedbackThankYou} style={{ color: "var(--warning)" }}>• Saved locally</span>
                     )}
                   </div>
                 )}

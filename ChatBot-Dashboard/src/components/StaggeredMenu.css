@@ -30,6 +30,13 @@
   z-index: 20;
 }
 
+.sm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  pointer-events: auto;
+}
+
 .staggered-menu-header > * {
   pointer-events: auto;
 }
@@ -78,7 +85,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #e9e9ef;
+  color: var(--text);
   font-weight: 500;
   line-height: 1;
   overflow: visible;
@@ -86,7 +93,7 @@
 }
 
 .sm-toggle:focus-visible {
-  outline: 2px solid #ffffffaa;
+  outline: 2px solid color-mix(in srgb, var(--heading) 67%, transparent);
   outline-offset: 4px;
   border-radius: 4px;
 }
@@ -270,7 +277,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--heading);
   text-transform: uppercase;
 }
 

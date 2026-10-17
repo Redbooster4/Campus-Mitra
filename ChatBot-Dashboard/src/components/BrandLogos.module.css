@@ -21,7 +21,7 @@
 .mascotBtn:hover,
 .mascotBtn:focus-visible {
   transform: scale(1.12);
-  filter: drop-shadow(0 0 14px rgba(249, 115, 22, 0.65));
+  filter: drop-shadow(0 0 14px var(--primary-glow));
 }
 
 .mascotBtn:active {
@@ -61,7 +61,7 @@
 .sbmpLink:hover,
 .sbmpLink:focus-visible {
   transform: scale(1.12);
-  filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.4));
+  filter: drop-shadow(0 0 14px var(--shadow-color));
 }
 
 .sbmpLink:active {

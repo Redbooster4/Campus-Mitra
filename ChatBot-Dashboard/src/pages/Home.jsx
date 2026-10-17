@@ -7,7 +7,6 @@ import MaskedHeading from '../components/MaskedHeading';
 import video from '../assets/SBMP INTRO.mp4';
 import poster from '../assets/poster.png';
 
-//Commits Pushed to Github Added from Github
 export default function Home(){
   const navigate=useNavigate();
 

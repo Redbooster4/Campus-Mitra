@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import ThemeToggle from "@/components/ThemeToggle";
 import "./styles/Onboarding.css";
 
 export default function OnboardingPreview() {
@@ -13,6 +14,9 @@ export default function OnboardingPreview() {
 
   return (
     <main className="onboarding-wrapper">
+      <div className="onboarding-theme-toggle">
+        <ThemeToggle />
+      </div>
       <div className="onboarding-container">
         <h1 className="onboarding-header">Your Answers</h1>
         <textarea

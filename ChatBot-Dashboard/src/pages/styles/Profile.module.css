@@ -65,7 +65,7 @@
   width:250px;
   height:250px;
   background:radial-gradient(circle, var(--primary) 0%, transparent 70%);
-  opacity:0.15;
+  opacity:0.12;
   filter:blur(40px);
   pointer-events:none;
 }
@@ -80,7 +80,7 @@
   width:72px;
   height:72px;
   border-radius:50%;
-  background:linear-gradient(135deg, rgba(230, 92, 0, 0.2), rgba(230, 92, 0, 0.05));
+  background:linear-gradient(135deg, var(--primary-soft), color-mix(in srgb, var(--primary-soft) 50%, transparent));
   border:2px solid var(--primary);
   display:flex;
   align-items:center;
@@ -107,7 +107,7 @@
   align-items:center;
   gap:10px;
   background:var(--primary);
-  color:var(--white);
+  color:var(--primary-foreground);
   border:none;
   padding:13px 24px;
   border-radius:var(--radius);
@@ -157,7 +157,7 @@
   width:42px;
   height:42px;
   border-radius:12px;
-  background:rgba(230, 92, 0, 0.1);
+  background:var(--primary-soft);
   color:var(--primary);
   display:flex;
   align-items:center;
@@ -283,7 +283,7 @@
 
 .toneActive {
   border-color:var(--primary);
-  background:rgba(230, 92, 0, 0.08);
+  background:var(--primary-soft);
 }
 
 .toneOption input {
@@ -427,14 +427,14 @@
 }
 
 .saveSuccess {
-  color:#10b981;
+  color:var(--success);
   font-size:0.9rem;
   font-weight:500;
 }
 
 .saveButton {
   background:var(--primary);
-  color:var(--white);
+  color:var(--primary-foreground);
   border:none;
   padding:13px 32px;
   border-radius:var(--radius);

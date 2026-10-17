@@ -15,6 +15,7 @@ import {
   QuestionnaireSubmit,
   QuestionnaireTitle,
 } from "@/components/ui/questionnaire"
+import ThemeToggle from "@/components/ThemeToggle"
 import "./styles/Onboarding.css"
 
 const items = [
@@ -111,6 +112,9 @@ export default function Onboarding(){
 
   return (
   <main className="onboarding-wrapper">
+    <div className="onboarding-theme-toggle">
+      <ThemeToggle />
+    </div>
     <div className="onboarding-container">
       <header className="onboarding-header">
         <p className="question-label">

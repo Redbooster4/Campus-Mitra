@@ -22,7 +22,7 @@
   width:260px;
   min-width:260px;
   height:100vh;
-  background:var(--sidebar, #121216);
+  background:var(--sidebar);
   border-right:1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -82,7 +82,7 @@
 .brandName {
   font-size:0.95rem;
   font-weight:700;
-  color:var(--white);
+  color:var(--heading);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -114,8 +114,8 @@
 }
 
 .collapseBtn:hover {
-  background:var(--sidebar-accent, rgba(255, 255, 255, 0.08));
-  color:var(--white);
+  background:var(--sidebar-accent);
+  color:var(--heading);
 }
 
 .sidebarBody {
@@ -172,8 +172,8 @@
 }
 
 .navButton:hover {
-  background:var(--sidebar-accent, rgba(255, 255, 255, 0.08));
-  color:var(--white);
+  background:var(--sidebar-accent);
+  color:var(--heading);
 }
 
 .navIcon {
@@ -226,9 +226,9 @@
   width:32px;
   height:32px;
   border-radius:50%;
-  background:rgba(249, 115, 22, 0.18);
+  background:var(--primary-soft);
   color:var(--primary);
-  border:1px solid rgba(249, 115, 22, 0.35);
+  border:1px solid var(--primary-soft-border);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -250,7 +250,7 @@
 .userName {
   font-size:0.8rem;
   font-weight:600;
-  color:var(--white);
+  color:var(--heading);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -293,7 +293,7 @@
 .counselorHeader h2 {
   margin: 0;
   font-size: 1.05rem;
-  color: var(--white);
+  color: var(--heading);
 }
 
 .subtitle {
@@ -314,9 +314,9 @@
 
 .actionBtn:hover {
   background: var(--card-hover);
-  color: var(--white);
+  color: var(--heading);
   transform:translateY(-2px);
-  box-shadow:0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow:0 4px 10px var(--shadow-color);
 }
 
 .messagesContainer {
@@ -364,7 +364,7 @@
 .userRow .messageBubble {
   background: var(--primary);
   border-color: var(--primary);
-  color: var(--white);
+  color: var(--primary-foreground);
 }
 
 .timeStamp {
@@ -468,14 +468,14 @@
   background: transparent;
   border: none;
   outline: none;
-  color: var(--white);
+  color: var(--text);
   font-size: 0.925rem;
   font-family: inherit;
 }
 
 .sendBtn {
   background: var(--primary);
-  color: var(--white);
+  color: var(--primary-foreground);
   border: none;
   width: 36px;
   height: 36px;
@@ -490,7 +490,7 @@
 .sendBtn:hover:not(:disabled) {
   background:var(--primary-hover);
   transform:translateY(-2px);
-  box-shadow:0 4px 10px rgba(249, 115, 22, 0.3);
+  box-shadow:0 4px 10px var(--primary-glow);
 }
 
 .sendBtn:disabled {

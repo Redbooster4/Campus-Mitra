@@ -1,9 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PixelTrail from '../components/PixelTrail.jsx';
 import api from '../api/api.js';
 import AnimatedLogo from "../components/AnimatedLogo.jsx";
+import ThemeToggle from "../components/ThemeToggle.jsx";
+import { useTheme } from "@/context/ThemeProvider";
 import styles from "./styles/Login.module.css";
+
+function useCssVar(prop) {
+    const { theme }=useTheme();
+    const [value, setValue]=useState(() =>
+        getComputedStyle(document.documentElement).getPropertyValue(prop).trim()
+    );
+    useEffect(() => {
+        setValue(
+            getComputedStyle(document.documentElement).getPropertyValue(prop).trim()
+        );
+    }, [theme, prop]);
+    return value;
+}
 
 function Login() {
     const [data, setData] = useState({
@@ -15,6 +30,7 @@ function Login() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const trailColor=useCssVar("--primary");
 
     function handleChange(e){
         setData({ ...data, [e.target.name]: e.target.value });
@@ -124,7 +140,7 @@ function Login() {
                     trailSize={0.1}
                     maxAge={250}
                     interpolate={5}
-                    color="#fb923c"
+                    color={trailColor || "#ea580c"}
                     gooeyFilter={{ id: "custom-goo-filter", strength: 2 }}
                     gooeyEnabled
                     gooStrength={2}/>
@@ -138,6 +154,9 @@ function Login() {
                 </div>
             </div>
             <div className={styles.rightSection}>
+                <div className={styles.loginThemeToggle}>
+                    <ThemeToggle />
+                </div>
                 <div className={styles.box}>
                     <h1 className={styles.title}>
                         {

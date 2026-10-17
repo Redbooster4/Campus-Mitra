@@ -1,0 +1,116 @@
+{
+  "id": "c1f7a28e-8a0a-471f-a5b6-72412bcf2001",
+  "version": "2.0",
+  "name": "Campus_Mitra_Tests",
+  "url": "http://localhost:5173",
+  "tests": [
+    {
+      "id": "e4f8b910-1234-4567-89ab-cdef01234567",
+      "name": "Register_User",
+      "commands": [
+        {
+          "id": "cmd-r1",
+          "command": "open",
+          "target": "/login",
+          "value": ""
+        },
+        {
+          "id": "cmd-r2",
+          "command": "click",
+          "target": "xpath=//span[contains(text(),'Sign up')]",
+          "value": ""
+        },
+        {
+          "id": "cmd-r3",
+          "command": "type",
+          "target": "name=username",
+          "value": "Redbooster"
+        },
+        {
+          "id": "cmd-r4",
+          "command": "select",
+          "target": "name=role",
+          "value": "label=Student"
+        },
+        {
+          "id": "cmd-r5",
+          "command": "type",
+          "target": "name=password",
+          "value": "pass@123"
+        },
+        {
+          "id": "cmd-r6",
+          "command": "click",
+          "target": "xpath=//button[contains(.,'Register')]",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "id": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
+      "name": "Login_And_Prompt_Mitra",
+      "commands": [
+        {
+          "id": "cmd-l1",
+          "command": "open",
+          "target": "/login",
+          "value": ""
+        },
+        {
+          "id": "cmd-l2",
+          "command": "type",
+          "target": "name=username",
+          "value": "Redbooster"
+        },
+        {
+          "id": "cmd-l3",
+          "command": "type",
+          "target": "name=password",
+          "value": "pass@123"
+        },
+        {
+          "id": "cmd-l4",
+          "command": "click",
+          "target": "xpath=//button[contains(.,'Login')]",
+          "value": ""
+        },
+        {
+          "id": "cmd-l5",
+          "command": "open",
+          "target": "/chat",
+          "value": ""
+        },
+        {
+          "id": "cmd-l6",
+          "command": "type",
+          "target": "css=form input",
+          "value": "What are the cutoff percentiles and fee concession options for Computer Engineering?"
+        },
+        {
+          "id": "cmd-l7",
+          "command": "click",
+          "target": "css=form button[type='submit']",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "suites": [
+    {
+      "id": "suite-01",
+      "name": "Campus_Mitra_Suite",
+      "persistSession": false,
+      "timeout": 300,
+      "parallel": false,
+      "tests": [
+        "e4f8b910-1234-4567-89ab-cdef01234567",
+        "a1b2c3d4-5678-90ab-cdef-1234567890ab"
+      ]
+    }
+  ],
+  "urls": [
+    "http://localhost:5173/"
+  ],
+  "plugins": [],
+  "delay": 1000
+}

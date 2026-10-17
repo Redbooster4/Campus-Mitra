@@ -162,8 +162,8 @@ export default function Profile() {
             checked={parentMode}
             onChange={(checked) => setParentMode(typeof checked === 'boolean' ? checked : Boolean(checked?.target?.checked))}
             label="Parent mode"
-            trackColor="#27272a"
-            trackOnColor="#f5f5f5"
+            trackColor="var(--border)"
+            trackOnColor="var(--primary)"
             width={76}
             height={38}
             radius={19}
@@ -172,8 +172,8 @@ export default function Profile() {
             hoverScale={1.035}
             colorDuration={320}
             disabled={false}
-            thumbColor="#4e4e51"
-            thumbOnColor="#27272a"
+            thumbColor="var(--muted)"
+            thumbOnColor="var(--primary-foreground)"
           />
         </div>
 

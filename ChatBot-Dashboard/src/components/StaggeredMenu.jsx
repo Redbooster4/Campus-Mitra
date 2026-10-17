@@ -2,6 +2,7 @@ import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import './StaggeredMenu.css';
 import BrandLogos from './BrandLogos';
+import ThemeToggle from './ThemeToggle';
 
 export const StaggeredMenu = ({
   position = 'right',
@@ -639,50 +640,54 @@ export const StaggeredMenu = ({
           {renderLogo()}
         </div>
 
-        <button
-          ref={toggleBtnRef}
-          className="sm-toggle"
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          aria-expanded={open}
-          aria-controls="staggered-menu-panel"
-          onClick={toggleMenu}
-          type="button"
-        >
-          <span
-            className="sm-toggle-textWrap"
-            aria-hidden="true"
+        <div className="sm-header-actions">
+          <ThemeToggle />
+
+          <button
+            ref={toggleBtnRef}
+            className="sm-toggle"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="staggered-menu-panel"
+            onClick={toggleMenu}
+            type="button"
           >
             <span
-              ref={textInnerRef}
-              className="sm-toggle-textInner"
+              className="sm-toggle-textWrap"
+              aria-hidden="true"
             >
-              {textLines.map((line, index) => (
-                <span
-                  className="sm-toggle-line"
-                  key={index}
-                >
-                  {line}
-                </span>
-              ))}
+              <span
+                ref={textInnerRef}
+                className="sm-toggle-textInner"
+              >
+                {textLines.map((line, index) => (
+                  <span
+                    className="sm-toggle-line"
+                    key={index}
+                  >
+                    {line}
+                  </span>
+                ))}
+              </span>
             </span>
-          </span>
-
-          <span
-            ref={iconRef}
-            className="sm-icon"
-            aria-hidden="true"
-          >
-            <span
-              ref={plusHRef}
-              className="sm-icon-line"
-            />
 
             <span
-              ref={plusVRef}
-              className="sm-icon-line sm-icon-line-v"
-            />
-          </span>
-        </button>
+              ref={iconRef}
+              className="sm-icon"
+              aria-hidden="true"
+            >
+              <span
+                ref={plusHRef}
+                className="sm-icon-line"
+              />
+
+              <span
+                ref={plusVRef}
+                className="sm-icon-line sm-icon-line-v"
+              />
+            </span>
+          </button>
+        </div>
       </header>
 
       <aside
