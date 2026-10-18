@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { chatWithMitra, submitFeedback, requestCallback } = require("../controllers/chat.controller");
+const { chatWithMitra, getSessionFollowupStatus, submitFeedback, requestCallback } = require("../controllers/chat.controller");
 const jwt = require("jsonwebtoken");
 
 const optionalAuth = (req, res, next) => {
@@ -17,6 +17,7 @@ const optionalAuth = (req, res, next) => {
     next();
 };
 router.post("/", optionalAuth, chatWithMitra);
+router.post("/followup-status", optionalAuth, getSessionFollowupStatus);
 router.post("/feedback", optionalAuth, submitFeedback);
 router.post("/request-callback", optionalAuth, requestCallback);
 

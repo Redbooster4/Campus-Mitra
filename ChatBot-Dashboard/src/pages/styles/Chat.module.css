@@ -465,6 +465,7 @@
 
 .chatInput {
   flex: 1;
+  min-width: 0;
   background: transparent;
   border: none;
   outline: none;
@@ -517,11 +518,76 @@
   color: var(--primary-hover);
 }
 
+.profilePromptToast,
+.sessionFeedbackToast {
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:60;
+  width:min(640px, calc(100vw - 2rem));
+  box-sizing:border-box;
+  margin-bottom:0;
+  box-shadow:0 12px 32px var(--shadow-color);
+}
+
+.profilePromptToast {
+  bottom:1.25rem;
+  animation:fadeInFeedback 0.25s ease;
+}
+
+.profilePromptLink {
+  display:inline-flex;
+  align-items:center;
+  gap:0.35rem;
+  white-space:nowrap;
+}
+
+.sessionFeedbackToast {
+  bottom:1rem;
+  display:block;
+  max-height:calc(100vh - 2rem);
+  overflow-y:auto;
+  padding:1rem 1.1rem;
+  animation:fadeInFeedback 0.25s ease;
+}
+
+.sessionFeedbackForm {
+  display:flex;
+  flex-direction:column;
+  gap:0.8rem;
+}
+
+.sessionFeedbackToast :global(input) {
+  width:100%;
+  box-sizing:border-box;
+}
+
+.sessionFeedbackSuccess {
+  justify-content:space-between;
+}
+
+.sessionFeedbackToast .sessionSubmitButton {
+  width:auto;
+  flex-shrink:0;
+}
+
 @media (max-width: 640px) {
   .mainLayout {
     padding: 1rem 0.75rem;
   }
   .messageRow {
     max-width: 90%;
+  }
+  .profilePromptToast {
+    align-items:flex-start;
+    flex-wrap:wrap;
+  }
+  .sessionFeedbackToast .headerActions,
+  .sessionFeedbackSuccess {
+    align-items:stretch;
+    flex-direction:column;
+  }
+  .sessionFeedbackToast .sessionSubmitButton {
+    width:100%;
   }
 }

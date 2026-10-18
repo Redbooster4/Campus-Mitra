@@ -1,19 +1,27 @@
 const pool = require("../config/db");
 const jwt = require("jsonwebtoken");
 
-const registerUser=async(req, res) => {
-    try{
-        const{ 
-            full_name, 
-            phone_number, 
-            password, 
-            role, 
-            student_id, counselor_id, 
-            email, 
-            target_branch, 
-            entrance_score 
-        }=req.body;
-        if(!full_name || !phone_number || !password || !role){
+const registerUser = async (req, res) => {
+    try {
+        const {
+            username,
+            full_name,
+            phone_number,
+            phone,
+            password,
+            role,
+            student_id,
+            counselor_id,
+            email,
+            target_branch,
+            entrance_score
+        } = req.body;
+
+        const loginUsername = (username || full_name || phone_number || phone || "").trim();
+        const studentFullName = (full_name || username || "").trim();
+        const studentPhone = (phone || phone_number || "").trim();
+
+        if (!loginUsername || !password || !role) {
             return res.status(400).json({
                 success: false,
                 message: "Fill all the required fields."
@@ -27,9 +35,9 @@ const registerUser=async(req, res) => {
                      VALUES ($1, $2, $3, $4, $5)
                      RETURNING student_id`,
                     [
-                        full_name.trim(),
-                        phone_number.trim(),
-                        email?email.trim():null,
+                        studentFullName || loginUsername,
+                        studentPhone || "",
+                        email ? email.trim() : null,
                         target_branch || null,
                         entrance_score || null
                     ]
@@ -43,22 +51,20 @@ const registerUser=async(req, res) => {
 
         const result = await pool.query(
             `INSERT INTO users_auth (
-                full_name,
-                phone_number,
+                username,
                 password_hash,
                 role,
                 student_id,
                 counselor_id
             )
             VALUES (
-                $1, $2,
-                crypt($3, gen_salt('bf')),
-                $4, $5, $6
+                $1,
+                crypt($2, gen_salt('bf')),
+                $3, $4, $5
             )
-            RETURNING user_id, full_name, phone_number, role, student_id, counselor_id;`,
+            RETURNING user_id, username, role, student_id, counselor_id, created_at;`,
             [
-                full_name.trim(),
-                phone_number.trim(),
+                loginUsername,
                 password,
                 role,
                 sid,
@@ -70,7 +76,8 @@ const registerUser=async(req, res) => {
             {
                 user_id: user.user_id,
                 role: user.role,
-                full_name: user.full_name,
+                username: user.username,
+                student_id: user.student_id
             },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
@@ -81,8 +88,9 @@ const registerUser=async(req, res) => {
             message: "Registration Successful",
             token,
             user: {
-        // If a Student registers without an existing student_id, create the student record
                 ...user,
+                full_name: studentFullName || user.username,
+                phone: studentPhone,
                 target_branch: target_branch || null,
                 entrance_score: entrance_score || null,
                 email: email || null
@@ -97,25 +105,26 @@ const registerUser=async(req, res) => {
 
 const loginUser=async(req, res) => {
     try{
-        const { full_name, username, password } = req.body;
-        const loginIdentifier=full_name || username;
+        const { username, full_name, phone_number, phone, password } = req.body;
+        const loginIdentifier=(username || full_name || phone_number || phone || "").trim();
 
         if (!loginIdentifier || !password) {
             return res.status(400).json({
                 success: false,
-                message: "full_name and password are required."
+                message: "Username and password are required."
             });
         }
 
         const result = await pool.query(
             `SELECT
                 u.user_id,
-                u.full_name,
-                u.phone_number,
+                u.username,
                 u.role,
                 u.student_id,
                 u.counselor_id,
-                s.email,
+                COALESCE(s.full_name, c.name, u.username) AS full_name,
+                COALESCE(s.phone, c.phone) AS phone,
+                COALESCE(s.email, c.email) AS email,
                 s.target_branch,
                 s.entrance_score,
                 s.category,
@@ -123,9 +132,10 @@ const loginUser=async(req, res) => {
                 s.followup_status
             FROM users_auth u
             LEFT JOIN students s ON u.student_id = s.student_id
-            WHERE (u.full_name = $1 OR u.phone_number = $1)
+            LEFT JOIN counselors c ON u.counselor_id = c.counselor_id
+            WHERE (u.username = $1 OR s.phone = $1 OR s.full_name = $1)
               AND u.password_hash = crypt($2, u.password_hash)`,
-            [loginIdentifier.trim(), password]
+            [loginIdentifier, password]
         );
         if(result.rows.length === 0){
             return res.status(401).json({
@@ -139,7 +149,7 @@ const loginUser=async(req, res) => {
             { 
                 user_id: user.user_id, 
                 role: user.role,
-                full_name: user.full_name,
+                username: user.username,
                 student_id: user.student_id
             },
             process.env.JWT_SECRET,
@@ -165,22 +175,25 @@ const getUser=async(req, res) => {
         const result=await pool.query(
             `SELECT 
                 u.user_id,
-                u.full_name,
-                u.phone_number,
+                u.username,
                 u.role,
                 u.student_id,
                 u.counselor_id,
                 u.created_at,
                 u.updated_at,
-                s.email,
+                COALESCE(s.full_name, c.name, u.username) AS full_name,
+                COALESCE(s.phone, c.phone) AS phone,
+                COALESCE(s.email, c.email) AS email,
+                s.dob,
+                s.category,
                 s.target_branch,
                 s.entrance_score,
-                s.category,
                 s.callback_requested,
                 s.followup_status,
                 s.notes
              FROM users_auth u
              LEFT JOIN students s ON u.student_id = s.student_id
+             LEFT JOIN counselors c ON u.counselor_id = c.counselor_id
              WHERE u.user_id = $1`,
             [userId]
         );
@@ -208,9 +221,20 @@ const getUser=async(req, res) => {
 const updateProfile=async(req, res) => {
     try {
         const userId=req.user?.user_id;
-        const{ full_name, phone_number, email, target_branch, entrance_score, category, callback_requested } = req.body;
+        const {
+            full_name,
+            phone,
+            phone_number,
+            email,
+            target_branch,
+            entrance_score,
+            category,
+            callback_requested
+        } = req.body;
 
-        const userRes=await pool.query("SELECT student_id, full_name, phone_number FROM users_auth WHERE user_id = $1", [userId]);
+        const contactPhone = phone || phone_number;
+
+        const userRes = await pool.query("SELECT student_id, username FROM users_auth WHERE user_id = $1", [userId]);
         if(userRes.rows.length === 0){
             return res.status(404).json({ success: false, message: "User not found" });
         }
@@ -223,8 +247,8 @@ const updateProfile=async(req, res) => {
                  VALUES ($1, $2, $3, $4, $5, $6, $7)
                  RETURNING student_id`,
                 [
-                    full_name || userRes.rows[0].full_name || "Student",
-                    phone_number || userRes.rows[0].phone_number || "",
+                    full_name || userRes.rows[0].username || "Student",
+                    contactPhone || "",
                     email || null,
                     target_branch || null,
                     entrance_score || null,
@@ -247,25 +271,25 @@ const updateProfile=async(req, res) => {
                      callback_requested = COALESCE($7, callback_requested),
                      updated_at = NOW()
                  WHERE student_id = $8`,
-                [full_name, phone_number, email, target_branch, entrance_score, category, callback_requested, sid]
+                [
+                    full_name || null,
+                    contactPhone || null,
+                    email || null,
+                    target_branch || null,
+                    entrance_score || null,
+                    category || null,
+                    callback_requested !== undefined ? Boolean(callback_requested) : null,
+                    sid
+                ]
             );
         }
 
-        if(full_name || phone_number){
-            await pool.query(
-                `UPDATE users_auth
-                 SET full_name = COALESCE($1, full_name),
-                     phone_number = COALESCE($2, phone_number),
-                     updated_at = NOW()
-                 WHERE user_id = $3`,
-                [full_name, phone_number, userId]
-            );
-        }
-
-        const updated=await pool.query(
+        const updated = await pool.query(
             `SELECT 
-                u.user_id, u.full_name, u.phone_number, u.role, u.student_id, u.counselor_id,
-                s.email, s.target_branch, s.entrance_score, s.category, s.callback_requested, s.followup_status
+                u.user_id, u.username, u.role, u.student_id, u.counselor_id,
+                COALESCE(s.full_name, u.username) AS full_name,
+                s.phone, s.email, s.target_branch, s.entrance_score, s.category,
+                s.callback_requested, s.followup_status
              FROM users_auth u
              LEFT JOIN students s ON u.student_id = s.student_id
              WHERE u.user_id = $1`,
@@ -277,7 +301,8 @@ const updateProfile=async(req, res) => {
             message: "Profile updated successfully",
             user: updated.rows[0]
         });
-    } catch(err) {
+    } 
+    catch(err){
         console.error("Update Profile Error:", err);
         return res.status(500).json({ success: false, message: "Internal server error" });
     }

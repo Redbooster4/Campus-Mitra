@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../api/api";
 import StaggeredMenu from "../components/StaggeredMenu";
 import {
   ArrowLeft,
@@ -87,10 +88,50 @@ export default function Profile() {
     setSavedStatus(false);
   };
 
-  const handleSave=() => {
+  useEffect(() => {
+    const fetchRemoteProfile = async () => {
+      try {
+        const resp = await api.get("/auth/me");
+        if (resp.data?.user) {
+          const u = resp.data.user;
+          setUser((prev) => ({ ...prev, ...u }));
+          localStorage.setItem("user", JSON.stringify({ ...(user || {}), ...u }));
+          setAcademicData((prev) => ({
+            ...prev,
+            targetBranch: u.target_branch || prev.targetBranch || "Computer Engineering",
+            entrancePercentile: u.entrance_score || prev.entrancePercentile || "",
+            category: u.category || prev.category || "General / Open",
+          }));
+        }
+      } catch (err) {
+        console.warn("Could not fetch remote profile:", err);
+      }
+    };
+    if (localStorage.getItem("token")) {
+      fetchRemoteProfile();
+    }
+  }, []);
+
+  const handleSave=async () => {
     localStorage.setItem("studentAcademicProfile", JSON.stringify(academicData));
     localStorage.setItem("counselingPreferences", JSON.stringify(counselingPrefs));
     localStorage.setItem("preferredLanguage", counselingPrefs.language);
+    
+    try {
+      const resp = await api.put("/auth/profile", {
+        target_branch: academicData.targetBranch,
+        entrance_score: academicData.entrancePercentile,
+        category: academicData.category,
+      });
+      if (resp.data?.user) {
+        const mergedUser = { ...user, ...resp.data.user, preferredLanguage: counselingPrefs.language };
+        localStorage.setItem("user", JSON.stringify(mergedUser));
+        setUser(mergedUser);
+      }
+    } catch (err) {
+      console.warn("Backend profile sync error, saved locally:", err);
+    }
+
     if (user) {
       const updatedUser={ ...user, preferredLanguage:counselingPrefs.language };
       localStorage.setItem("user", JSON.stringify(updatedUser));

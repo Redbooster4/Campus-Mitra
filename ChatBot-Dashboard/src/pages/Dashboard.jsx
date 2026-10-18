@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../api/api";
 import { ArrowUpRight, Bot, Sparkles, ChevronRight, UserRound, PhoneCall } from "lucide-react";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import styles from "./styles/Dashboard.module.css";
@@ -24,7 +25,7 @@ export default function Dashboard() {
     }
   });
 
-  const [academicProfile]=useState(() => {
+  const [academicProfile, setAcademicProfile]=useState(() => {
     try {
       const stored=localStorage.getItem("studentAcademicProfile");
       const parsed=stored ? JSON.parse(stored):null;
@@ -49,6 +50,30 @@ export default function Dashboard() {
       return "English";
     }
   });
+
+  useEffect(() => {
+    const fetchRemoteProfile = async () => {
+      try {
+        const resp = await api.get("/auth/me");
+        if (resp.data?.user) {
+          const u = resp.data.user;
+          if (u.target_branch || u.entrance_score || u.category) {
+            setAcademicProfile((prev) => ({
+              ...prev,
+              targetBranch: u.target_branch || prev.targetBranch,
+              entrancePercentile: u.entrance_score || prev.entrancePercentile,
+              category: u.category || prev.category,
+            }));
+          }
+        }
+      } 
+      catch(err){
+      }
+    };
+    if (localStorage.getItem("token")) {
+      fetchRemoteProfile();
+    }
+  }, []);
 
   const handleLaunch=(text) => {
     const q=typeof text === "string" ? text:query.trim();

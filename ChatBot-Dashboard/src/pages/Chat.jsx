@@ -6,8 +6,12 @@ import {
   User,
   PanelLeftClose,
   PanelLeftOpen,
+  ArrowUpRight,
+  X,
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
+import profileStyles from "./styles/Profile.module.css";
+import modalStyles from "./styles/Modal.module.css";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
@@ -15,6 +19,7 @@ import MessageRenderer from "@/components/MessageRenderer";
 import GlideSelect from "@/components/GlideSelect";
 import PeekRating from "@/components/PeekRating";
 import ThemeToggle from "@/components/ThemeToggle";
+import VoiceInput from "@/components/VoiceInput";
 
 const languages=[
   { value:"English", label:"English", tag:"EN" },
@@ -78,6 +83,7 @@ const getFormattedTime = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
 const generateId = () => Date.now();
+const SESSION_IDLE_TIMEOUT = 10 * 60 * 1000;
 
 export default function Chat(){
   const [user]=useState(() => {
@@ -92,11 +98,14 @@ export default function Chat(){
     }
     return null;
   });
+  const userName = user?.username || user?.full_name || "Friend";
+  const shouldPromptForProfile = !user?.role || ["student", "parent"].includes(String(user.role).toLowerCase());
   const navigate = useNavigate();
   const location=useLocation();
   const initialHandledRef=useRef(false);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isVoiceBusy, setIsVoiceBusy] = useState(false);
   const [isCollapsed, setIsCollapsed]=useState(false);
   const [language, setLanguage]=useState(() => localStorage.getItem("preferredLanguage") || "English");
   const [feedbackRatings, setFeedbackRatings]=useState(() => {
@@ -111,7 +120,77 @@ export default function Chat(){
     return {};
   });
   const [feedbackStatus, setFeedbackStatus] = useState({});
+  const [profilePromptVisible, setProfilePromptVisible] = useState(shouldPromptForProfile);
+  const [profilePromptNonce, setProfilePromptNonce] = useState(0);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const [sessionEndedManually, setSessionEndedManually] = useState(false);
+  const [sessionNeedsFollowup, setSessionNeedsFollowup] = useState(false);
+  const [sessionRating, setSessionRating] = useState(0);
+  const [contactPhone, setContactPhone] = useState(user?.phone || user?.phone_number || "");
+  const [contactEmail, setContactEmail] = useState(user?.email || "");
+  const [sessionFeedbackBusy, setSessionFeedbackBusy] = useState(false);
+  const [sessionFeedbackSaved, setSessionFeedbackSaved] = useState(false);
+  const [sessionFeedbackError, setSessionFeedbackError] = useState("");
   const messagesEndRef = useRef(null);
+  const idleTimerRef = useRef(null);
+  const sessionStatusRef = useRef("active");
+  const markActivityRef = useRef(() => {});
+  const endSessionRef = useRef(() => {});
+  const latestInteractionRef = useRef({ chatId: null, userMessage: null, aiReply: null });
+  const sessionChatIdsRef = useRef([]);
+  const requiresContact = sessionNeedsFollowup || sessionEndedManually;
+
+  useEffect(() => {
+    if (!shouldPromptForProfile || !profilePromptVisible) return undefined;
+    const timer = window.setTimeout(() => setProfilePromptVisible(false), 8000);
+    return () => window.clearTimeout(timer);
+  }, [profilePromptNonce, profilePromptVisible, shouldPromptForProfile]);
+
+  useEffect(() => {
+    const expireSession = async () => {
+      if (sessionStatusRef.current !== "active") return;
+      sessionStatusRef.current = "checking-followup";
+
+      try {
+        const result = await api.post("/chat/followup-status", {
+          chat_ids: sessionChatIdsRef.current,
+        });
+        setSessionNeedsFollowup(Boolean(result.data?.needs_followup));
+      } catch (error) {
+        console.warn("Could not check chat follow-up status:", error);
+        setSessionNeedsFollowup(false);
+      }
+
+      sessionStatusRef.current = "expired";
+      setSessionExpired(true);
+    };
+    endSessionRef.current = expireSession;
+
+    const markActivity = () => {
+      if (sessionStatusRef.current !== "active") return;
+      window.clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = window.setTimeout(expireSession, SESSION_IDLE_TIMEOUT);
+    };
+    const handleActivity = () => {
+      if (!document.hidden) markActivity();
+    };
+    const activityEvents = ["pointerdown", "keydown", "input", "touchstart"];
+
+    markActivityRef.current = markActivity;
+    activityEvents.forEach((eventName) => {
+      document.addEventListener(eventName, handleActivity, { passive: true });
+    });
+    markActivity();
+
+    return () => {
+      window.clearTimeout(idleTimerRef.current);
+      activityEvents.forEach((eventName) => {
+        document.removeEventListener(eventName, handleActivity);
+      });
+      markActivityRef.current = () => {};
+      endSessionRef.current = () => {};
+    };
+  }, []);
 
   const handleFeedback = async (msg, score) => {
     const msgId = typeof msg === "object" ? msg.id : msg;
@@ -137,8 +216,6 @@ export default function Chat(){
       setFeedbackStatus((prev) => ({ ...prev, [msgId]: "error" }));
     }
   };
-
-  const userName = user?.username || "Friend";
 
   const [messages, setMessages]=useState(() => {
     const defaultLang=localStorage.getItem("preferredLanguage") || "English";
@@ -173,7 +250,9 @@ export default function Chat(){
 
   const handleSend = async (textToSend) => {
     const query = textToSend || inputValue.trim();
-    if (!query) return;
+    if (!query || sessionStatusRef.current !== "active") return;
+    markActivityRef.current();
+    latestInteractionRef.current = { chatId: null, userMessage: query, aiReply: null };
 
     const userMsgTime = getFormattedTime();
     const userMsg={
@@ -238,6 +317,14 @@ export default function Chat(){
         userMessage: query,
       };
 
+      latestInteractionRef.current = {
+        chatId,
+        userMessage: query,
+        aiReply: responseText,
+      };
+      if (chatId && !sessionChatIdsRef.current.includes(chatId)) {
+        sessionChatIdsRef.current.push(chatId);
+      }
       setMessages((prev) => [...prev, counselorMsg]);
     } catch (err) {
       console.error("Chat error:", err);
@@ -247,9 +334,18 @@ export default function Chat(){
         text: "Sorry, I couldn't reach the admission assistant server. Please check that backend services are running.",
         time: getFormattedTime(),
       };
+      latestInteractionRef.current = {
+        ...latestInteractionRef.current,
+        userMessage: query,
+        aiReply: counselorMsg.text,
+      };
+      if (latestInteractionRef.current.chatId && !sessionChatIdsRef.current.includes(latestInteractionRef.current.chatId)) {
+        sessionChatIdsRef.current.push(latestInteractionRef.current.chatId);
+      }
       setMessages((prev) => [...prev, counselorMsg]);
     } finally {
       setIsTyping(false);
+      markActivityRef.current();
     }
   };
 
@@ -267,10 +363,22 @@ export default function Chat(){
     }
   }, [location.state?.initialQuery, location.pathname, navigate]);
 
-  const handleReset=() => {
+  const handleStartNewSession = () => {
     const resetId = generateId();
     const resetTime = getFormattedTime();
 
+    sessionStatusRef.current = "active";
+    setSessionExpired(false);
+    setSessionEndedManually(false);
+    setSessionNeedsFollowup(false);
+    setSessionRating(0);
+    setContactPhone(user?.phone || user?.phone_number || "");
+    setContactEmail(user?.email || "");
+    setSessionFeedbackBusy(false);
+    setSessionFeedbackSaved(false);
+    setSessionFeedbackError("");
+    latestInteractionRef.current = { chatId: null, userMessage: null, aiReply: null };
+    sessionChatIdsRef.current = [];
     setMessages([
       {
         id:resetId,
@@ -280,10 +388,182 @@ export default function Chat(){
         time:resetTime,
       },
     ]);
+    if (shouldPromptForProfile) {
+      setProfilePromptVisible(true);
+      setProfilePromptNonce((nonce) => nonce + 1);
+    }
+    markActivityRef.current();
+  };
+
+  const handleEndSession = () => {
+    if (sessionStatusRef.current !== "active") return;
+    window.clearTimeout(idleTimerRef.current);
+    setSessionEndedManually(true);
+    setSessionExpired(true);
+    endSessionRef.current();
+  };
+
+  const handleFinalFeedbackSubmit = async (event) => {
+    event.preventDefault();
+    const hasContact = Boolean(contactPhone.trim() || contactEmail.trim());
+    if (sessionRating < 1 || (requiresContact && !hasContact) || sessionFeedbackBusy) return;
+
+    setSessionFeedbackBusy(true);
+    setSessionFeedbackError("");
+    try {
+      let studentId = user?.student_id || null;
+      if (requiresContact) {
+        const callbackResponse = await api.post("/chat/request-callback", {
+          student_id: studentId,
+          phone: contactPhone.trim() || null,
+          email: contactEmail.trim() || null,
+          full_name: user?.full_name || user?.username || null,
+          target_branch: user?.target_branch || null,
+          chat_id: latestInteractionRef.current.chatId,
+          notes: "Follow-up requested after an admission chat session.",
+        });
+        studentId = callbackResponse.data?.student_id || studentId;
+      }
+
+      await api.post("/chat/feedback", {
+        rating: sessionRating,
+        user_message: latestInteractionRef.current.userMessage,
+        ai_reply: latestInteractionRef.current.aiReply,
+        chat_id: latestInteractionRef.current.chatId,
+        student_id: studentId,
+        callback_requested: requiresContact,
+      });
+
+      setSessionFeedbackSaved(true);
+    } catch (error) {
+      console.error("Could not submit session feedback:", error);
+      setSessionFeedbackError(error.response?.data?.message || "We couldn't save this yet. Please try again.");
+    } finally {
+      setSessionFeedbackBusy(false);
+    }
   };
 
   return (
     <div className={styles.chatPage}>
+      {profilePromptVisible && shouldPromptForProfile && (
+        <div className={`${styles.counselorHeader} ${styles.profilePromptToast}`} role="status" aria-live="polite">
+          <div>
+            <h2>Personalize your chats</h2>
+            <p className={styles.subtitle}>Complete your profile for more helpful, tailored answers.</p>
+          </div>
+          <div className={styles.headerActions}>
+            <button
+              type="button"
+              className={`${styles.actionBtn} ${styles.profilePromptLink}`}
+              onClick={() => navigate("/profile")}
+            >
+              Complete profile <ArrowUpRight size={15} />
+            </button>
+            <button
+              type="button"
+              className={styles.collapseBtn}
+              onClick={() => setProfilePromptVisible(false)}
+              aria-label="Dismiss profile reminder"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {sessionExpired && (
+        <section className={`${styles.counselorHeader} ${styles.sessionFeedbackToast}`} role="dialog" aria-labelledby="session-feedback-title">
+          {sessionFeedbackSaved ? (
+            <div className={`${styles.headerActions} ${styles.sessionFeedbackSuccess}`}>
+              <div>
+                <h2>Thanks for your feedback.</h2>
+                <p className={styles.subtitle}>Your follow-up details have been saved for the admissions team.</p>
+              </div>
+              <button type="button" className={`${modalStyles.primaryButton} ${styles.sessionSubmitButton}`} onClick={handleStartNewSession}>
+                Start a new conversation
+              </button>
+            </div>
+          ) : (
+            <form className={styles.sessionFeedbackForm} onSubmit={handleFinalFeedbackSubmit}>
+              <div>
+                <h2 id="session-feedback-title">How was your chat?</h2>
+                <p className={styles.subtitle}>
+                  {sessionEndedManually
+                    ? "Your chat has ended. Leave a rating and add a phone number or email so our admissions team can follow up."
+                    : sessionNeedsFollowup
+                      ? "This conversation ended after 10 minutes of inactivity. Leave a rating and contact details so our admissions team can follow up."
+                      : "This conversation ended after 10 minutes of inactivity. How helpful was Mitra?"}
+                </p>
+              </div>
+
+              <div className={styles.feedbackContainer}>
+                <span className={styles.feedbackLabel}>Your rating</span>
+                <PeekRating
+                  value={sessionRating}
+                  onChange={setSessionRating}
+                  labels={["Poor", "Fair", "Good", "Helpful", "Exceptional"]}
+                  size={20}
+                  lift={4}
+                  activeColor="var(--primary)"
+                  idleColor="var(--muted)"
+                  tipColor="var(--card)"
+                  tipTextColor="var(--text)"
+                  ariaLabel="Rate your chat session"
+                />
+              </div>
+
+              {requiresContact && (
+                <div className={profileStyles.formGrid}>
+                  <div className={profileStyles.formGroup}>
+                    <label>
+                      Phone number
+                      <input
+                        type="tel"
+                        value={contactPhone}
+                        onChange={(event) => setContactPhone(event.target.value)}
+                        placeholder="e.g. +91 98765 43210"
+                        pattern="[0-9+() .-]{7,20}"
+                        title="Enter a valid phone number"
+                        required={!contactEmail.trim()}
+                        disabled={sessionFeedbackBusy}
+                      />
+                    </label>
+                  </div>
+                  <div className={profileStyles.formGroup}>
+                    <label>
+                      Email address
+                      <input
+                        type="email"
+                        value={contactEmail}
+                        onChange={(event) => setContactEmail(event.target.value)}
+                        placeholder="you@example.com"
+                        required={!contactPhone.trim()}
+                        disabled={sessionFeedbackBusy}
+                      />
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {sessionFeedbackError && <p className={styles.feedbackThankYou} style={{ color: "var(--warning)" }} role="alert">{sessionFeedbackError}</p>}
+
+              <div className={styles.headerActions}>
+                <span className={styles.feedbackLabel}>
+                  {requiresContact ? "Add at least one contact method." : "Your rating is saved with this chat."}
+                </span>
+                <button
+                  type="submit"
+                  className={`${modalStyles.primaryButton} ${styles.sessionSubmitButton}`}
+                  disabled={sessionFeedbackBusy || sessionRating < 1 || (requiresContact && !contactPhone.trim() && !contactEmail.trim())}
+                >
+                  {sessionFeedbackBusy ? "Saving…" : "Submit feedback"}
+                </button>
+              </div>
+            </form>
+          )}
+        </section>
+      )}
+
       <aside className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed:""}`}>
         <div className={styles.sidebarHeader}>
           {!isCollapsed && (
@@ -375,8 +655,11 @@ export default function Chat(){
                 glideDuration={240}
                 rememberPosition
               />
-              <button className={styles.actionBtn} onClick={handleReset}>
+              <button className={styles.actionBtn} onClick={handleStartNewSession} disabled={sessionExpired}>
                 Reset
+              </button>
+              <button className={styles.actionBtn} onClick={handleEndSession} disabled={sessionExpired}>
+                End chat
               </button>
               <ThemeToggle />
             </div>
@@ -467,12 +750,23 @@ export default function Chat(){
               placeholder="Ask Mitra about courses, housing, fees..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
+              disabled={sessionExpired || isVoiceBusy}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}/>
+
+            <VoiceInput
+              disabled={sessionExpired || isTyping}
+              language={language}
+              onBusyChange={setIsVoiceBusy}
+              onTranscript={(transcript) => {
+                setInputValue((current) => [current.trim(), transcript].filter(Boolean).join(" "));
+                markActivityRef.current();
+              }}
+            />
 
             <button
               type="submit"
               className={styles.sendBtn}
-              disabled={!inputValue.trim() || isTyping}
+              disabled={!inputValue.trim() || isTyping || sessionExpired || isVoiceBusy}
               aria-label="Send message">
               <Send size={16} />
             </button>

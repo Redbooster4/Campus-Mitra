@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const authRoutes = require("./src/routes/auth.routes.js");
 const chatRoutes = require("./src/routes/chat.routes.js");
+const voiceRoutes = require("./src/routes/voice.routes.js");
 const analyticsRoutes = require("./src/routes/analytics.routes.js");
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(cors({
 }));
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/voice", voiceRoutes);
 app.use("/api/admin/analytics", analyticsRoutes);
 
 
