@@ -11,7 +11,9 @@ const getAnalyticsSummary = async (req, res) => {
                 (SELECT COUNT(*)::int FROM chat_history WHERE created_at >= NOW() - INTERVAL '24 HOURS') AS questions_last_24h,
                 (SELECT COUNT(*)::int FROM chat_history WHERE created_at >= NOW() - INTERVAL '7 DAYS') AS questions_last_7d,
                 (SELECT COUNT(*)::int FROM students WHERE callback_requested = TRUE) AS pending_callbacks_count,
-                (SELECT COUNT(*)::int FROM chat_history WHERE needs_followup = TRUE) AS queries_needing_followup;
+                (SELECT COUNT(*)::int FROM chat_history WHERE needs_followup = TRUE) AS queries_needing_followup,
+                (SELECT COUNT(*)::int FROM applications) AS total_applications,
+                (SELECT COUNT(*)::int FROM documents WHERE status = 'Pending') AS pending_documents;
         `;
 
         const departmentBreakdownQuery = `
@@ -65,6 +67,10 @@ const getAnalyticsSummary = async (req, res) => {
                     totalStudents: stats.total_students,
                     registeredUserAccounts: stats.total_student_accounts,
                     activeStudentsAskingQuestions: stats.active_students_count
+                },
+                applications: {
+                    totalApplications: stats.total_applications,
+                    pendingDocuments: stats.pending_documents
                 },
                 followups: {
                     pendingCallbacks: stats.pending_callbacks_count,

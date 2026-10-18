@@ -1,0 +1,384 @@
+{
+  "id": "campusmitra-e2e-simple",
+  "version": "2.0",
+  "name": "CampusMitra – Register, Login & Chat",
+  "url": "http://localhost:5173",
+  "tests": [
+    {
+      "id": "test-auth",
+      "name": "Register & Login",
+      "commands": [
+        {
+          "id": "a01",
+          "comment": "",
+          "command": "open",
+          "target": "/login",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a02",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "2000"
+        },
+        {
+          "id": "a03",
+          "comment": "",
+          "command": "click",
+          "target": "xpath=//span[contains(text(),'Sign up')]",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a04",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "500"
+        },
+        {
+          "id": "a05",
+          "comment": "",
+          "command": "type",
+          "target": "css=input[name='username']",
+          "targets": [],
+          "value": "selenium_testuser"
+        },
+        {
+          "id": "a06",
+          "comment": "",
+          "command": "select",
+          "target": "css=select[name='role']",
+          "targets": [],
+          "value": "label=Student"
+        },
+        {
+          "id": "a07",
+          "comment": "",
+          "command": "type",
+          "target": "css=input[name='password']",
+          "targets": [],
+          "value": "Test@12345"
+        },
+        {
+          "id": "a08",
+          "comment": "",
+          "command": "click",
+          "target": "xpath=//button[contains(text(),'Register')]",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a09",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "3000"
+        },
+        {
+          "id": "a10",
+          "comment": "",
+          "command": "executeScript",
+          "target": "localStorage.removeItem('token'); localStorage.removeItem('user'); return 'ok';",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a11",
+          "comment": "",
+          "command": "open",
+          "target": "/login",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a12",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "2000"
+        },
+        {
+          "id": "a13",
+          "comment": "",
+          "command": "type",
+          "target": "css=input[name='username']",
+          "targets": [],
+          "value": "selenium_testuser"
+        },
+        {
+          "id": "a14",
+          "comment": "",
+          "command": "type",
+          "target": "css=input[name='password']",
+          "targets": [],
+          "value": "Test@12345"
+        },
+        {
+          "id": "a15",
+          "comment": "",
+          "command": "click",
+          "target": "xpath=//button[contains(text(),'Login')]",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a16",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "3000"
+        },
+        {
+          "id": "a17",
+          "comment": "",
+          "command": "click",
+          "target": "css=[data-slot='questionnaire-skip']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a18",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "400"
+        },
+        {
+          "id": "a19",
+          "comment": "",
+          "command": "click",
+          "target": "css=[data-slot='questionnaire-skip']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a20",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "400"
+        },
+        {
+          "id": "a21",
+          "comment": "",
+          "command": "click",
+          "target": "css=[data-slot='questionnaire-skip']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a22",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "400"
+        },
+        {
+          "id": "a23",
+          "comment": "",
+          "command": "click",
+          "target": "css=[data-slot='questionnaire-skip']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a24",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "400"
+        },
+        {
+          "id": "a25",
+          "comment": "",
+          "command": "click",
+          "target": "css=[data-slot='questionnaire-skip']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a26",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "400"
+        },
+        {
+          "id": "a27",
+          "comment": "",
+          "command": "click",
+          "target": "css=[data-slot='questionnaire-submit']",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a28",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "1500"
+        },
+        {
+          "command": "click",
+          "target": "css=.col-start-2",
+          "value": "",
+          "id": "290986ac-c2a0-4574-a46a-6f029ecfdbf2",
+          "fallbackTargets": [
+            [
+              "css=.col-start-2",
+              "css:finder"
+            ],
+            [
+              "xpath=(//button[@type='button' and text()='Skip'])[1]",
+              "xpath:attributes"
+            ],
+            [
+              "xpath=(//div[@id='root']/main/div/form/div[2]/button[2])[1]",
+              "xpath:idRelative"
+            ],
+            [
+              "xpath=//button[contains(.,'Skip')]",
+              "xpath:innerText"
+            ]
+          ]
+        },
+        {
+          "id": "a29",
+          "comment": "",
+          "command": "click",
+          "target": "xpath=//button[contains(text(),'Navigate to ChatBot')]",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a30",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "2000"
+        },
+        {
+          "id": "a31",
+          "comment": "",
+          "command": "echo",
+          "target": "Register & Login complete – landed on Chat page.",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "command": "click",
+          "target": "css=.\\_navButton_17ia3_149:nth-child(4)",
+          "value": "",
+          "id": "6b9b3c6d-ed52-4c9c-a4c0-53440939feb6",
+          "fallbackTargets": [
+            [
+              "css=.\\_navButton_17ia3_149:nth-child(4)",
+              "css:finder"
+            ],
+            [
+              "xpath=(//div[@id='root']/div/aside/div[2]/button[3])[1]",
+              "xpath:idRelative"
+            ],
+            [
+              "xpath=//button[contains(.,'Profile')]",
+              "xpath:innerText"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "test-chat-ping",
+      "name": "Chat Ping",
+      "commands": [
+        {
+          "id": "c01",
+          "comment": "",
+          "command": "open",
+          "target": "/chat",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "c02",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "2000"
+        },
+        {
+          "id": "c03",
+          "comment": "",
+          "command": "click",
+          "target": "css=.\\_suggestionChip_17ia3_437:nth-child(3)",
+          "targets": [],
+          "value": "",
+          "fallbackTargets": [
+            [
+              "css=.\\_suggestionChip_17ia3_437:nth-child(3)",
+              "css:finder"
+            ],
+            [
+              "xpath=(//div[@id='root']/div/div/main/div/div[2]/button[3])[1]",
+              "xpath:idRelative"
+            ],
+            [
+              "xpath=//button[contains(.,'Admission Deadlines & Fees')]",
+              "xpath:innerText"
+            ]
+          ]
+        },
+        {
+          "id": "c04",
+          "comment": "",
+          "command": "pause",
+          "target": "",
+          "targets": [],
+          "value": "15000"
+        },
+        {
+          "id": "c05",
+          "comment": "",
+          "command": "echo",
+          "target": "Chatbot responded to suggestion chip – done!",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "suites": [
+    {
+      "id": "suite-campusmitra",
+      "name": "CampusMitra Full E2E",
+      "persistSession": true,
+      "parallel": false,
+      "timeout": 120,
+      "tests": [
+        "test-auth",
+        "test-chat-ping"
+      ]
+    }
+  ],
+  "urls": [
+    "http://localhost:5173"
+  ],
+  "plugins": [],
+  "delay": 500
+}

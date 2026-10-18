@@ -25,37 +25,47 @@ export default function AdminDashboard(){
     return null;
   });
   
-    const [analytics, setAnalytics]=useState({
-    totalApplications:850,
-    totalQueries:3450,
-    pendingDocuments:42,
-    totalStudents:1250,
+  const [analytics, setAnalytics] = useState({
+    totalApplications: 0,
+    totalQueries: 0,
+    pendingDocuments: 0,
+    totalStudents: 0,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    const fetchAnalytics=async () => {
-      try{
-        const resp=await api.get("/admin/analytics/summary", { withCredentials: true });
-        const d=resp.data?.data;
-        if (d && d.students && d.students.totalStudents > 0) {
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const resp = await api.get("/admin/analytics/summary", { withCredentials: true });
+        const d = resp.data?.data;
+        if (d) {
           setAnalytics({
-            totalApplications:d.students.registeredUserAccounts,
-            totalQueries:d.questions.totalQuestionsAsked,
-            pendingDocuments:12,
-            totalStudents:d.students.totalStudents
+            totalApplications: d.applications?.totalApplications ?? d.students?.registeredUserAccounts ?? 0,
+            totalQueries: d.questions?.totalQuestionsAsked ?? 0,
+            pendingDocuments: d.applications?.pendingDocuments ?? 0,
+            totalStudents: d.students?.totalStudents ?? 0
           });
         }
-      }
-      catch(err){
+      } catch (err) {
         console.error("Failed to fetch analytics:", err);
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          setError("You need to log in with an Admin account to view dashboard statistics.");
+        } else {
+          setError("Failed to load statistics from the backend.");
+        }
+      } finally {
+        setLoading(false);
       }
     };
     fetchAnalytics();
   }, []);
-  const displayName=admin?.username||"Admin";
+  const displayName = admin?.username || "Admin";
 
-  return(
+  return (
     <DashboardLayout
       menuItems={ADMIN_MENU_ITEMS}
       displayName={displayName}
@@ -67,10 +77,29 @@ export default function AdminDashboard(){
           <BarChart size={25}/>
         </div>
         <h2 className={styles.aiTitle}>System Overview</h2>
-        <p className={styles.aiDescription}>
-          Currently tracking <strong>{analytics.totalApplications}</strong> active student applications out of <strong>{analytics.totalStudents}</strong> registered students. 
-          Campus Mitra has successfully resolved <strong>{analytics.totalQueries}</strong> queries so far, drastically reducing manual support workload.
-        </p>
+        {error ? (
+          <div style={{ margin: "14px 0", padding: "12px 16px", background: "rgba(239, 68, 68, 0.12)", border: "1px solid rgba(239, 68, 68, 0.4)", borderRadius: "8px", color: "#f87171" }}>
+            <p style={{ margin: "0 0 10px 0", fontSize: "0.95rem" }}>⚠️ {error}</p>
+            <button
+              className={styles.primaryButton}
+              style={{ padding: "6px 14px", fontSize: "0.85rem", background: "var(--primary)" }}
+              onClick={() => navigate("/login")}
+            >
+              Log in as Admin
+            </button>
+          </div>
+        ) : (
+          <p className={styles.aiDescription}>
+            {loading ? (
+              "Loading latest system analytics..."
+            ) : (
+              <>
+                Currently tracking <strong>{analytics.totalApplications}</strong> active student applications out of <strong>{analytics.totalStudents}</strong> registered students. 
+                Campus Mitra has successfully resolved <strong>{analytics.totalQueries}</strong> queries so far, drastically reducing manual support workload.
+              </>
+            )}
+          </p>
+        )}
 
         <button
           className={styles.primaryButton}

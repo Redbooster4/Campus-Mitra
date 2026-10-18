@@ -7,6 +7,7 @@ import Onboarding from "./pages/Onboarding";
 import Preview from "./pages/Preview";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
+import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Analytics from "./pages/admin/Analytics";
 
@@ -24,8 +25,16 @@ function App() {
           <Route path="/onboarding" element={<Onboarding />}/>
           <Route path="/preview" element={<Preview />}/>
           <Route path="/chat" element={<Chat />}/>
-          <Route path="/admin" element={<AdminDashboard />}/>
-          <Route path="/admin/analytics" element={<Analytics />}/>
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }/>
+          <Route path="/admin/analytics" element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }/>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
