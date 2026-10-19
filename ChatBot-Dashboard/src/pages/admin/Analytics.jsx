@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import {
   Users,
@@ -25,58 +26,73 @@ export default function Analytics() {
     return null;
   });
 
-    const [analytics, setAnalytics]=useState({
-    students:{ totalStudents:1250, registeredUserAccounts:850, activeStudentsAskingQuestions:420 },
-    questions:{ totalQuestionsAsked:3450, guestQuestions:800, questionsLast24Hours:145, questionsLast7Days:890 },
-    departmentBreakdown:[
-      { department_name:'Computer Engineering', question_count:1200 },
-      { department_name:'Information Technology', question_count:950 },
-      { department_name:'Mechanical Engineering', question_count:850 },
-      { department_name:'Electrical Engineering', question_count:650 },
-      { department_name:'Civil Engineering', question_count:400 },
-    ],
+  const [analytics, setAnalytics] = useState({
+    students: { totalStudents: 0, registeredUserAccounts: 0, activeStudentsAskingQuestions: 0 },
+    questions: { totalQuestionsAsked: 0, guestQuestions: 0, questionsLast24Hours: 0, questionsLast7Days: 0 },
+    departmentBreakdown: [],
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAnalytics=async () => {
+    const fetchAnalytics = async () => {
       try {
-        const resp=await api.get("/admin/analytics/summary", { withCredentials:true });
-        if (resp.data && resp.data.data && resp.data.data.students.totalStudents > 0) {
-          setAnalytics(resp.data.data);
+        setLoading(true);
+        setError(null);
+        const resp = await api.get("/admin/analytics/summary", { withCredentials: true });
+        if (resp.data?.success && resp.data?.data) {
+          setAnalytics({
+            students: resp.data.data.students || { totalStudents: 0, registeredUserAccounts: 0, activeStudentsAskingQuestions: 0 },
+            questions: resp.data.data.questions || { totalQuestionsAsked: 0, guestQuestions: 0, questionsLast24Hours: 0, questionsLast7Days: 0 },
+            departmentBreakdown: resp.data.data.departmentBreakdown || [],
+          });
         }
       } catch (err) {
         console.error("Failed to fetch analytics:", err);
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          setError("You need to log in with an Admin account to view analytics.");
+        } else {
+          setError("Failed to load analytics from the backend.");
+        }
+      } finally {
+        setLoading(false);
       }
     };
     fetchAnalytics();
   }, []);
 
-  const displayName=admin?.username || "Admin";
+  const displayName = admin?.username || "Admin";
 
-  const registered=analytics.students.registeredUserAccounts;
-  const unregistered=Math.max(0, analytics.students.totalStudents - registered);
+  const registered = analytics.students?.registeredUserAccounts || 0;
+  const totalStudents = analytics.students?.totalStudents || 0;
+  const unregistered = Math.max(0, totalStudents - registered);
   
-  const studentData=[
-    { name:'Registered', value:registered },
-    { name:'Unregistered', value:unregistered }
+  const studentData = [
+    { name: 'Registered', value: registered },
+    { name: 'Unregistered', value: unregistered }
   ];
 
-  const engagementData=[
-    { name:'Active (Asked Qs)', value:analytics.students.activeStudentsAskingQuestions },
-    { name:'Inactive', value:Math.max(0, registered - analytics.students.activeStudentsAskingQuestions) }
+  const activeQuestions = analytics.students?.activeStudentsAskingQuestions || 0;
+  const engagementData = [
+    { name: 'Active (Asked Qs)', value: activeQuestions },
+    { name: 'Inactive', value: Math.max(0, registered - activeQuestions) }
   ];
 
-  const olderQuestions=Math.max(0, analytics.questions.totalQuestionsAsked - analytics.questions.questionsLast7Days);
+  const totalQuestions = analytics.questions?.totalQuestionsAsked || 0;
+  const questionsLast7Days = analytics.questions?.questionsLast7Days || 0;
+  const questionsLast24Hours = analytics.questions?.questionsLast24Hours || 0;
+  const olderQuestions = Math.max(0, totalQuestions - questionsLast7Days);
   
-  const queryData=[
-    { name:'Last 24h', count:analytics.questions.questionsLast24Hours },
-    { name:'2 to 7 Days ago', count:Math.max(0, analytics.questions.questionsLast7Days - analytics.questions.questionsLast24Hours) },
-    { name:'Older', count:olderQuestions }
+  const queryData = [
+    { name: 'Last 24h', count: questionsLast24Hours },
+    { name: '2 to 7 Days ago', count: Math.max(0, questionsLast7Days - questionsLast24Hours) },
+    { name: 'Older', count: olderQuestions }
   ];
 
-  const deptData=analytics.departmentBreakdown.map(d => ({
-    name:d.department_name,
-    Queries:d.question_count
+  const deptData = (analytics.departmentBreakdown || []).map(d => ({
+    name: d.department_name,
+    Queries: d.question_count
   }));
 
   return (
@@ -86,6 +102,17 @@ export default function Analytics() {
       greeting="Analytics Overview,"
     >
       <>
+        {error && (
+          <div style={{ gridColumn: '1 / -1', padding: '14px 18px', background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.4)', borderRadius: '12px', color: '#f87171', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>⚠️ {error}</span>
+            <button
+              onClick={() => navigate('/login')}
+              style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', background: 'var(--primary)', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
+            >
+              Log in as Admin
+            </button>
+          </div>
+        )}
         
         <div className={styles.card}>
           <div className={styles.cardHeader}>
@@ -164,15 +191,21 @@ export default function Analytics() {
             <BarChart3 style={{ color:'var(--primary)' }} />
           </div>
           <div style={{ marginTop:'24px', height:'350px', width:'100%', background:'var(--card-hover)', padding:'20px', borderRadius:'12px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart layout="vertical" data={deptData} margin={{ top:5, right:30, left:40, bottom:5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                <XAxis type="number" stroke="var(--muted)" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis dataKey="name" type="category" stroke="var(--text)" fontSize={12} tickLine={false} axisLine={false} width={120} />
-                <Tooltip contentStyle={{ backgroundColor:'var(--card)', borderColor:'var(--border)', borderRadius:'8px', color:'var(--text)' }} cursor={{ fill:'var(--border)' }} />
-                <Bar dataKey="Queries" fill="var(--orange-light)" radius={[0, 4, 4, 0]} barSize={20} />
-              </BarChart>
-            </ResponsiveContainer>
+            {deptData.length === 0 ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--muted)' }}>
+                {loading ? "Loading department analytics..." : "No department query data recorded yet."}
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart layout="vertical" data={deptData} margin={{ top:5, right:30, left:40, bottom:5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                  <XAxis type="number" stroke="var(--muted)" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis dataKey="name" type="category" stroke="var(--text)" fontSize={12} tickLine={false} axisLine={false} width={120} />
+                  <Tooltip contentStyle={{ backgroundColor:'var(--card)', borderColor:'var(--border)', borderRadius:'8px', color:'var(--text)' }} cursor={{ fill:'var(--border)' }} />
+                  <Bar dataKey="Queries" fill="var(--orange-light)" radius={[0, 4, 4, 0]} barSize={20} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
