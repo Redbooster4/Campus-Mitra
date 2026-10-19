@@ -4,7 +4,12 @@ import { LoaderCircle, Mic, Square } from "lucide-react";
 import styles from "./VoiceInput.module.css";
 
 const MAX_RECORDING_MS = 90_000;
-const MIME_TYPES = ["audio/webm;codecs=opus", "audio/ogg;codecs=opus", "audio/mp4", "audio/webm"];
+const MIME_TYPES=[
+  "audio/webm;codecs=opus", 
+  "audio/ogg;codecs=opus", 
+  "audio/mp4", 
+  "audio/webm"
+];
 const LANGUAGE_CODES = {
   English: "en",
   Hindi: "hi",
@@ -94,7 +99,7 @@ export default function VoiceInput({ disabled = false, language = "English", onT
     requestRef.current = requestController;
     try {
       const response = await axios.post(
-        import.meta.env.VITE_VOICE_API_URL || "http://localhost:3003/api/voice/transcribe",
+        "http://localhost:3000/api/voice/transcribe",
         blob,
         {
           params: { language: LANGUAGE_CODES[language] || "en" },
@@ -109,11 +114,13 @@ export default function VoiceInput({ disabled = false, language = "English", onT
         onTranscript?.(transcript);
         setAnnouncement("Transcript added to your message.");
       }
-    } catch (requestError) {
+    } 
+    catch(requestError){
       if (requestError.name !== "CanceledError" && requestError.name !== "AbortError" && mountedRef.current) {
         setError(requestError.response?.data?.error || requestError.message || "Couldn't transcribe that recording. Try again.");
       }
-    } finally {
+    } 
+    finally{
       if (mountedRef.current) {
         setTranscribing(false);
         onBusyChange?.(false);

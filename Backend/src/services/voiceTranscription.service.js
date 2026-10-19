@@ -1,4 +1,4 @@
-const TRANSCRIPTION_URL = "https://api.openai.com/v1/audio/transcriptions";
+const TRANSCRIPTION_URL = "https://api.sarvam.ai/speech-to-text";
 const AUDIO_EXTENSIONS = {
     "audio/webm": "webm",
     "audio/ogg": "ogg",
@@ -7,14 +7,20 @@ const AUDIO_EXTENSIONS = {
     "audio/mpeg": "mp3",
 };
 
+const LANGUAGE_CODES = {
+    en: "en-IN",
+    hi: "hi-IN",
+    mr: "mr-IN",
+    gu: "gu-IN",
+};
+
 const transcribeVoiceAudio = async ({ audio, contentType, language }) => {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.SARVAM_API_KEY;
     if (!apiKey) {
         const error = new Error("Voice transcription is not configured.");
-        error.code = "OPENAI_NOT_CONFIGURED";
+        error.code="SARVAM_NOT_CONFIGURED";
         throw error;
     }
-
     const mimeType = String(contentType || "").split(";")[0].trim().toLowerCase();
     const extension = AUDIO_EXTENSIONS[mimeType];
     if (!extension) {
@@ -23,20 +29,17 @@ const transcribeVoiceAudio = async ({ audio, contentType, language }) => {
         throw error;
     }
 
-    const model = process.env.OPENAI_TRANSCRIPTION_MODEL || "whisper-1";
+    const model = process.env.SARVAM_MODEL || "saaras:v3";
+    const languageCode = LANGUAGE_CODES[language] || (language && language.includes("-") ? language : "en-IN");
+
     const form = new FormData();
     form.append("file", new Blob([audio], { type: mimeType }), `voice-input.${extension}`);
     form.append("model", model);
-    // whisper-1 accepts one ISO-639-1 language hint. Newer transcription
-    // models use languages[]; keep that path available for explicit overrides.
-    if (language) {
-        if (model === "whisper-1") form.append("language", language);
-        else form.append("languages[]", language);
-    }
+    form.append("language_code", languageCode);
 
     const response = await fetch(TRANSCRIPTION_URL, {
         method: "POST",
-        headers: { Authorization: `Bearer ${apiKey}` },
+        headers: { "api-subscription-key": apiKey },
         body: form,
         signal: AbortSignal.timeout(60_000),
     });
@@ -51,13 +54,15 @@ const transcribeVoiceAudio = async ({ audio, contentType, language }) => {
         error.providerType = providerError?.type;
         throw error;
     }
-    if (typeof result?.text !== "string" || !result.text.trim()) {
+
+    const transcript = result?.transcript || result?.text;
+    if (typeof transcript !== "string" || !transcript.trim()) {
         const error = new Error("The transcription provider returned no text.");
         error.code = "EMPTY_TRANSCRIPTION";
         throw error;
     }
 
-    return result.text.trim();
+    return transcript.trim();
 };
 
 module.exports = { AUDIO_EXTENSIONS, transcribeVoiceAudio };

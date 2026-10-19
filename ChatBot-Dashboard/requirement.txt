@@ -29,6 +29,3 @@ eslint-plugin-react-refresh
 globals
 vite
 chroma
-Flask
-Flask-Cors
-sarvamai
