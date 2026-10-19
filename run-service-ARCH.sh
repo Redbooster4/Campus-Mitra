@@ -84,6 +84,12 @@ launch_service \
     "$ROOT_DIR/RAG/classification-service" \
     "../.venv/bin/python api.py"
 
+# 5. Sarvam Voice Service
+launch_service \
+    "Sarvam Voice Service" \
+    "$ROOT_DIR/ChatBot-Dashboard" \
+    "../.venv/bin/python sarvam_voice_server.py"
+
 echo
-echo "Launch requests issued for all four services."
+echo "Launch requests issued for all services."
 echo "Check each Konsole window for startup errors."

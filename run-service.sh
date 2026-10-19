@@ -20,6 +20,7 @@ if [ "$TERMINAL_BIN" = "kitty" ]; then
     kitty --title "Dashboard" bash -c "cd '$ROOT_DIR/ChatBot-Dashboard' && npm run dev; exec bash" &
     kitty --title "ChromaDB" bash -c "cd '$ROOT_DIR/RAG' && source .venv/bin/activate && pip install -r ./requirements.txt && chroma run --path '$ROOT_DIR/RAG/chroma_data' --port 8000; exec bash" &
     kitty --title "Classification Service" bash -c "cd '$ROOT_DIR/RAG' && source .venv/bin/activate && pip install -r ./requirements.txt && cd classification-service && python api.py; exec bash" &
+    kitty --title "Sarvam Voice Service" bash -c "cd '$ROOT_DIR/ChatBot-Dashboard' && '$ROOT_DIR/.venv/bin/python' sarvam_voice_server.py; exec bash" &
 
 elif [ "$TERMINAL_BIN" = "gnome-terminal" ]; then
     # Launch separate GNOME Terminal windows
@@ -27,6 +28,7 @@ elif [ "$TERMINAL_BIN" = "gnome-terminal" ]; then
     gnome-terminal --title="Dashboard" -- bash -c "cd '$ROOT_DIR/ChatBot-Dashboard' && npm run dev; exec bash"
     gnome-terminal --title="ChromaDB" -- bash -c "cd '$ROOT_DIR/RAG' && source .venv/bin/activate && pip install -r ./requirements.txt && chroma run --path '$ROOT_DIR/RAG/chroma_data' --port 8000; exec bash"
     gnome-terminal --title="Classification Service" -- bash -c "cd '$ROOT_DIR/RAG' && source .venv/bin/activate && pip install -r ./requirements.txt && cd classification-service && python api.py; exec bash"
+    gnome-terminal --title="Sarvam Voice Service" -- bash -c "cd '$ROOT_DIR/ChatBot-Dashboard' && '$ROOT_DIR/.venv/bin/python' sarvam_voice_server.py; exec bash"
 
 else
     # Fallback for generic x-terminal-emulator
@@ -34,4 +36,5 @@ else
     x-terminal-emulator -T "Dashboard" -e bash -c "cd '$ROOT_DIR/ChatBot-Dashboard' && npm run dev; exec bash" &
     x-terminal-emulator -T "ChromaDB" -e bash -c "cd '$ROOT_DIR/RAG' && source .venv/bin/activate && pip install -r ./requirements.txt && chroma run --path '$ROOT_DIR/RAG/chroma_data' --port 8000; exec bash" &
     x-terminal-emulator -T "Classification Service" -e bash -c "cd '$ROOT_DIR/RAG' && source .venv/bin/activate && pip install -r ./requirements.txt && cd classification-service && python api.py; exec bash" &
+    x-terminal-emulator -T "Sarvam Voice Service" -e bash -c "cd '$ROOT_DIR/ChatBot-Dashboard' && '$ROOT_DIR/.venv/bin/python' sarvam_voice_server.py; exec bash" &
 fi

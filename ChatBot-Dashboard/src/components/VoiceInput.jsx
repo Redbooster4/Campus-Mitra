@@ -94,7 +94,7 @@ export default function VoiceInput({ disabled = false, language = "English", onT
     requestRef.current = requestController;
     try {
       const response = await axios.post(
-        import.meta.env.VITE_VOICE_API_URL || "http://localhost:3001/api/voice/transcribe",
+        import.meta.env.VITE_VOICE_API_URL || "http://localhost:3003/api/voice/transcribe",
         blob,
         {
           params: { language: LANGUAGE_CODES[language] || "en" },

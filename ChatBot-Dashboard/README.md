@@ -12,7 +12,7 @@ export SARVAM_API_KEY="your Sarvam subscription key"
 python sarvam_voice_server.py
 ```
 
-The voice API listens on port `3001`, separate from the dashboard API on port
+The voice API listens on port `3003`, separate from the dashboard API on port
 `3000`. For deployment, set `VITE_VOICE_API_URL` to the deployed transcription
 endpoint when building the frontend. Start the Vite app with `npm run dev`.
 

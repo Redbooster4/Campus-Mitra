@@ -4,6 +4,14 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from sarvamai import SarvamAI
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    load_dotenv(os.path.join(os.path.dirname(__file__), "..", "Backend", ".env"))
+    load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+except ImportError:
+    pass
+
 app = Flask(__name__)
 CORS(
     app,
@@ -32,7 +40,6 @@ def transcribe_voice():
     mime_type=request.headers.get("Content-Type", "audio/webm").split(";")[0]
     try:
         client = SarvamAI(
-            base_url="https://api.sarvam.ai/",
             api_subscription_key=api_key,
         )
         result = client.speech_to_text.transcribe(
@@ -45,4 +52,5 @@ def transcribe_voice():
         return jsonify(error="Couldn't transcribe that recording. Please try again."), 502
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3001)
+    port = int(os.environ.get("VOICE_PORT", 3003))
+    app.run(host="0.0.0.0", port=port)
