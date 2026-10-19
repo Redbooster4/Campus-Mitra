@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import { LoaderCircle, Mic, Square } from "lucide-react";
-import api from "../api/api";
 import styles from "./VoiceInput.module.css";
 
 const MAX_RECORDING_MS = 90_000;
@@ -93,12 +93,16 @@ export default function VoiceInput({ disabled = false, language = "English", onT
     const requestController = new AbortController();
     requestRef.current = requestController;
     try {
-      const response = await api.post("/voice/transcribe", blob, {
-        params: { language: LANGUAGE_CODES[language] || "en" },
-        headers: { "Content-Type": blob.type || "audio/webm" },
-        signal: requestController.signal,
-        timeout: 65_000,
-      });
+      const response = await axios.post(
+        import.meta.env.VITE_VOICE_API_URL || "http://localhost:3001/api/voice/transcribe",
+        blob,
+        {
+          params: { language: LANGUAGE_CODES[language] || "en" },
+          headers: { "Content-Type": blob.type || "audio/webm" },
+          signal: requestController.signal,
+          timeout: 65_000,
+        }
+      );
       const transcript = response.data?.text?.trim();
       if (!transcript) throw new Error("No speech was recognized. Try speaking a little closer to your mic.");
       if (mountedRef.current) {
