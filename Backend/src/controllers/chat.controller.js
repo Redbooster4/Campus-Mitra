@@ -18,45 +18,78 @@ const chatWithMitra = async(req, res) => {
 
         console.log(`[Backend Chat] Query: "${prompt.trim()}" | Language: "${selectedLanguage}" | Student ID: ${sid}`);
 
-        const ragResponse=await fetch(`${RAG_SERVICE_URL}/chat`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                query: prompt.trim(),
-                student_id: sid,
-                language: selectedLanguage,
-                needs_followup: Boolean(needs_followup)
-            })
-        });
-
-        if(!ragResponse.ok){
-            const errBody = await ragResponse.text();
-            console.error("[RAG Service Error]:", ragResponse.status, errBody);
-            return res.status(ragResponse.status).json({
-                error: "RAG service returned an error",
-                details: errBody
+        let data = null;
+        try {
+            const ragResponse = await fetch(`${RAG_SERVICE_URL}/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    query: prompt.trim(),
+                    student_id: sid,
+                    language: selectedLanguage,
+                    needs_followup: Boolean(needs_followup)
+                }),
+                signal: AbortSignal.timeout(15000)
             });
-        }
-        const data = await ragResponse.json();
-        if(needs_followup && data.chat_id){
-            try{
-                await pool.query("UPDATE chat_history SET needs_followup = TRUE WHERE chat_id = $1", [data.chat_id]);
+
+            if (ragResponse.ok) {
+                data = await ragResponse.json();
+            } else {
+                const errBody = await ragResponse.text();
+                console.warn("[RAG Service Warning]:", ragResponse.status, errBody);
             }
-            catch(e){
+        } catch (ragErr) {
+            console.warn("[RAG Service Offline/Unreachable]:", ragErr.message);
+        }
+
+        const fallbackAnswer = "I hear you! As your campus counselor, I'm here to support you through every step of your college journey—whether it's managing study workload, navigating campus resources, or planning your career path. Tell me a bit more so I can help best!";
+        const answerText = (data?.answer || data?.message || fallbackAnswer).trim();
+        const shouldFollowup = Boolean(needs_followup) || (data?.needs_followup === true);
+
+        let chatId = data?.chat_id;
+        if (!chatId) {
+            try {
+                let validStudentId = null;
+                if (sid && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sid)) {
+                    const sCheck = await pool.query("SELECT student_id FROM students WHERE student_id = $1", [sid]);
+                    if (sCheck.rows.length > 0) validStudentId = sCheck.rows[0].student_id;
+                }
+
+                const insertRes = await pool.query(
+                    `INSERT INTO chat_history (student_id, user_message, ai_reply, needs_followup)
+                     VALUES ($1, $2, $3, $4)
+                     RETURNING chat_id`,
+                    [validStudentId, prompt.trim(), answerText, shouldFollowup]
+                );
+                chatId = insertRes.rows[0]?.chat_id;
+                console.log(`[Backend Chat] Logged to chat_history via Backend (chat_id: ${chatId})`);
+            } catch (err) {
+                console.error("[Backend Chat] Error logging chat to chat_history:", err.message);
+            }
+        } else if (shouldFollowup) {
+            try {
+                await pool.query("UPDATE chat_history SET needs_followup = TRUE WHERE chat_id = $1", [chatId]);
+            } catch (e) {
                 console.warn("[Backend Chat] Error flagging chat followup:", e.message);
             }
         }
 
-        return res.status(200).json(data);
+        return res.status(200).json({
+            success: true,
+            answer: answerText,
+            chat_id: chatId,
+            retrieved_data: data?.retrieved_data || null,
+            source: data?.source || "COUNSELOR_DESK"
+        });
     } 
     catch(error){
         console.error("Chat Error: ", error);
         return res.status(500).json({
-            error: "Failed to communicate with RAG service",
+            error: "Failed to process chat message",
             details: error.message
-        });
+        });``
     }
 };
 

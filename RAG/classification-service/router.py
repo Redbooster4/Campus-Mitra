@@ -9,14 +9,16 @@ from answer_generator import generate_answer
 # Load environment configuration
 env_path = os.path.join(os.path.dirname(__file__), ".env")
 load_dotenv(dotenv_path=env_path)
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", "Backend", ".env"))
 load_dotenv()
 
 POSTGRES_CONFIG = {
-    "host": os.getenv("POSTGRES_HOST", "localhost"),
-    "port": os.getenv("POSTGRES_PORT", 5432),
-    "database": os.getenv("POSTGRES_DB", "campus_mitra"),
-    "user": os.getenv("POSTGRES_USER", "postgres"),
-    "password": os.getenv("POSTGRES_PASSWORD", "")
+    "host": os.getenv("POSTGRES_HOST") or os.getenv("DB_HOST", "localhost"),
+    "port": int(os.getenv("POSTGRES_PORT") or os.getenv("DB_PORT", 5432)),
+    "database": os.getenv("POSTGRES_DB") or os.getenv("DB_NAME", "sbmp_final_year_project"),
+    "user": os.getenv("POSTGRES_USER") or os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("POSTGRES_PASSWORD") or os.getenv("DB_PASSWORD", "password")
 }
 
 # --- 1. Connect to Running Chroma HTTP Server ---
@@ -305,9 +307,11 @@ def log_chat(student_id, user_message, ai_reply, department_id=None, needs_follo
         valid_student_id = None
         if student_id:
             try:
+                import uuid
+                parsed_uuid = uuid.UUID(str(student_id))
                 cursor.execute("""
                     SELECT student_id FROM students WHERE student_id = %s
-                """, (str(student_id),))
+                """, (str(parsed_uuid),))
                 row = cursor.fetchone()
                 if row:
                     valid_student_id = row[0]

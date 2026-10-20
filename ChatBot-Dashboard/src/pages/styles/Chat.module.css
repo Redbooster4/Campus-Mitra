@@ -408,6 +408,48 @@
   animation:fadeInFeedback 0.2s ease;
 }
 
+.thumbsGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.thumbButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px 6px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.2s ease;
+}
+
+.thumbButton:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+
+.thumbActiveUp {
+  color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.14) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.thumbActiveDown {
+  color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.14) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.thumbButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .typingIndicator {
   display: flex;
   gap: 4px;

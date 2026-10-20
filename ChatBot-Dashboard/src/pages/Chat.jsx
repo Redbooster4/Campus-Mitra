@@ -8,6 +8,8 @@ import {
   PanelLeftOpen,
   ArrowUpRight,
   X,
+  ThumbsUp,
+  ThumbsDown,
 } from "lucide-react";
 import styles from "./styles/Chat.module.css";
 import profileStyles from "./styles/Profile.module.css";
@@ -681,20 +683,30 @@ export default function Chat(){
                 {msg.sender === "counselor" && msg.type !== "initialMsg" && msg.type !== "resetMsg" && (
                   <div className={styles.feedbackContainer}>
                     <span className={styles.feedbackLabel}>
-                      {feedbackRatings[msg.id] ? "Feedback recorded:":"Rate this response:"}
+                      {feedbackRatings[msg.id] ? "Feedback:" : "Was this helpful?"}
                     </span>
-                    <PeekRating
-                      value={feedbackRatings[msg.id] || 0}
-                      onChange={(score) => handleFeedback(msg, score)}
-                      labels={["Poor", "Fair", "Good", "Helpful", "Exceptional"]}
-                      size={16}
-                      lift={4}
-                      activeColor="var(--primary)"
-                      idleColor="var(--muted)"
-                      tipColor="var(--card)"
-                      tipTextColor="var(--text)"
-                      ariaLabel="Rate response feedback"
-                    />
+                    <div className={styles.thumbsGroup}>
+                      <button
+                        type="button"
+                        className={`${styles.thumbButton} ${feedbackRatings[msg.id] === 5 ? styles.thumbActiveUp : ""}`}
+                        onClick={() => handleFeedback(msg, 5)}
+                        disabled={feedbackStatus[msg.id] === "submitting"}
+                        title="Helpful (Thumbs up)"
+                        aria-label="Helpful"
+                      >
+                        <ThumbsUp size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.thumbButton} ${feedbackRatings[msg.id] === 1 ? styles.thumbActiveDown : ""}`}
+                        onClick={() => handleFeedback(msg, 1)}
+                        disabled={feedbackStatus[msg.id] === "submitting"}
+                        title="Not helpful (Thumbs down)"
+                        aria-label="Not helpful"
+                      >
+                        <ThumbsDown size={13} />
+                      </button>
+                    </div>
                     {feedbackStatus[msg.id] === "submitting" && (
                       <span className={styles.feedbackThankYou}>• Saving...</span>
                     )}

@@ -18,23 +18,48 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace/>}/>
-          <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<Home />}/>
-          <Route path="/dashboard" element={<Dashboard />}/>
-          <Route path="/profile" element={<Profile />}/>
-          <Route path="/onboarding" element={<Onboarding />}/>
-          <Route path="/preview" element={<Preview />}/>
-          <Route path="/chat" element={<Chat />}/>
-          <Route path="/admin" element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }/>
-          <Route path="/admin/analytics" element={
-            <ProtectedRoute>
-              <Analytics />
-            </ProtectedRoute>
-          }/>
+          <Route path="/login" element={<Login/>}/>
+          <Route path="/home" element={<Home/>}/>
+          <Route path="/dashboard" 
+            element={
+              <ProtectedRoute><Dashboard /></ProtectedRoute>
+            }
+          />
+          <Route path="/profile" 
+            element={
+              <ProtectedRoute><Profile /></ProtectedRoute>
+            }
+          />
+          <Route path="/onboarding" 
+            element={
+              <ProtectedRoute><Onboarding /></ProtectedRoute>
+            }
+          />
+          <Route path="/preview" 
+            element={
+              <ProtectedRoute><Preview /></ProtectedRoute>
+            }
+          />
+          <Route path="/chat" 
+            element={
+              <ProtectedRoute><Chat /></ProtectedRoute>
+            }
+          />
+          <Route path="/admin" 
+            element={
+              <ProtectedRoute allowedRoles={["Admin"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/admin/analytics" 
+            element={
+              <ProtectedRoute allowedRoles={["Admin"]}>
+                <Analytics />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/home" replace/>}/>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
