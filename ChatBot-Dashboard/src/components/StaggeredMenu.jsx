@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback, isValidElement } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../api/api';
 import './StaggeredMenu.css';
 import BrandLogos from './BrandLogos';
 import ThemeToggle from './ThemeToggle';
@@ -24,6 +26,25 @@ export const StaggeredMenu = ({
   const [open, setOpen] = useState(false);
   const panelRef = useRef(null);
   const toggleBtnRef = useRef(null);
+  const navigate = useNavigate();
+
+  const handleItemClick = async (e, item) => {
+    if (item.isLogout || item.link === '/logout' || item.label?.toLowerCase() === 'logout') {
+      e.preventDefault();
+      setOpen(false);
+      try {
+        await api.post('/auth/logout', {}, { withCredentials: true });
+      } catch (err) {
+        console.warn('Logout endpoint error:', err);
+      } finally {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/login');
+      }
+      return;
+    }
+    setOpen(false);
+  };
 
   const toggleMenu = useCallback(() => {
     setOpen(prev => {
@@ -160,7 +181,7 @@ export const StaggeredMenu = ({
                     href={item.link}
                     aria-label={item.ariaLabel}
                     data-index={index + 1}
-                    onClick={() => setOpen(false)}
+                    onClick={(e) => handleItemClick(e, item)}
                   >
                     <span className="sm-panel-itemLabel">{item.label}</span>
                   </a>

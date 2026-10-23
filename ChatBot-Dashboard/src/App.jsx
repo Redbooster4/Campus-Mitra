@@ -1,4 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import api from "./api/api";
 import { ThemeProvider } from "@/context/ThemeProvider";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -11,6 +13,20 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Analytics from "./pages/admin/Analytics";
+
+function LogoutHandler() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    api.post("/auth/logout", {}, { withCredentials: true })
+      .catch(() => {})
+      .finally(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login", { replace: true });
+      });
+  }, [navigate]);
+  return null;
+}
 
 function App() {
   return (
@@ -70,6 +86,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/logout" element={<LogoutHandler />} />
           <Route path="*" element={<Navigate to="/home" replace/>}/>
         </Routes>
       </BrowserRouter>

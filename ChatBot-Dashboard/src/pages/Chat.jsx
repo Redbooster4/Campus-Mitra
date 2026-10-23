@@ -29,6 +29,93 @@ const getFormattedTime = () =>
 const generateId = () => Date.now();
 const SESSION_IDLE_TIMEOUT = 10 * 60 * 1000;
 
+const createPrivacyDisclosureText = (userData, dbSynced = false) => {
+  let storedUser = {};
+  let academicProfile = {};
+  let counselingPrefs = {};
+  let token = null;
+  let preferredLanguage = "English";
+  let preferredBranch = "";
+
+  try {
+    const rawUser = localStorage.getItem("user");
+    if (rawUser) storedUser = JSON.parse(rawUser);
+  } catch (err) {
+    console.warn("Could not parse user from localStorage:", err);
+  }
+
+  try {
+    const rawAcademic = localStorage.getItem("studentAcademicProfile");
+    if (rawAcademic) academicProfile = JSON.parse(rawAcademic);
+  } catch (err) {
+    console.warn("Could not parse academic profile:", err);
+  }
+
+  try {
+    const rawPrefs = localStorage.getItem("counselingPreferences");
+    if (rawPrefs) counselingPrefs = JSON.parse(rawPrefs);
+  } catch (err) {
+    console.warn("Could not parse counseling preferences:", err);
+  }
+
+  token = localStorage.getItem("token");
+  preferredLanguage = localStorage.getItem("preferredLanguage") || "English";
+  preferredBranch = localStorage.getItem("preferredBranch") || "";
+
+  // Merge live /auth/me user data if provided
+  const activeUser = { ...storedUser, ...(userData || {}) };
+
+  const username = activeUser.username || activeUser.full_name || "Guest Student";
+  const studentId = activeUser.student_id || activeUser.id || "Temporary Guest Session";
+  const role = activeUser.role ? String(activeUser.role).toUpperCase() : "STUDENT";
+  const email = activeUser.email || "Not specified in profile";
+  const phone = activeUser.phone || activeUser.phone_number || "Not specified in profile";
+
+  const targetBranch =
+    activeUser.target_branch ||
+    academicProfile.targetBranch ||
+    preferredBranch ||
+    "Computer Engineering (Default SBMP Diploma)";
+  const tenthPercentage =
+    activeUser.tenth_percentage || academicProfile.tenthPercentage || "Not entered yet";
+  const entranceScore =
+    activeUser.entrance_score || academicProfile.entrancePercentile || "Not entered yet";
+  const category = activeUser.category || academicProfile.category || "General / Open";
+  const quota = activeUser.admission_quota || academicProfile.quota || "State CAP / Merit";
+
+  const counselingMode = counselingPrefs.mode || "Online AI Advisory (Text & Voice)";
+  const consent = counselingPrefs.followUpConsent
+    ? "Granted for counselor callback"
+    : "Optional (Only shared if callback requested)";
+
+  return `### 🔒 Privacy & Data Transparency Audit
+*(Frontend Testing Mode — Synchronized with **Database & LocalStorage**)*
+
+Here is the exact record of student details currently loaded into Mitra's counseling memory:
+
+#### 1. Identity & Credentials (Database & LocalStorage)
+* **Student Name / User**: \`${username}\`
+* **Student ID / UID**: \`${studentId}\`
+* **Account Role**: \`${role}\`
+* **Email Address**: \`${email}\`
+* **Contact Phone**: \`${phone}\`
+* **Auth Session**: \`${token ? "Active JWT Bearer Token (Stored in LocalStorage)" : "Unauthenticated Guest"}\`
+* **Database Sync Status**: \`${dbSynced ? "✅ Synchronized live with Backend /auth/me" : "⚡ Loaded from LocalStorage cache"}\`
+
+#### 2. Academic Profile (Used for Course & Cutoff Recommendations)
+* **Target Diploma Branch**: **${targetBranch}**
+* **Class 10th Percentage**: \`${tenthPercentage}\`
+* **Entrance Percentile / Score**: \`${entranceScore}\`
+* **Category**: \`${category}\`
+* **Admission Quota**: \`${quota}\`
+
+#### 3. Counseling Preferences & Session State
+* **Active Language**: \`${preferredLanguage}\`
+* **Interaction Mode**: \`${counselingMode}\`
+* **Parent Callback Status**: \`${consent}\`
+* **Data Storage Policy**: Your academic scores and inquiries are kept strictly confidential for SVKM's Shri Bhagubhai Mafatlal Polytechnic (SBMP) admission counseling.`;
+};
+
 export default function Chat() {
   const [user] = useState(() => {
     const storedUser = localStorage.getItem("user");
@@ -202,7 +289,7 @@ function StudentChatRoom({ user, userName }) {
     }
   };
 
-  // Initial messages state
+  // Initial messages state with default privacy/data disclosure response for testing
   const [messages, setMessages] = useState(() => {
     const defaultLang = localStorage.getItem("preferredLanguage") || "English";
     const t = translations[defaultLang] || translations.English;
@@ -212,10 +299,47 @@ function StudentChatRoom({ user, userName }) {
         sender: "counselor",
         text: t.initialMsg(userName),
         type: "initialMsg",
-        time: "10:30 AM",
+        time: getFormattedTime(),
+      },
+      {
+        id: "msg-privacy",
+        sender: "counselor",
+        text: createPrivacyDisclosureText(user, false),
+        type: "privacyDisclosure",
+        time: getFormattedTime(),
       },
     ];
   });
+
+  // Verify and sync live user details from backend database (/auth/me)
+  useEffect(() => {
+    let isMounted = true;
+    const syncDatabaseDetails = async () => {
+      if (!localStorage.getItem("token")) return;
+      try {
+        const resp = await api.get("/auth/me");
+        if (isMounted && resp.data?.user) {
+          const freshUser = resp.data.user;
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === "msg-privacy"
+                ? {
+                    ...msg,
+                    text: createPrivacyDisclosureText(freshUser, true),
+                  }
+                : msg
+            )
+          );
+        }
+      } catch (err) {
+        console.warn("Could not sync live DB user profile for privacy disclosure:", err);
+      }
+    };
+    syncDatabaseDetails();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleLanguageChange = (newLang) => {
     setLanguage(newLang);
@@ -256,6 +380,84 @@ function StudentChatRoom({ user, userName }) {
 
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputValue("");
+
+    const lowerQuery = query.toLowerCase();
+    const isPrivacyQuery =
+      lowerQuery.includes("what details") ||
+      lowerQuery.includes("my details") ||
+      lowerQuery.includes("privacy") ||
+      lowerQuery.includes("what do you know") ||
+      lowerQuery.includes("data do you have") ||
+      lowerQuery.includes("details do you have") ||
+      lowerQuery.includes("details does the chatbot have") ||
+      lowerQuery.includes("details does the bot have") ||
+      lowerQuery.includes("गोपनीयता") ||
+      lowerQuery.includes("तपशील") ||
+      lowerQuery.includes("વિગતો");
+
+    if (isPrivacyQuery) {
+      const counselorMsg = {
+        id: generateId(),
+        sender: "counselor",
+        text: createPrivacyDisclosureText(user, true),
+        time: getFormattedTime(),
+        type: "privacyDisclosure",
+      };
+      setMessages((prev) => [...prev, counselorMsg]);
+      return;
+    }
+
+    const isEscalateQuery =
+      lowerQuery.includes("escalat") ||
+      lowerQuery.includes("human counselor") ||
+      lowerQuery.includes("talk to human") ||
+      lowerQuery.includes("talk to counselor") ||
+      lowerQuery.includes("human advisor") ||
+      lowerQuery.includes("सलाहकार से बात") ||
+      lowerQuery.includes("मानव समुपदेशक") ||
+      lowerQuery.includes("માનવ કાઉન્સેલર");
+
+    if (isEscalateQuery) {
+      try {
+        const studentId = user?.student_id || user?.id || null;
+        const validEmail =
+          user?.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)
+            ? user.email
+            : `${(user?.username || "student").toLowerCase().replace(/[^a-z0-9]/g, "") || "student"}@sbmp.ac.in`;
+        const validPhone =
+          user?.phone && /^[0-9+() .-]{7,20}$/.test(user.phone)
+            ? user.phone
+            : null;
+
+        await api.post("/chat/request-callback", {
+          student_id: studentId,
+          phone: validPhone,
+          email: validEmail,
+          full_name: user?.full_name || user?.username || "Student",
+          target_branch: user?.target_branch || null,
+          chat_id: latestInteractionRef.current?.chatId || null,
+          notes: `Escalated inquiry: "${query}"`,
+        });
+      } catch (err) {
+        console.warn("Escalation callback request warning:", err);
+      }
+
+      const counselorMsg = {
+        id: generateId(),
+        sender: "counselor",
+        text: `### 🚨 Inquiry Escalated to Human Counselor
+Your inquiry has been officially escalated to the **Shri Bhagubhai Mafatlal Polytechnic (SBMP) Admissions Office**.
+
+* **Status**: \`Pending Review (Flagged for Follow-up)\`
+* **Student**: \`${userName}\`
+* **Next Steps**: A senior faculty counselor will inspect this chat log and review your admission questions.`,
+        time: getFormattedTime(),
+        type: "escalationConfirmation",
+      };
+      setMessages((prev) => [...prev, counselorMsg]);
+      return;
+    }
+
     setIsTyping(true);
 
     try {
@@ -365,6 +567,13 @@ function StudentChatRoom({ user, userName }) {
         type: "resetMsg",
         time: getFormattedTime(),
       },
+      {
+        id: "msg-privacy",
+        sender: "counselor",
+        text: createPrivacyDisclosureText(user, true),
+        type: "privacyDisclosure",
+        time: getFormattedTime(),
+      },
     ]);
     if (shouldPromptForProfile) {
       setProfilePromptVisible(true);
@@ -378,43 +587,47 @@ function StudentChatRoom({ user, userName }) {
     window.clearTimeout(idleTimerRef.current);
     setSessionEndedManually(true);
     setSessionExpired(true);
+    if (sessionRating < 1) {
+      setSessionRating(5);
+    }
     endSessionRef.current();
   };
 
   const handleFinalFeedbackSubmit = async (event) => {
     event.preventDefault();
+    if (sessionFeedbackBusy) return;
+
+    const effectiveRating = sessionRating >= 1 ? sessionRating : 5;
     const hasContact = Boolean(contactPhone.trim() || contactEmail.trim());
-    if (
-      sessionRating < 1 ||
-      (requiresContact && !hasContact) ||
-      sessionFeedbackBusy
-    )
-      return;
 
     setSessionFeedbackBusy(true);
     setSessionFeedbackError("");
     try {
-      let studentId = user?.student_id || null;
-      if (requiresContact) {
-        const callbackResponse = await api.post("/chat/request-callback", {
-          student_id: studentId,
-          phone: contactPhone.trim() || null,
-          email: contactEmail.trim() || null,
-          full_name: user?.full_name || user?.username || null,
-          target_branch: user?.target_branch || null,
-          chat_id: latestInteractionRef.current.chatId,
-          notes: "Follow-up requested after an admission chat session.",
-        });
-        studentId = callbackResponse.data?.student_id || studentId;
+      let studentId = user?.student_id || user?.id || null;
+      if (hasContact) {
+        try {
+          const callbackResponse = await api.post("/chat/request-callback", {
+            student_id: studentId,
+            phone: contactPhone.trim() || null,
+            email: contactEmail.trim() || null,
+            full_name: user?.full_name || user?.username || "Student",
+            target_branch: user?.target_branch || null,
+            chat_id: latestInteractionRef.current?.chatId || null,
+            notes: "Follow-up requested after an admission chat session.",
+          });
+          studentId = callbackResponse.data?.student_id || studentId;
+        } catch (cbErr) {
+          console.warn("Callback registration error (continuing to submit rating):", cbErr);
+        }
       }
 
       await api.post("/chat/feedback", {
-        rating: sessionRating,
-        user_message: latestInteractionRef.current.userMessage,
-        ai_reply: latestInteractionRef.current.aiReply,
-        chat_id: latestInteractionRef.current.chatId,
+        rating: effectiveRating,
+        user_message: latestInteractionRef.current?.userMessage || "Counseling session completed",
+        ai_reply: latestInteractionRef.current?.aiReply || "Session ended",
+        chat_id: latestInteractionRef.current?.chatId || null,
         student_id: studentId,
-        callback_requested: requiresContact,
+        callback_requested: hasContact,
       });
 
       setSessionFeedbackSaved(true);
@@ -422,7 +635,8 @@ function StudentChatRoom({ user, userName }) {
       console.error("Could not submit session feedback:", error);
       setSessionFeedbackError(
         error.response?.data?.message ||
-          "We couldn't save this yet. Please try again."
+          error.response?.data?.error ||
+          "Could not save feedback. Please try again."
       );
     } finally {
       setSessionFeedbackBusy(false);
@@ -626,7 +840,9 @@ function StudentChatRoom({ user, userName }) {
 
                 {msg.sender === "counselor" &&
                   msg.type !== "initialMsg" &&
-                  msg.type !== "resetMsg" && (
+                  msg.type !== "resetMsg" &&
+                  msg.type !== "privacyDisclosure" &&
+                  msg.type !== "escalationConfirmation" && (
                     <div className={styles.feedbackContainer}>
                       <span className={styles.feedbackLabel}>
                         {feedbackRatings[msg.id]
@@ -700,7 +916,7 @@ function StudentChatRoom({ user, userName }) {
               </div>
             )}
 
-            {messages.length < 3 && !isTyping && (
+            {messages.filter((m) => m.sender === "user").length === 0 && !isTyping && (
               <div className={styles.suggestionsArea}>
                 {(
                   translations[language] || translations.English

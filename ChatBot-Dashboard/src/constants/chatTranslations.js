@@ -26,6 +26,14 @@ export const translations = {
         label: "Admission Deadlines & Fees",
         query: "What are the upcoming admission deadlines and fee structures?",
       },
+      {
+        label: "Privacy & Stored Details",
+        query: "What details does the chatbot have of me?",
+      },
+      {
+        label: "Escalate to Human Counselor",
+        query: "Escalate my query to a human counselor",
+      },
     ],
   },
   Hindi: {
@@ -47,6 +55,14 @@ export const translations = {
       {
         label: "प्रवेश समय सीमा और फीस",
         query: "आगामी प्रवेश की समय सीमा और फीस संरचना क्या है?",
+      },
+      {
+        label: "गोपनीयता और मेरा विवरण",
+        query: "चैटबॉट के पास मेरे बारे में क्या विवरण हैं?",
+      },
+      {
+        label: "काउंसलर को भेजें",
+        query: "सलाहकार से बात करना चाहते हैं",
       },
     ],
   },
@@ -70,6 +86,14 @@ export const translations = {
         label: "प्रवेश अंतिम मुदत आणि फी",
         query: "आगामी प्रवेशाची अंतिम मुदत आणि फी संरचना काय आहे?",
       },
+      {
+        label: "गोपनीयता आणि माझे तपशील",
+        query: "माझ्याबद्दल चॅटबॉटकडे कोणते तपशील आहेत?",
+      },
+      {
+        label: "समुपदेशकाला पाठवा",
+        query: "मानव समुपदेशक यांच्याशी बोला",
+      },
     ],
   },
   Gujarati: {
@@ -92,7 +116,14 @@ export const translations = {
         label: "પ્રવેશની અંતિમ તારીખ અને ફી",
         query: "આગામી પ્રવેશની અંતિમ તારીખ અને ફી માળખું શું છે?",
       },
+      {
+        label: "ગોપનીયતા અને મારી વિગતો",
+        query: "ચેટબોટ પાસે મારા વિશે શું વિગતો છે?",
+      },
+      {
+        label: "કાઉન્સેલરને મોકલો",
+        query: "માનવ કાઉન્સેલર સાથે વાત કરવી છે",
+      },
     ],
   },
 };
-
