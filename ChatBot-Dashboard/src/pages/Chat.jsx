@@ -18,8 +18,8 @@ import MessageRenderer from "@/components/MessageRenderer";
 import GlideSelect from "@/components/GlideSelect";
 import ThemeToggle from "@/components/ThemeToggle";
 import VoiceInput from "@/components/VoiceInput";
-import ChatAdminView from "@/components/chat/ChatAdminView";
-import ChatFeedbackModal from "@/components/chat/ChatFeedbackModal";
+import ChatAdminView from "@/pages/chat/ChatAdminView";
+import ChatFeedbackModal from "@/pages/chat/ChatFeedbackModal";
 import { languages, translations } from "@/constants/chatTranslations";
 import styles from "./styles/Chat.module.css";
 

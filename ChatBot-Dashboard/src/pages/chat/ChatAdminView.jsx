@@ -33,10 +33,11 @@ export default function ChatAdminView({ user, userName }) {
       const res = await api.get("/admin/analytics/chats?limit=50", {
         withCredentials: true,
       });
-      if (res.data?.success && Array.isArray(res.data.data)) {
-        setInquiries(res.data.data);
-        if (!selectedInquiryId && res.data.data.length > 0) {
-          setSelectedInquiryId(res.data.data[0].chat_id);
+      const chatRecords = res.data?.chats || res.data?.data || [];
+      if (res.data?.success && Array.isArray(chatRecords)) {
+        setInquiries(chatRecords);
+        if (!selectedInquiryId && chatRecords.length > 0) {
+          setSelectedInquiryId(chatRecords[0].chat_id);
         }
       }
     } catch (err) {

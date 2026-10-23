@@ -304,6 +304,16 @@ const requestCallback = async (req, res) => {
             catch(err){
                 console.warn("[Callback] Could not flag chat_history:", err.message);
             }
+        } else {
+            try {
+                await pool.query(
+                    `INSERT INTO chat_history (student_id, user_message, ai_reply, needs_followup)
+                     VALUES ($1, $2, $3, TRUE)`,
+                    [validStudentId, contactNotes || "Escalated inquiry to admissions", "Inquiry escalated to human counselor"]
+                );
+            } catch(err) {
+                console.warn("[Callback] Could not insert escalated inquiry into chat_history:", err.message);
+            }
         }
         return res.status(200).json({
             success: true,

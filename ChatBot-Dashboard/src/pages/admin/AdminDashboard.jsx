@@ -65,8 +65,9 @@ export default function AdminDashboard(){
         }
         try{
           const chatsResp=await api.get("/admin/analytics/chats?limit=4",{withCredentials: true});
-          if(chatsResp.data?.success && Array.isArray(chatsResp.data?.data)) {
-            setRecentChats(chatsResp.data.data);
+          const chatList = chatsResp.data?.chats || chatsResp.data?.data || [];
+          if(chatsResp.data?.success && Array.isArray(chatList)) {
+            setRecentChats(chatList);
           }
         }
         catch{}
@@ -100,7 +101,7 @@ export default function AdminDashboard(){
   const handleExportCSV = async () => {
     try {
       const resp=await api.get("/admin/analytics/chats?limit=100", { withCredentials: true });
-      const records=resp.data?.data || [];
+      const records=resp.data?.chats || resp.data?.data || [];
       if(!records.length){
         alert("No student inquiry records found to export.");
         return;
@@ -108,13 +109,13 @@ export default function AdminDashboard(){
       const headers=["Chat ID", "Student Name", "Phone", "Email", "Target Branch", "Question", "Callback Requested", "Followup Status", "Date"];
       const rows=records.map(r => [
         r.chat_id,
-        `"${(r.student_name || "Guest").replace(/"/g, '""')}"`,
-        `"${r.student_phone || ""}"`,
-        `"${r.student_email || ""}"`,
-        `"${r.target_branch || ""}"`,
+        `"${(r.student?.full_name || r.student_name || "Guest").replace(/"/g, '""')}"`,
+        `"${r.student?.phone || r.student_phone || ""}"`,
+        `"${r.student?.email || r.student_email || ""}"`,
+        `"${r.student?.target_branch || r.target_branch || ""}"`,
         `"${(r.question || "").replace(/"/g, '""')}"`,
-        r.callback_requested ? "Yes" : "No",
-        r.followup_status || "Pending",
+        (r.student?.callback_requested ?? r.callback_requested) ? "Yes" : "No",
+        r.student?.followup_status || r.followup_status || "Pending",
         r.created_at || ""
       ]);
       const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
