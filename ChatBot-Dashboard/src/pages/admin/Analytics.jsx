@@ -15,6 +15,8 @@ import { ADMIN_MENU_ITEMS } from "../../constants/navigation";
 const COLORS = ['#fdba74', '#fed7aa', '#f97316', '#fb923c', '#ffedd5'];
 const STAR_COLORS = { 5: "#10b981", 4: "#3b82f6", 3: "#f59e0b", 2: "#f97316", 1: "#ef4444" };
 const tooltipStyle = { backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--text)' };
+const tooltipItemStyle = { color: 'var(--text)' };
+const tooltipLabelStyle = { color: 'var(--heading)', fontWeight: 600 };
 
 export default function Analytics() {
   const [admin] = useState(() => {
@@ -167,7 +169,7 @@ export default function Analytics() {
     >
       {error && (
         <div className={styles.errorBanner}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className={styles.qaLeft}>
             <AlertCircle size={16} />
             <span>{error}</span>
           </div>
@@ -205,6 +207,14 @@ export default function Analytics() {
               title="View all individual reaction and session ratings"
             >
               All Raw Logs ({feedbackData.totalFeedback})
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/chat")}
+              className={`${styles.filterBtn} ${styles.filterBtnActive}`}
+              title="Inspect all live chat logs & transcripts in Admin Chat"
+            >
+              <span>Admin Chat Logs &rarr;</span>
             </button>
           </div>
         </div>
@@ -257,7 +267,9 @@ export default function Analytics() {
                   <YAxis stroke="var(--muted)" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
                   <Tooltip
                     contentStyle={tooltipStyle}
-                    cursor={{ fill: 'var(--border)' }}
+                    itemStyle={tooltipItemStyle}
+                    labelStyle={tooltipLabelStyle}
+                    cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
                     formatter={(val, name, item) => [`${val} reviews (${item.payload.label})`, 'Count']}
                   />
                   <Bar dataKey="Reviews" radius={[6, 6, 0, 0]}>
@@ -268,20 +280,21 @@ export default function Analytics() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className={styles.chartLegendRow}>
-              {starChartData.map(item => (
-                <div key={item.stars} className={styles.chartLegendItem}>
-                  <span style={{ color: STAR_COLORS[item.stars], fontWeight: 700 }}>{item.name}</span>
-                  <div className={styles.kpiUnit}>{item.Reviews}</div>
-                </div>
-              ))}
-            </div>
           </div>
 
           <div className={`${styles.chartPanel} ${styles.chartPanelCol}`}>
             <div className={styles.chartPanelHeader}>
               <h3 className={styles.chartPanelTitle}>Student Reviews & Feedback</h3>
-              <span className={styles.displayedCount}>{displayedFeedbacks.length} Displayed</span>
+              <div className={styles.qaRight}>
+                <button
+                  type="button"
+                  onClick={() => navigate("/chat")}
+                  className={`${styles.filterBtn} ${styles.filterBtnActive}`}
+                  title="View full conversation transcripts in /chat"
+                >
+                  <span>Inspect in Chat &rarr;</span>
+                </button>
+              </div>
             </div>
             <div className={styles.feedbackList}>
               {displayedFeedbacks.length === 0 ? (
@@ -393,7 +406,7 @@ export default function Analytics() {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
               <XAxis dataKey="name" stroke="var(--muted)" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis stroke="var(--muted)" fontSize={12} tickLine={false} axisLine={false} />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'var(--border)' }} />
+              <Tooltip contentStyle={tooltipStyle} itemStyle={tooltipItemStyle} labelStyle={tooltipLabelStyle} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} />
               <Bar dataKey="count" fill="var(--orange-light)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -418,7 +431,7 @@ export default function Analytics() {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
                 <XAxis type="number" stroke="var(--muted)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis dataKey="name" type="category" stroke="var(--text)" fontSize={12} tickLine={false} axisLine={false} width={120} />
-                <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'var(--border)' }} />
+                <Tooltip contentStyle={tooltipStyle} itemStyle={tooltipItemStyle} labelStyle={tooltipLabelStyle} cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }} />
                 <Bar dataKey="Queries" fill="var(--orange-light)" radius={[0, 4, 4, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>

@@ -57,9 +57,6 @@ export default function GlideSelect({
         <span className="glide-select-label">
           {selectedOption ? selectedOption.label : "Select"}
         </span>
-        {selectedOption?.tag && (
-          <span className="glide-select-tag">{selectedOption.tag}</span>
-        )}
         <ChevronDown size={14} className={`glide-select-chevron ${open ? 'is-open' : ''}`} />
       </button>
 

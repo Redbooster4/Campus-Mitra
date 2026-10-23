@@ -1,23 +1,25 @@
-import { useNavigate } from "react-router-dom";
 import AnimatedLogo from "./AnimatedLogo";
 import logo from "../assets/logo.png";
 import styles from "./BrandLogos.module.css";
 
-export default function BrandLogos({ className = "" }){
-  const navigate=useNavigate();
-
-  const handleMascotClick=(e)=>{
+export default function BrandLogos({ className = "", onLogoClick }){
+  const handleMascotClick = (e) => {
     e.stopPropagation();
-    navigate("/dashboard");
+    if (onLogoClick) {
+      onLogoClick(e);
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("toggle-menu"));
   };
+
   return (
     <div className={`${styles.logos} ${className}`.trim()}>
       <button
         type="button"
         className={styles.mascotBtn}
         onClick={handleMascotClick}
-        title="Chat with Mitra AI Counselor"
-        aria-label="Mitra AI Counselor">
+        title="Open navigation menu"
+        aria-label="Open navigation menu">
         <AnimatedLogo />
       </button>
       <span className={styles.divider} aria-hidden="true" />

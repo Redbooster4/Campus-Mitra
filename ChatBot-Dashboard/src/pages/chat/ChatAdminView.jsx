@@ -107,7 +107,12 @@ export default function ChatAdminView({ user, userName }) {
       <aside className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : ""}`}>
         <div className={styles.sidebarHeader}>
           {!isCollapsed && (
-            <div className={styles.brandGroup}>
+            <div
+              className={styles.brandGroup}
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              style={{ cursor: "pointer" }}
+              title="Toggle sidebar"
+            >
               <div className={styles.logoWrapper}><AnimatedLogo /></div>
               <div className={styles.brandText}>
                 <span className={styles.brandName}>Campus Mitra</span>

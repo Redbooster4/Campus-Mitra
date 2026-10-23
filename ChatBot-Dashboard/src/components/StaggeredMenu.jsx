@@ -7,17 +7,13 @@ import ThemeToggle from './ThemeToggle';
 
 export const StaggeredMenu = ({
   position = 'right',
-  colors = ['#B497CF', '#5227FF'],
   items = [],
   socialItems = [],
   displaySocials = true,
   displayItemNumbering = true,
   className = '',
   logoUrl = null,
-  menuButtonColor = '#fff',
-  openMenuButtonColor = '#fff',
   accentColor = '#5227FF',
-  changeMenuColorOnOpen = true,
   isFixed = false,
   closeOnClickAway = true,
   onMenuOpen,
@@ -95,16 +91,23 @@ export const StaggeredMenu = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, closeMenu]);
 
+  // Global event listener for opening/toggling the menu from any logo or button
+  useEffect(() => {
+    const handleToggle = () => toggleMenu();
+    window.addEventListener('toggle-menu', handleToggle);
+    return () => window.removeEventListener('toggle-menu', handleToggle);
+  }, [toggleMenu]);
+
   const renderLogo = () => {
     if (logoUrl === null || logoUrl === undefined) {
-      return <BrandLogos />;
+      return <BrandLogos onLogoClick={toggleMenu} />;
     }
     if (isValidElement(logoUrl)) {
-      return logoUrl;
+      return <div onClick={toggleMenu} style={{ cursor: 'pointer' }}>{logoUrl}</div>;
     }
     if (typeof logoUrl === 'function') {
       const LogoComponent = logoUrl;
-      return <LogoComponent />;
+      return <div onClick={toggleMenu} style={{ cursor: 'pointer' }}><LogoComponent /></div>;
     }
     return (
       <img
@@ -114,6 +117,8 @@ export const StaggeredMenu = ({
         draggable={false}
         width={110}
         height={32}
+        onClick={toggleMenu}
+        style={{ cursor: 'pointer' }}
       />
     );
   };

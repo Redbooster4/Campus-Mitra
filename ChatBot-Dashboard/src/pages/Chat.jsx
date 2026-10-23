@@ -286,7 +286,6 @@ function StudentChatRoom({ user, userName }) {
     }
   };
 
-  // Initial messages state with default privacy/data disclosure response for testing
   const [messages, setMessages] = useState(() => {
     const defaultLang = localStorage.getItem("preferredLanguage") || "English";
     const t = translations[defaultLang] || translations.English;
@@ -298,45 +297,8 @@ function StudentChatRoom({ user, userName }) {
         type: "initialMsg",
         time: getFormattedTime(),
       },
-      {
-        id: "msg-privacy",
-        sender: "counselor",
-        text: createPrivacyDisclosureText(user, false),
-        type: "privacyDisclosure",
-        time: getFormattedTime(),
-      },
     ];
   });
-
-  // Verify and sync live user details from backend database (/auth/me)
-  useEffect(() => {
-    let isMounted = true;
-    const syncDatabaseDetails = async () => {
-      if (!localStorage.getItem("token")) return;
-      try {
-        const resp = await api.get("/auth/me");
-        if (isMounted && resp.data?.user) {
-          const freshUser = resp.data.user;
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === "msg-privacy"
-                ? {
-                    ...msg,
-                    text: createPrivacyDisclosureText(freshUser, true),
-                  }
-                : msg
-            )
-          );
-        }
-      } catch (err) {
-        console.warn("Could not sync live DB user profile for privacy disclosure:", err);
-      }
-    };
-    syncDatabaseDetails();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const handleLanguageChange = (newLang) => {
     setLanguage(newLang);
@@ -564,13 +526,6 @@ Your inquiry has been officially escalated to the **Shri Bhagubhai Mafatlal Poly
         type: "resetMsg",
         time: getFormattedTime(),
       },
-      {
-        id: "msg-privacy",
-        sender: "counselor",
-        text: createPrivacyDisclosureText(user, true),
-        type: "privacyDisclosure",
-        time: getFormattedTime(),
-      },
     ]);
     if (shouldPromptForProfile) {
       setProfilePromptVisible(true);
@@ -702,7 +657,12 @@ Your inquiry has been officially escalated to the **Shri Bhagubhai Mafatlal Poly
       >
         <div className={styles.sidebarHeader}>
           {!isCollapsed && (
-            <div className={styles.brandGroup}>
+            <div
+              className={styles.brandGroup}
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              style={{ cursor: "pointer" }}
+              title="Toggle sidebar"
+            >
               <div className={styles.logoWrapper}>
                 <AnimatedLogo />
               </div>

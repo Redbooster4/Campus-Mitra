@@ -159,6 +159,7 @@
   font-size:0.85rem;
   font-weight:500;
   cursor: pointer;
+  transition: all 0.2s ease;
   transition:background 0.2s ease, color 0.2s ease;
   white-space:nowrap;
   text-align:left;
@@ -310,6 +311,7 @@
   border-radius: 8px;
   font-size: 0.8rem;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .actionBtn:hover {
@@ -423,6 +425,7 @@
   border-radius: 6px;
   padding: 4px 6px;
   cursor: pointer;
+  transition: all 0.2s ease;
   color: var(--muted);
   transition: all 0.2s ease;
 }
@@ -459,7 +462,7 @@
 .dot {
   width: 5px;
   height: 5px;
-  background: var(--purple-light);
+  background: var(--primary);
   border-radius: 50%;
   animation: bounce 1.4s infinite ease-in-out both;
 }
@@ -479,11 +482,12 @@
 .suggestionChip {
   background: var(--bg);
   border: 1px solid var(--border);
-  color: var(--purple-light);
+  color: var(--primary);
   padding: 0.45rem 0.8rem;
   border-radius: 18px;
   font-size: 0.825rem;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .suggestionChip:hover {
@@ -527,6 +531,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all 0.2s ease;
   transition:all 0.3s ease;
 }
 

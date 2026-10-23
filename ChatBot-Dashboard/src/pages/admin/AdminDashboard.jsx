@@ -104,12 +104,11 @@ export default function AdminDashboard(){
   return(
     <DashboardLayout
       menuItems={ADMIN_MENU_ITEMS} displayName={displayName}
-      greeting="Admin Workspace,"
-      subtitle="Institutional management portal. Monitor student inquiries, parent callbacks, and counseling metrics.">
+      greeting="Admin Workspace, ">
 
       {error && (
         <div className={styles.errorBanner}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className={styles.qaLeft}>
             <AlertCircle size={16} />
             <span>{error}</span>
           </div>
@@ -131,21 +130,21 @@ export default function AdminDashboard(){
               </>
             )}
           </p>
-          <form className={styles.queryLauncher} onSubmit={handleSearch} style={{ marginTop: "1rem", marginBottom: "1.25rem" }}>
+          <form className={styles.queryLauncher} onSubmit={handleSearch}>
             <input type="text" className={styles.queryInput} placeholder="Search students, parents, phone numbers, or branches..."
               value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
             <button type="submit" className={styles.querySubmitBtn} aria-label="Search Inquiries">
               <Search size={18} />
             </button>
           </form>
-          <div className={styles.snapshotGrid} style={{ marginBottom: "1.5rem" }}>
+          <div className={styles.snapshotGrid}>
             <div className={styles.snapshotItem}>
               <span>Registered Students</span>
               <strong>{analytics.totalStudents} Active</strong>
             </div>
             <div className={styles.snapshotItem}>
               <span>Parent Callbacks</span>
-              <strong style={{ color: analytics.pendingCallbacks > 0 ? "var(--primary)" : "var(--heading)" }}>
+              <strong className={analytics.pendingCallbacks > 0 ? styles.primaryText : ""}>
                 {analytics.pendingCallbacks} Pending
               </strong>
             </div>
@@ -155,13 +154,13 @@ export default function AdminDashboard(){
             </div>
             <div className={styles.snapshotItem}>
               <span>Flagged Escalations</span>
-              <strong style={{ color: analytics.queriesNeedingFollowup > 0 ? "#f59e0b" : "var(--heading)" }}>
+              <strong className={analytics.queriesNeedingFollowup > 0 ? styles.warningText : ""}>
                 {analytics.queriesNeedingFollowup} Urgent
               </strong>
             </div>
-            <div className={styles.snapshotItem} style={{ cursor: "pointer" }} onClick={() => navigate("/admin/analytics")} title="Click to view Satisfaction & Rating Intelligence in Analytics">
+            <div className={styles.snapshotItem} onClick={() => navigate("/admin/analytics")} title="Click to view Satisfaction & Rating Intelligence in Analytics">
               <span>Satisfaction Rating</span>
-              <strong style={{ color: "#f59e0b" }}>
+              <strong className={styles.warningText}>
                 {analytics.averageRating ? `${analytics.averageRating} ★` : "5.0 ★"}
               </strong>
             </div>
@@ -173,9 +172,8 @@ export default function AdminDashboard(){
             <ArrowUpRight size={17}/>
           </button>
           <button type="button" className={styles.outlineActionBtn}
-            style={{ width: "auto", padding: "10px 16px" }}
             onClick={handleExportCSV} title="Download CSV report of student inquiries">
-            <Download size={16} style={{ marginRight: "6px" }} />
+            <Download size={16} />
             <span>Export Inquiries (CSV)</span>
           </button>
         </div>
@@ -183,18 +181,15 @@ export default function AdminDashboard(){
 
       <div className={styles.sideStack}>
         <div className={`${styles.card} ${styles.quickCard}`}>
-          <div className={styles.cardHeader} style={{ marginBottom: "14px" }}>
+          <div className={styles.cardHeader}>
             <div>
               <h2 className={styles.cardTitle}>Operations & Control Center</h2>
-              <span style={{ fontSize: "0.78rem", color: "var(--muted)", display: "block", marginTop: "2px" }}>
-                Manage student inquiries, parent callbacks & escalations
-              </span>
             </div>
           </div>
           <div className={styles.quickActions}>
             <button className={`${styles.quickAction} ${styles.qaRow}`} onClick={() => navigate("/admin/analytics")}>
               <div className={styles.qaLeft}>
-                <div className={styles.quickIcon} style={{ background: "rgba(249, 115, 22, 0.15)", color: "var(--primary)" }}>
+                <div className={styles.quickIcon}>
                   <PhoneCall size={18}/>
                 </div>
                 <div className={styles.quickActionText}>
@@ -211,7 +206,7 @@ export default function AdminDashboard(){
             </button>
             <button className={`${styles.quickAction} ${styles.qaRow}`} onClick={() => navigate("/chat")}>
               <div className={styles.qaLeft}>
-                <div className={styles.quickIcon} style={{ background: "rgba(59, 130, 246, 0.15)", color: "#3b82f6" }}>
+                <div className={`${styles.quickIcon} ${styles.pillTotal}`}>
                   <Users size={18}/>
                 </div>
                 <div className={styles.quickActionText}>
@@ -228,7 +223,7 @@ export default function AdminDashboard(){
             </button>
             <button className={`${styles.quickAction} ${styles.qaRow}`} onClick={() => navigate("/admin/analytics")}>
               <div className={styles.qaLeft}>
-                <div className={styles.quickIcon} style={{ background: "rgba(168, 85, 247, 0.15)", color: "#a855f7" }}>
+                <div className={`${styles.quickIcon} ${styles.pillRating}`}>
                   <AlertCircle size={18}/>
                 </div>
                 <div className={styles.quickActionText}>
@@ -245,7 +240,7 @@ export default function AdminDashboard(){
             </button>
             <button className={`${styles.quickAction} ${styles.qaRow}`} onClick={() => navigate("/admin/analytics")}>
               <div className={styles.qaLeft}>
-                <div className={styles.quickIcon} style={{ background: "rgba(245, 158, 11, 0.15)", color: "#f59e0b" }}>
+                <div className={`${styles.quickIcon} ${styles.pillRating}`}>
                   <Star size={18}/>
                 </div>
                 <div className={styles.quickActionText}>

@@ -100,24 +100,16 @@ export default function Dashboard() {
   ];
 
   return (
-    <DashboardLayout
-      displayName={user?.username || "Student"}
-      subtitle="Your centralized AI counseling center. Have questions about cutoffs, fees, or documents? Mitra is ready."
-    >
+    <DashboardLayout displayName={user?.username || "Student"}>
       <div className={`${styles.card} ${styles.aiHeroCard}`}>
         <div>
           <h2 className={styles.aiHeroTitle}>What would you like to explore today?</h2>
-          <p className={styles.aiHeroDesc}>
-            Get instant, personalized guidance on cutoffs, seat matrices, scholarships, and admission procedures.
-          </p>
-
           <form
             className={styles.queryLauncher}
             onSubmit={(e) => {
               e.preventDefault();
               handleLaunch();
-            }}
-          >
+            }}>
             <input
               type="text"
               className={styles.queryInput}
