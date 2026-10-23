@@ -17,8 +17,8 @@ import api from "../../api/api";
 import { ADMIN_MENU_ITEMS } from "../../constants/navigation";
 
 export default function AdminDashboard(){
-  const [admin] = useState(() => {
-    const storedUser = localStorage.getItem("user");
+  const [admin]=useState(() => {
+    const storedUser=localStorage.getItem("user");
     if(storedUser){
       try{
         return JSON.parse(storedUser);
@@ -30,7 +30,7 @@ export default function AdminDashboard(){
     return null;
   });
   
-  const [analytics, setAnalytics] = useState({
+  const [analytics, setAnalytics]=useState({
     totalApplications: 0,
     totalQueries: 0,
     totalStudents: 0,
@@ -39,20 +39,20 @@ export default function AdminDashboard(){
     averageRating: 5.0,
     totalFeedback: 0,
   });
-  const [recentChats, setRecentChats] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [recentChats, setRecentChats]=useState([]);
+  const [searchQuery, setSearchQuery]=useState("");
+  const [loading, setLoading]=useState(true);
+  const [error, setError]=useState(null);
+  const navigate=useNavigate();
 
   useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
+    const fetchAnalytics=async() => {
+      try{
         setLoading(true);
         setError(null);
-        const resp = await api.get("/admin/analytics/summary", { withCredentials: true });
-        const d = resp.data?.data;
-        if (d) {
+        const resp=await api.get("/admin/analytics/summary", { withCredentials: true });
+        const d=resp.data?.data;
+        if(d){
           setAnalytics({
             totalApplications: d.applications?.totalApplications ?? d.students?.registeredUserAccounts ?? 0,
             totalQueries: d.questions?.totalQuestionsAsked ?? 0,
@@ -63,51 +63,50 @@ export default function AdminDashboard(){
             totalFeedback: d.feedback?.totalFeedback ?? 0,
           });
         }
-
-        // Fetch recent inquiries / callbacks stream
-        try {
-          const chatsResp = await api.get("/admin/analytics/chats?limit=4", { withCredentials: true });
-          if (chatsResp.data?.success && Array.isArray(chatsResp.data?.data)) {
+        try{
+          const chatsResp=await api.get("/admin/analytics/chats?limit=4",{withCredentials: true});
+          if(chatsResp.data?.success && Array.isArray(chatsResp.data?.data)) {
             setRecentChats(chatsResp.data.data);
           }
-        } catch {
-          // Non-critical fallback
         }
-      } catch (err) {
+        catch{}
+      } 
+      catch(err){
         console.error("Failed to fetch analytics:", err);
-        if (err.response?.status === 401 || err.response?.status === 403) {
-          setError("You need to log in with an Admin account to view dashboard statistics.");
-        } else {
-          setError("Failed to load statistics from the backend.");
+        if(err.response?.status === 401 || err.response?.status === 403) {
+          setError("Log in with an Admin account");
+        } 
+        else{
+          setError("Failed to load");
         }
-      } finally {
+      } 
+      finally{
         setLoading(false);
       }
     };
     fetchAnalytics();
   }, []);
 
-  const displayName = admin?.username || "Admin";
-
-  const handleSearch = (e) => {
+  const displayName=admin?.username || "Admin";
+  const handleSearch=(e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
+    if(searchQuery.trim()){
       navigate(`/admin/analytics?search=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
+    } 
+    else{
       navigate("/admin/analytics");
     }
   };
-
   const handleExportCSV = async () => {
     try {
-      const resp = await api.get("/admin/analytics/chats?limit=100", { withCredentials: true });
-      const records = resp.data?.data || [];
-      if (!records.length) {
+      const resp=await api.get("/admin/analytics/chats?limit=100", { withCredentials: true });
+      const records=resp.data?.data || [];
+      if(!records.length){
         alert("No student inquiry records found to export.");
         return;
       }
-      const headers = ["Chat ID", "Student Name", "Phone", "Email", "Target Branch", "Question", "Callback Requested", "Followup Status", "Date"];
-      const rows = records.map(r => [
+      const headers=["Chat ID", "Student Name", "Phone", "Email", "Target Branch", "Question", "Callback Requested", "Followup Status", "Date"];
+      const rows=records.map(r => [
         r.chat_id,
         `"${(r.student_name || "Guest").replace(/"/g, '""')}"`,
         `"${r.student_phone || ""}"`,
@@ -126,96 +125,78 @@ export default function AdminDashboard(){
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (err) {
+    } 
+    catch(err){
       console.error("Export failed:", err);
       alert("Failed to export inquiries.");
     }
   };
 
-  return (
+  return(
     <DashboardLayout
       menuItems={ADMIN_MENU_ITEMS}
       displayName={displayName}
       greeting="Admin Workspace,"
-      subtitle="Institutional management portal. Monitor student inquiries, parent callbacks, and counseling metrics."
-    >
-      {/* Left Main Card: System Overview & Student Lookup */}
+      subtitle="Institutional management portal. Monitor student inquiries, parent callbacks, and counseling metrics.">
+
       <div className={`${styles.card} ${styles.aiCard}`}>
         <div className={styles.aiIcon}>
           <BarChart size={25}/>
         </div>
         <h2 className={styles.aiTitle}>System Control & Overview</h2>
 
-        {error ? (
-          <div style={{ margin: "14px 0", padding: "12px 16px", background: "rgba(239, 68, 68, 0.12)", border: "1px solid rgba(239, 68, 68, 0.4)", borderRadius: "8px", color: "#f87171" }}>
-            <p style={{ margin: "0 0 10px 0", fontSize: "0.95rem" }}>⚠️ {error}</p>
-            <button
-              className={styles.primaryButton}
-              style={{ padding: "6px 14px", fontSize: "0.85rem", background: "var(--primary)" }}
-              onClick={() => navigate("/login")}
-            >
-              Log in as Admin
+        <div>
+          <p className={styles.aiDescription}>
+            {loading?(
+              "Loading latest institutional statistics..."
+            ):(
+              <>
+                Overseeing <strong>{analytics.totalStudents}</strong> student profiles and <strong>{analytics.totalApplications}</strong> admissions. 
+                Campus-Mitra has resolved <strong>{analytics.totalQueries}</strong> parent/student queries with an average satisfaction rating of <strong>{analytics.averageRating} ★</strong>.
+              </>
+            )}
+          </p>
+
+          <form className={styles.queryLauncher} onSubmit={handleSearch} style={{ marginTop: "1rem", marginBottom: "1.25rem" }}>
+            <input
+              type="text"
+              className={styles.queryInput}
+              placeholder="Search students, parents, phone numbers, or branches..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}/>
+            <button type="submit" className={styles.querySubmitBtn} aria-label="Search Inquiries">
+              <Search size={18} />
             </button>
-          </div>
-        ) : (
-          <div>
-            <p className={styles.aiDescription}>
-              {loading ? (
-                "Loading latest institutional statistics..."
-              ) : (
-                <>
-                  Overseeing <strong>{analytics.totalStudents}</strong> student profiles and <strong>{analytics.totalApplications}</strong> admissions. 
-                  Campus-Mitra has resolved <strong>{analytics.totalQueries}</strong> parent/student queries with an average satisfaction rating of <strong>{analytics.averageRating} ★</strong>.
-                </>
-              )}
-            </p>
+          </form>
 
-            {/* Quick Student / Parent Search Bar */}
-            <form className={styles.queryLauncher} onSubmit={handleSearch} style={{ marginTop: "1rem", marginBottom: "1.25rem" }}>
-              <input
-                type="text"
-                className={styles.queryInput}
-                placeholder="Search students, parents, phone numbers, or branches..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button type="submit" className={styles.querySubmitBtn} aria-label="Search Inquiries">
-                <Search size={18} />
-              </button>
-            </form>
-
-            {/* Snapshot KPI Grid */}
-            <div className={styles.snapshotGrid} style={{ marginBottom: "1.5rem" }}>
-              <div className={styles.snapshotItem}>
-                <span>Registered Students</span>
-                <strong>{analytics.totalStudents} Active</strong>
-              </div>
-              <div className={styles.snapshotItem}>
-                <span>Parent Callbacks</span>
-                <strong style={{ color: analytics.pendingCallbacks > 0 ? "var(--primary)" : "var(--heading)" }}>
-                  {analytics.pendingCallbacks} Pending
-                </strong>
-              </div>
-              <div className={styles.snapshotItem}>
-                <span>Total Queries Resolved</span>
-                <strong>{analytics.totalQueries} Chats</strong>
-              </div>
-              <div className={styles.snapshotItem}>
-                <span>Flagged Escalations</span>
-                <strong style={{ color: analytics.queriesNeedingFollowup > 0 ? "#f59e0b" : "var(--heading)" }}>
-                  {analytics.queriesNeedingFollowup} Urgent
-                </strong>
-              </div>
+          <div className={styles.snapshotGrid} style={{ marginBottom: "1.5rem" }}>
+            <div className={styles.snapshotItem}>
+              <span>Registered Students</span>
+              <strong>{analytics.totalStudents} Active</strong>
+            </div>
+            <div className={styles.snapshotItem}>
+              <span>Parent Callbacks</span>
+              <strong style={{ color: analytics.pendingCallbacks > 0 ? "var(--primary)" : "var(--heading)" }}>
+                {analytics.pendingCallbacks} Pending
+              </strong>
+            </div>
+            <div className={styles.snapshotItem}>
+              <span>Total Queries Resolved</span>
+              <strong>{analytics.totalQueries} Chats</strong>
+            </div>
+            <div className={styles.snapshotItem}>
+              <span>Flagged Escalations</span>
+              <strong style={{ color: analytics.queriesNeedingFollowup > 0 ? "#f59e0b" : "var(--heading)" }}>
+                {analytics.queriesNeedingFollowup} Urgent
+              </strong>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Action Button Row */}
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "auto" }}>
           <button
             className={styles.primaryButton}
-            onClick={() => navigate("/admin/analytics")}
-          >
+            onClick={() => navigate("/admin/analytics")}>
             Open Full Analytics Hub
             <ArrowUpRight size={17}/>
           </button>
@@ -225,15 +206,13 @@ export default function AdminDashboard(){
             className={styles.outlineActionBtn}
             style={{ width: "auto", padding: "10px 16px" }}
             onClick={handleExportCSV}
-            title="Download CSV report of student inquiries"
-          >
+            title="Download CSV report of student inquiries">
             <Download size={16} style={{ marginRight: "6px" }} />
             <span>Export Inquiries (CSV)</span>
           </button>
         </div>
       </div>
 
-      {/* Right Column: Upgraded Operations & Control Center */}
       <div className={styles.sideStack}>
         <div className={`${styles.card} ${styles.quickCard}`}>
           <div className={styles.cardHeader} style={{ marginBottom: "14px" }}>
@@ -246,12 +225,10 @@ export default function AdminDashboard(){
           </div>
 
           <div className={styles.quickActions}>
-            {/* 1. Parent & Student Callbacks */}
             <button 
               className={styles.quickAction} 
               onClick={() => navigate("/admin/analytics")}
-              style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
-            >
+              style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <span className={styles.quickIcon} style={{ background: "rgba(249, 115, 22, 0.15)", color: "var(--primary)" }}>
                   <PhoneCall size={18}/>
@@ -276,7 +253,6 @@ export default function AdminDashboard(){
               </div>
             </button>
 
-            {/* 2. Student Queries & Live Logs */}
             <button 
               className={styles.quickAction} 
               onClick={() => navigate("/chat")}
@@ -299,7 +275,6 @@ export default function AdminDashboard(){
               </div>
             </button>
 
-            {/* 3. Escalated Inquiries */}
             <button 
               className={styles.quickAction} 
               onClick={() => navigate("/admin/analytics")}
@@ -331,7 +306,6 @@ export default function AdminDashboard(){
           </div>
         </div>
 
-        {/* Live Recent Inquiries Feed */}
         {recentChats.length > 0 && (
           <div className={styles.card} style={{ padding: "18px 20px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>

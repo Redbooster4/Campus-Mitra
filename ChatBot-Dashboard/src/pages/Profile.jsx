@@ -9,7 +9,6 @@ import {
   GraduationCap,
   Sliders,
   Check,
-  PhoneCall,
   Save,
 } from "lucide-react";
 import styles from "./styles/Profile.module.css";
@@ -235,7 +234,6 @@ export default function Profile() {
               <div className={styles.parentBox}>
                 <h4>Direct Admission Helpline</h4>
                 <p>
-                  <PhoneCall size={14} style={{ marginRight:6, verticalAlign:"middle" }} />
                   +91 (022) 4233-6000 (SBMP Admission Desk)
                   <br />
                   Office hours: Mon - Sat (9:30 AM to 5:00 PM)
