@@ -1,21 +1,12 @@
-html, body{
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  color: var(--text);
-}
-
-body{
-  font-family: inherit;
-}
-.wrapper{
+.wrapper {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
   background: var(--bg);
   color: var(--text);
 }
-.main{
+
+.main {
   position: relative;
   z-index: 1;
   min-height: 100vh;
@@ -29,22 +20,22 @@ body{
   text-align: center;
 }
 
-.title{
+.title {
   margin: 0 0 1.5rem;
   color: var(--heading);
   font-size: 3rem;
   font-weight: 800;
   line-height: 1.1;
 }
-.gradient{
-  background: linear-gradient(
-    to right, var(--orange-light), var(--primary)
-  );
+
+.gradient {
+  background: linear-gradient(to right, var(--orange-light), var(--primary));
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
-.description{
+
+.leadDescription {
   max-width: 650px;
   margin: 0 auto 2rem;
   color: var(--muted);
@@ -52,11 +43,12 @@ body{
   line-height: 1.6;
 }
 
-.btngroup{
+.btngroup {
   display: flex;
   gap: 1rem;
 }
-.btn{
+
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -68,33 +60,38 @@ body{
   font-weight: 600;
   transition: all 0.2s ease;
 }
-.btnLarge{
+
+.btnLarge {
   margin-top: 40px;
   padding: 1rem 1.5rem;
   font-size: 1rem;
 }
-.btnPrimary{
+
+.btnPrimary {
   background: var(--primary);
   color: var(--primary-foreground);
 }
-.btnPrimary:hover{
+
+.btnPrimary:hover {
   background: var(--primary-hover);
-  transform:translateY(-2px);
-  box-shadow:0 4px 15px var(--primary-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--primary-glow);
 }
-.btnSecondary{
+
+.btnSecondary {
   background: var(--card);
   border: 1px solid var(--border);
   color: var(--heading);
 }
-.btnSecondary:hover{
+
+.btnSecondary:hover {
   border-color: var(--primary);
   color: var(--primary);
-  transform:translateY(-2px);
-  box-shadow:0 4px 15px var(--shadow-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--shadow-color);
 }
 
-.grid{
+.grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
@@ -102,22 +99,22 @@ body{
   margin-top: 5rem;
 }
 
-.card{
+.card {
   padding: 1.5rem;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   text-align: left;
-  transition:all 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-.card:hover{
+.card:hover {
   border-color: var(--primary);
-  transform:translateY(-5px);
-  box-shadow:0 8px 25px var(--primary-glow);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px var(--primary-glow);
 }
 
-.icon{
+.icon {
   width: 3rem;
   height: 3rem;
   display: flex;
@@ -130,40 +127,36 @@ body{
   border: 1px solid var(--border);
 }
 
-.featureTitle{
+.featureTitle {
   margin: 0 0 0.5rem;
   color: var(--heading);
   font-size: 1.1rem;
 }
 
-.description{
+.cardDescription {
   margin: 0;
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.6;
 }
 
-@media (min-width: 640px){
-  .grid{
+@media (min-width: 640px) {
+  .grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-@media (min-width: 768px){
-  .hero-title{
-    font-size: 4.5rem;
-  }
-  .hero-description{
-    font-size: 1.2rem;
-  }
-  .grid{
+
+@media (min-width: 768px) {
+  .grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-@media (max-width: 480px){
-  .title{
+
+@media (max-width: 480px) {
+  .title {
     font-size: 2.1rem;
   }
-  .btngroup{
+  .btngroup {
     margin-top: 1.5rem;
     padding-top: 0;
     flex-direction: column;
@@ -171,16 +164,13 @@ body{
     max-width: 290px;
     gap: 0.75rem;
   }
-  .btnLarge{
+  .btnLarge {
     margin-top: 0;
     padding: 0.75rem 1.25rem;
     font-size: 0.92rem;
   }
-  .btnPrimary, .btnSecondary{
+  .btnPrimary, .btnSecondary {
     font-size: 0.92rem;
     width: 100%;
-  }
-  .hide{
-    display: inline-block;
   }
 }

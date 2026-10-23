@@ -33,9 +33,6 @@ const createPrivacyDisclosureText = (userData, dbSynced = false) => {
   let storedUser = {};
   let academicProfile = {};
   let counselingPrefs = {};
-  let token = null;
-  let preferredLanguage = "English";
-  let preferredBranch = "";
 
   try {
     const rawUser = localStorage.getItem("user");
@@ -58,9 +55,9 @@ const createPrivacyDisclosureText = (userData, dbSynced = false) => {
     console.warn("Could not parse counseling preferences:", err);
   }
 
-  token = localStorage.getItem("token");
-  preferredLanguage = localStorage.getItem("preferredLanguage") || "English";
-  preferredBranch = localStorage.getItem("preferredBranch") || "";
+  const token = localStorage.getItem("token");
+  const preferredLanguage = localStorage.getItem("preferredLanguage") || "English";
+  const preferredBranch = localStorage.getItem("preferredBranch") || "";
 
   // Merge live /auth/me user data if provided
   const activeUser = { ...storedUser, ...(userData || {}) };
@@ -731,30 +728,21 @@ Your inquiry has been officially escalated to the **Shri Bhagubhai Mafatlal Poly
 
         <div className={styles.sidebarBody}>
           <span className={styles.navSectionTitle}>Navigation</span>
-          <button
-            onClick={() => navigate("/home")}
-            className={styles.navButton}
-            title="Home"
-          >
-            <Home className={styles.navIcon} />
-            <span className={styles.navLabel}>Home</span>
-          </button>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className={styles.navButton}
-            title="Dashboard"
-          >
-            <LayoutDashboard className={styles.navIcon} />
-            <span className={styles.navLabel}>Dashboard</span>
-          </button>
-          <button
-            onClick={() => navigate("/profile")}
-            className={styles.navButton}
-            title="Profile"
-          >
-            <User className={styles.navIcon} />
-            <span className={styles.navLabel}>Profile</span>
-          </button>
+          {[
+            { label: "Home", path: "/home", Icon: Home },
+            { label: "Dashboard", path: "/dashboard", Icon: LayoutDashboard },
+            { label: "Profile", path: "/profile", Icon: User },
+          ].map(({ label, path, Icon }) => (
+            <button
+              key={path}
+              onClick={() => navigate(path)}
+              className={styles.navButton}
+              title={label}
+            >
+              <Icon className={styles.navIcon} />
+              <span className={styles.navLabel}>{label}</span>
+            </button>
+          ))}
         </div>
 
         <div className={styles.sidebarFooter}>

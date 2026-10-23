@@ -3,98 +3,90 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import StaggeredMenu from "../components/StaggeredMenu";
 import {
-  ArrowLeft,
-  MessageSquare,
-  User,
-  GraduationCap,
-  Sliders,
-  Check,
-  Save,
+  ArrowLeft, MessageSquare, User, GraduationCap, Sliders, Check, Save,
 } from "lucide-react";
 import styles from "./styles/Profile.module.css";
 import { STUDENT_MENU_ITEMS, SOCIAL_ITEMS } from "../constants/navigation";
 import SquishSwitch from '../components/SquishSwitch';
 
-export default function Profile() {
-  const navigate=useNavigate();
+const LANGUAGES = ["English", "Hindi", "Marathi", "Gujarati"];
+const TONE_OPTIONS = [
+  { value: "detailed", title: "Detailed & In-Depth", desc: "Includes cut-off trends, placement stats, and syllabus breakdowns." },
+  { value: "concise", title: "Quick & Direct", desc: "Brief answers focused strictly on cut-off numbers and document lists." },
+  { value: "mentorship", title: "Step-by-Step Mentorship", desc: "Friendly, roadmap-style advice explaining each CAP round step." },
+];
 
-  const [user, setUser]=useState(() => {
-    const stored=localStorage.getItem("user");
+export default function Profile() {
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("user");
     if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch {
-        return null;
-      }
+      try { return JSON.parse(stored); } catch { return null; }
     }
     return null;
   });
 
-  const [academicData, setAcademicData]=useState(() => {
-    const saved=localStorage.getItem("studentAcademicProfile");
-    if(saved){
-      try{
-        return JSON.parse(saved);
-      } 
-      catch(err) {
-        console.log(err);
-      }
-    }
-    return{
-      sscPercentage:"",
-      hscPercentage:"",
-      entranceExam:"",
-      entrancePercentile:"",
-      targetBranch:"",
-      category:"",
-    };
-  });
-
-  const [counselingPrefs, setCounselingPrefs]=useState(() => {
-    const savedLang=user?.preferredLanguage || localStorage.getItem("preferredLanguage") || "English";
-    const saved=localStorage.getItem("counselingPreferences");
+  const [academicData, setAcademicData] = useState(() => {
+    const saved = localStorage.getItem("studentAcademicProfile");
     if (saved) {
-      try {
-        const parsed=JSON.parse(saved);
-        return { ...parsed, language:savedLang };
-      } catch (err) {
-        console.error("Failed to parse counseling preferences", err);
-      }
+      try { return JSON.parse(saved); } catch (err) { console.debug(err); }
     }
     return {
-      language:savedLang,
-      tone:"detailed",
-      targetYear:"2026-2027",
+      sscPercentage: "",
+      hscPercentage: "",
+      entranceExam: "MHT-CET",
+      entrancePercentile: "",
+      targetBranch: "Computer Engineering",
+      category: "General / Open",
     };
   });
 
-  const [parentMode, setParentMode]=useState(false);
-  const [savedStatus, setSavedStatus]=useState(false);
+  const [counselingPrefs, setCounselingPrefs] = useState(() => {
+    const savedLang = user?.preferredLanguage || localStorage.getItem("preferredLanguage") || "English";
+    const saved = localStorage.getItem("counselingPreferences");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return { ...parsed, language: savedLang };
+      } catch (err) {
+        console.error("Failed to parse preferences", err);
+      }
+    }
+    return { language: savedLang, tone: "detailed", targetYear: "2026-2027" };
+  });
 
-  const handleAcademicChange=(e) => {
-    setAcademicData({ ...academicData, [e.target.name]:e.target.value });
+  const [parentMode, setParentMode] = useState(false);
+  const [savedStatus, setSavedStatus] = useState(false);
+
+  const handleAcademicChange = (e) => {
+    setAcademicData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setSavedStatus(false);
   };
 
-  const handleLanguageSelect=(lang) => {
-    setCounselingPrefs({ ...counselingPrefs, language:lang });
+  const handleLanguageSelect = (lang) => {
+    setCounselingPrefs((prev) => ({ ...prev, language: lang }));
     localStorage.setItem("preferredLanguage", lang);
     setSavedStatus(false);
   };
 
-  const handleToneSelect=(tone) => {
-    setCounselingPrefs({ ...counselingPrefs, tone });
+  const handleToneSelect = (tone) => {
+    setCounselingPrefs((prev) => ({ ...prev, tone }));
     setSavedStatus(false);
   };
 
   useEffect(() => {
+    let isMounted = true;
     const fetchRemoteProfile = async () => {
       try {
         const resp = await api.get("/auth/me");
-        if (resp.data?.user) {
+        if (isMounted && resp.data?.user) {
           const u = resp.data.user;
-          setUser((prev) => ({ ...prev, ...u }));
-          localStorage.setItem("user", JSON.stringify({ ...(user || {}), ...u }));
+          setUser((prev) => {
+            const updated = { ...(prev || {}), ...u };
+            localStorage.setItem("user", JSON.stringify(updated));
+            return updated;
+          });
           setAcademicData((prev) => ({
             ...prev,
             targetBranch: u.target_branch || prev.targetBranch || "Computer Engineering",
@@ -109,13 +101,14 @@ export default function Profile() {
     if (localStorage.getItem("token")) {
       fetchRemoteProfile();
     }
+    return () => { isMounted = false; };
   }, []);
 
-  const handleSave=async () => {
+  const handleSave = async () => {
     localStorage.setItem("studentAcademicProfile", JSON.stringify(academicData));
     localStorage.setItem("counselingPreferences", JSON.stringify(counselingPrefs));
     localStorage.setItem("preferredLanguage", counselingPrefs.language);
-    
+
     try {
       const resp = await api.put("/auth/profile", {
         target_branch: academicData.targetBranch,
@@ -132,23 +125,21 @@ export default function Profile() {
     }
 
     if (user) {
-      const updatedUser={ ...user, preferredLanguage:counselingPrefs.language };
+      const updatedUser = { ...user, preferredLanguage: counselingPrefs.language };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
     }
     setSavedStatus(true);
-    setTimeout(() => {
-      setSavedStatus(false);
-    }, 3000);
+    setTimeout(() => setSavedStatus(false), 3000);
   };
 
-  const handleStartCounseling=() => {
+  const handleStartCounseling = () => {
     handleSave();
     navigate("/chat");
   };
 
-  const displayName=user?.username || "Student";
-  const displayEmail=user?.email || `${displayName.toLowerCase().replace(/\s+/g, "")}@student.ac.in`;
+  const displayName = user?.username || "Student";
+  const displayEmail = user?.email || `${displayName.toLowerCase().replace(/\s+/g, "")}@student.ac.in`;
 
   return (
     <div className={styles.profilePage}>
@@ -193,9 +184,7 @@ export default function Profile() {
         <div className={styles.parentToggleCard}>
           <div className={styles.parentToggleInfo}>
             <h3>Parent/Guardian View Mode</h3>
-            <p>
-              Switch on to see verified fee structure and official grievance helpline.
-            </p>
+            <p>Switch on to see verified fee structure and official grievance helpline.</p>
           </div>
           <SquishSwitch
             checked={parentMode}
@@ -221,21 +210,16 @@ export default function Profile() {
             <div className={styles.parentRow}>
               <div className={styles.parentBox}>
                 <h4>Transparent Fee Breakdown</h4>
-                <p>
-                  Tuition, development, and university exam fees are governed strictly by FRA (Fees Regulating Authority). TFWS and EBC concessions apply as per norms.
-                </p>
+                <p>Tuition, development, and university exam fees are governed strictly by FRA (Fees Regulating Authority). TFWS and EBC concessions apply as per norms.</p>
               </div>
               <div className={styles.parentBox}>
                 <h4>Hostel & Campus Safety</h4>
-                <p>
-                  24/7 campus security, separate monitored boys and girls hostels, and biometrics attendance notifications are enabled for guardians.
-                </p>
+                <p>24/7 campus security, separate monitored boys and girls hostels, and biometrics attendance notifications are enabled for guardians.</p>
               </div>
               <div className={styles.parentBox}>
                 <h4>Direct Admission Helpline</h4>
                 <p>
-                  +91 (022) 4233-6000 (SBMP Admission Desk)
-                  <br />
+                  +91 (022) 4233-6000 (SBMP Admission Desk)<br />
                   Office hours: Mon - Sat (9:30 AM to 5:00 PM)
                 </p>
               </div>
@@ -356,13 +340,11 @@ export default function Profile() {
             <div className={styles.formGroupFull}>
               <label>Counseling Interaction Language</label>
               <div className={styles.languagePills}>
-                {["English", "Hindi", "Marathi", "Gujarati"].map((lang) => (
+                {LANGUAGES.map((lang) => (
                   <button
                     key={lang}
                     type="button"
-                    className={`${styles.langPill} ${
-                      counselingPrefs.language === lang ? styles.langPillActive:""
-                    }`}
+                    className={`${styles.langPill} ${counselingPrefs.language === lang ? styles.langPillActive : ""}`}
                     onClick={() => handleLanguageSelect(lang)}
                   >
                     {lang}
@@ -371,62 +353,27 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className={styles.formGroupFull} style={{ marginTop:18 }}>
+            <div className={styles.formGroupFull} style={{ marginTop: 18 }}>
               <label>Counselor Guidance Style</label>
               <div className={styles.toneList}>
-                <label
-                  className={`${styles.toneOption} ${
-                    counselingPrefs.tone === "detailed" ? styles.toneActive:""
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="tone"
-                    value="detailed"
-                    checked={counselingPrefs.tone === "detailed"}
-                    onChange={() => handleToneSelect("detailed")}
-                  />
-                  <div>
-                    <strong>Detailed & In-Depth</strong>
-                    <span>Includes cut-off trends, placement stats, and syllabus breakdowns.</span>
-                  </div>
-                </label>
-
-                <label
-                  className={`${styles.toneOption} ${
-                    counselingPrefs.tone === "concise" ? styles.toneActive:""
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="tone"
-                    value="concise"
-                    checked={counselingPrefs.tone === "concise"}
-                    onChange={() => handleToneSelect("concise")}
-                  />
-                  <div>
-                    <strong>Quick & Direct</strong>
-                    <span>Brief answers focused strictly on cut-off numbers and document lists.</span>
-                  </div>
-                </label>
-
-                <label
-                  className={`${styles.toneOption} ${
-                    counselingPrefs.tone === "mentorship" ? styles.toneActive:""
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="tone"
-                    value="mentorship"
-                    checked={counselingPrefs.tone === "mentorship"}
-                    onChange={() => handleToneSelect("mentorship")}
-                  />
-                  <div>
-                    <strong>Step-by-Step Mentorship</strong>
-                    <span>Friendly, roadmap-style advice explaining each CAP round step.</span>
-                  </div>
-                </label>
+                {TONE_OPTIONS.map((opt) => (
+                  <label
+                    key={opt.value}
+                    className={`${styles.toneOption} ${counselingPrefs.tone === opt.value ? styles.toneActive : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="tone"
+                      value={opt.value}
+                      checked={counselingPrefs.tone === opt.value}
+                      onChange={() => handleToneSelect(opt.value)}
+                    />
+                    <div>
+                      <strong>{opt.title}</strong>
+                      <span>{opt.desc}</span>
+                    </div>
+                  </label>
+                ))}
               </div>
             </div>
           </section>
@@ -435,12 +382,12 @@ export default function Profile() {
         <div className={styles.saveBar}>
           {savedStatus && (
             <span className={styles.saveSuccess}>
-              <Check size={16} style={{ marginRight:6, verticalAlign:"middle" }} />
+              <Check size={16} style={{ marginRight: 6, verticalAlign: "middle" }} />
               Preferences saved
             </span>
           )}
           <button className={styles.saveButton} onClick={handleSave}>
-            <Save size={16} style={{ marginRight:8, verticalAlign:"middle" }} />
+            <Save size={16} style={{ marginRight: 8, verticalAlign: "middle" }} />
             Save Profile & Preferences
           </button>
         </div>

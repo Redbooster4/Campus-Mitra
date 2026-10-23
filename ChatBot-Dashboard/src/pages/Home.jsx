@@ -7,16 +7,27 @@ import MaskedHeading from '../components/MaskedHeading';
 import video from '../assets/SBMP INTRO.mp4';
 import poster from '../assets/poster.png';
 
-export default function Home(){
-  const navigate=useNavigate();
+const FEATURES = [
+  {
+    icon: MessageSquare,
+    title: "24/7 AI Guidance",
+    desc: "Have questions about courses, cut-offs, or fees? Mitra provides instant, verified answers anytime."
+  },
+  {
+    icon: PhoneCall,
+    title: "Counselor Callback",
+    desc: "Need one-on-one personal guidance? Request an official phone callback or schedule a counseling session directly through chat."
+  },
+  {
+    icon: Zap,
+    title: "Live Tracking",
+    desc: "Never wonder where you stand. Track your application status step-by-step from inquiry to final confirmation."
+  }
+];
 
-  function handleStartApp(){
-   window.open("http://sbmp.ac.in/", "_blank");
-  }
-  function handleChat(){
-    navigate("/dashboard");
-  }
-  
+export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <div className={styles.wrapper}>
       <StaggeredMenu
@@ -48,44 +59,34 @@ export default function Home(){
           weight={1000}
           textScale={0.125}
         />
-        <p className={styles.description}>
+        <p className={styles.leadDescription}>
           The intelligent, AI-powered academic advisory and counseling portal for SVKM's Shri Bhagubhai Mafatlal Polytechnic. Get personalized cutoff guidance, fee breakdowns, and real-time counseling support.
         </p>
 
         <div className={styles.btngroup}>
-          <button className={`${styles.btn} ${styles.btnPrimary} ${styles.btnLarge}`} onClick={handleStartApp}>
+          <button className={`${styles.btn} ${styles.btnPrimary} ${styles.btnLarge}`} onClick={() => window.open("http://sbmp.ac.in/", "_blank")}>
             Start Application 
-            <ArrowRight size={18} className={styles.hide}/>
+            <ArrowRight size={18} />
           </button>
-          <button className={`${styles.btn} ${styles.btnSecondary} ${styles.btnLarge}`} onClick={handleChat}>
-            <MessageSquare size={18} className={styles.hide}/>
+          <button className={`${styles.btn} ${styles.btnSecondary} ${styles.btnLarge}`} onClick={() => navigate("/dashboard")}>
+            <MessageSquare size={18} />
             Ask AI Counselor
           </button>
         </div>
 
         <div className={styles.grid}>
-          <div className={styles.card}>
-            <div className={styles.icon}>
-              <MessageSquare size={24} />
-            </div>
-            <h3 className={styles.featureTitle}>24/7 AI Guidance</h3>
-            <p className={styles.description}>Have questions about courses, cut-offs, or fees? Mitra provides instant, verified answers anytime.</p>
-          </div>
-          <div className={styles.card}>
-            <div className={styles.icon}>
-              <PhoneCall size={24} />
-            </div>
-            <h3 className={styles.featureTitle}>Counselor Callback</h3>
-            <p className={styles.description}>Need one-on-one personal guidance? Request an official phone callback or schedule a counseling session directly through chat.</p>
-          </div>
-
-          <div className={styles.card}>
-            <div className={styles.icon}>
-              <Zap size={24} />
-            </div>
-            <h3 className={styles.featureTitle}>Live Tracking</h3>
-            <p className={styles.description}>Never wonder where you stand. Track your application status step-by-step from inquiry to final confirmation.</p>
-          </div>
+          {FEATURES.map((f) => {
+            const Icon = f.icon;
+            return (
+              <div key={f.title} className={styles.card}>
+                <div className={styles.icon}>
+                  <Icon size={24} />
+                </div>
+                <h3 className={styles.featureTitle}>{f.title}</h3>
+                <p className={styles.cardDescription}>{f.desc}</p>
+              </div>
+            );
+          })}
         </div>
       </main>
     </div>

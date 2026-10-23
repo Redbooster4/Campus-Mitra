@@ -71,7 +71,7 @@ export default function ChatFeedbackModal({
           <div className={profileStyles.formGrid}>
             <div className={profileStyles.formGroup}>
               <label>
-                Phone number (optional)
+                Phone number {requiresContact ? "(recommended for callback)" : "(optional)"}
                 <input
                   type="tel"
                   value={contactPhone}

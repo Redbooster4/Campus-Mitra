@@ -170,19 +170,65 @@ const submitFeedback = async(req, res) => {
             }
         }
 
-        const result = await pool.query(`
-            INSERT INTO chat_feedback(
-                student_id,
-                chat_id,
-                rating,
-                user_message,
-                ai_reply
-            )
-            VALUES($1, $2, $3, $4, $5)
-            RETURNING feedback_id, rating, created_at;
-            `,
-            [validStudentId, validChatId, numericRating, user_message || null, ai_reply || null]
-        );
+        // Check if an existing feedback should be updated rather than duplicated:
+        // 1. Explicit feedback_id passed from frontend
+        // 2. OR student already submitted a feedback in the current counseling session (within the last 1 hour)
+        let existingFeedback = null;
+        if (req.body.feedback_id) {
+            try {
+                const checkRes = await pool.query(
+                    "SELECT feedback_id FROM chat_feedback WHERE feedback_id = $1",
+                    [req.body.feedback_id]
+                );
+                if (checkRes.rows.length > 0) {
+                    existingFeedback = checkRes.rows[0];
+                }
+            } catch (err) {
+                console.warn("[Feedback] Invalid feedback_id format:", req.body.feedback_id);
+            }
+        }
+
+        if (!existingFeedback && validStudentId) {
+            const recentCheck = await pool.query(
+                `SELECT feedback_id FROM chat_feedback 
+                 WHERE student_id = $1 AND created_at >= NOW() - INTERVAL '1 HOUR' 
+                 ORDER BY created_at DESC LIMIT 1`,
+                [validStudentId]
+            );
+            if (recentCheck.rows.length > 0) {
+                existingFeedback = recentCheck.rows[0];
+            }
+        }
+
+        let savedFeedback;
+        if (existingFeedback) {
+            // Update existing feedback record instead of creating duplicates
+            const updateResult = await pool.query(`
+                UPDATE chat_feedback
+                SET rating = $1,
+                    user_message = COALESCE($2, user_message),
+                    ai_reply = COALESCE($3, ai_reply),
+                    chat_id = COALESCE($4, chat_id),
+                    created_at = NOW()
+                WHERE feedback_id = $5
+                RETURNING feedback_id, rating, created_at;
+            `, [numericRating, user_message || null, ai_reply || null, validChatId, existingFeedback.feedback_id]);
+            savedFeedback = updateResult.rows[0];
+        } else {
+            // Insert new feedback record
+            const insertResult = await pool.query(`
+                INSERT INTO chat_feedback(
+                    student_id,
+                    chat_id,
+                    rating,
+                    user_message,
+                    ai_reply
+                )
+                VALUES($1, $2, $3, $4, $5)
+                RETURNING feedback_id, rating, created_at;
+            `, [validStudentId, validChatId, numericRating, user_message || null, ai_reply || null]);
+            savedFeedback = insertResult.rows[0];
+        }
 
         // If student requested follow-up alongside feedback
         if (callback_requested) {
@@ -199,8 +245,6 @@ const submitFeedback = async(req, res) => {
                 );
             }
         }
-
-        const savedFeedback = result.rows[0];
         return res.status(201).json({
             success: true,
             message: "Feedback submitted successfully",

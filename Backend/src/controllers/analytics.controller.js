@@ -208,7 +208,8 @@ const getChatLogs = async (req, res) => {
                 s.entrance_score,
                 s.callback_requested,
                 s.followup_status,
-                s.notes AS counselor_notes
+                s.notes AS counselor_notes,
+                (SELECT rating FROM chat_feedback WHERE student_id = c.student_id OR chat_id = c.chat_id ORDER BY created_at DESC LIMIT 1) AS student_rating
             FROM chat_history c
             LEFT JOIN students s ON c.student_id = s.student_id
             LEFT JOIN departments d ON c.department_id = d.department_id
@@ -289,7 +290,8 @@ const getStudentChatHistory = async (req, res) => {
             SELECT 
                 student_id, full_name, email, phone, category,
                 target_branch, entrance_score, callback_requested,
-                followup_status, notes, created_at, updated_at
+                followup_status, notes, created_at, updated_at,
+                (SELECT rating FROM chat_feedback WHERE student_id = $1 ORDER BY created_at DESC LIMIT 1) AS student_rating
             FROM students
             WHERE student_id = $1;
         `;
