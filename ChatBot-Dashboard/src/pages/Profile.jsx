@@ -4,7 +4,7 @@ import api from "../api/api";
 import StaggeredMenu from "../components/StaggeredMenu";
 import {
   ArrowLeft,
-  Sparkles,
+  MessageSquare,
   User,
   GraduationCap,
   Sliders,
@@ -175,7 +175,6 @@ export default function Profile() {
         </div>
 
         <section className={styles.profileBanner}>
-          <div className={styles.bannerGlow} />
           <div className={styles.userInfo}>
             <div className={styles.avatar}>
               <User size={38} />
@@ -187,7 +186,7 @@ export default function Profile() {
           </div>
 
           <button className={styles.bannerAction} onClick={handleStartCounseling}>
-            <Sparkles size={18} />
+            <MessageSquare size={18} />
             Consult AI Counselor
           </button>
         </section>
@@ -237,7 +236,7 @@ export default function Profile() {
                 <h4>Direct Admission Helpline</h4>
                 <p>
                   <PhoneCall size={14} style={{ marginRight:6, verticalAlign:"middle" }} />
-                  +91 (022) 2854-5566 (Admin Desk)
+                  +91 (022) 4233-6000 (SBMP Admission Desk)
                   <br />
                   Office hours: Mon - Sat (9:30 AM to 5:00 PM)
                 </p>
@@ -357,7 +356,7 @@ export default function Profile() {
             </div>
 
             <div className={styles.formGroupFull}>
-              <label>Chatbot Interaction Language</label>
+              <label>Counseling Interaction Language</label>
               <div className={styles.languagePills}>
                 {["English", "Hindi", "Marathi", "Gujarati"].map((lang) => (
                   <button

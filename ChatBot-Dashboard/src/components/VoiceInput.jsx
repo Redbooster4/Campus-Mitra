@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import api from "@/api/api";
 import { LoaderCircle, Mic, Square } from "lucide-react";
 import styles from "./VoiceInput.module.css";
 
@@ -98,8 +98,8 @@ export default function VoiceInput({ disabled = false, language = "English", onT
     const requestController = new AbortController();
     requestRef.current = requestController;
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/voice/transcribe",
+      const response = await api.post(
+        "/voice/transcribe",
         blob,
         {
           params: { language: LANGUAGE_CODES[language] || "en" },

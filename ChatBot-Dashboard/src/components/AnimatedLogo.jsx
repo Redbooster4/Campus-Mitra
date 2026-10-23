@@ -2,23 +2,21 @@ import { useRef } from 'react';
 import logoAnimation from '../assets/chatbot.mp4';
 import styles from "./AnimatedLogo.module.css";
 
-export default function AnimatedLogo({ onClick, className, title }) {
-  const videoRef = useRef(null);
+export default function AnimatedLogo({ onClick, className, title }){
+  const videoRef=useRef(null);
   const handleMouseEnter = () => {
-    if (videoRef.current) {
+    if(videoRef.current){
       videoRef.current.currentTime = 0; 
-      videoRef.current.play().catch(()=>{});
+      videoRef.current.play();
     }
   };
-
   const handleClick=(e) =>{
     if(videoRef.current){
       videoRef.current.currentTime = 0; 
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play();
     }
     onClick?.(e);
   };
-
   return(
     <div 
       className={`${styles.animatedLogo} ${className || ''}`} 
@@ -30,8 +28,7 @@ export default function AnimatedLogo({ onClick, className, title }) {
         src={logoAnimation}
         muted
         playsInline
-        disablePictureInPicture
-      />
+        disablePictureInPicture/>
     </div>
   );
 }

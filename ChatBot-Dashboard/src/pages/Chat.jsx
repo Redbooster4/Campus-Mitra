@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Send,
   Home,
@@ -11,75 +12,16 @@ import {
   ThumbsUp,
   ThumbsDown,
 } from "lucide-react";
-import styles from "./styles/Chat.module.css";
-import profileStyles from "./styles/Profile.module.css";
-import modalStyles from "./styles/Modal.module.css";
+import api from "@/api/api";
 import AnimatedLogo from "@/components/AnimatedLogo";
-import { useNavigate, useLocation } from "react-router-dom";
-import api from "../api/api";
 import MessageRenderer from "@/components/MessageRenderer";
 import GlideSelect from "@/components/GlideSelect";
-import PeekRating from "@/components/PeekRating";
 import ThemeToggle from "@/components/ThemeToggle";
 import VoiceInput from "@/components/VoiceInput";
-
-const languages=[
-  { value:"English", label:"English", tag:"EN" },
-  { value:"Hindi", label:"Hindi", tag:"हिन्दी" },
-  { value:"Marathi", label:"Marathi", tag:"मराठी" },
-  { value:"Gujarati", label:"Gujarati", tag:"ગુજરાતી" },
-];
-
-const translations={
-  English:{
-    initialMsg:(name) => `Hey ${name}! I'm Mitra, your campus counselor and academic advisor. What's on your mind today?`,
-    newChatMsg:(name) => `Hey ${name}! How can I help you in this new session?`,
-    resetMsg:(name) => `Fresh start! How can I help you today, ${name}?`,
-    suggestions:[
-      { label:"Course Recommendations", query:"Can you help me choose the right courses for next semester?" },
-      { label:"Scholarships & Financial Aid", query:"What scholarship and financial aid options are available?" },
-      { label:"Admission Deadlines & Fees", query:"What are the upcoming admission deadlines and fee structures?" },
-    ]
-  },
-  Hindi:{
-    initialMsg:(name) => `नमस्ते ${name}! मैं मित्रा हूँ, आपका कैंपस काउंसलर और शैक्षणिक सलाहकार। आज मैं आपकी क्या मदद कर सकता हूँ?`,
-    newChatMsg:(name) => `नमस्ते ${name}! इस नए सत्र में मैं आपकी क्या मदद कर सकता हूँ?`,
-    resetMsg:(name) => `नई शुरुआत! आज मैं आपकी क्या मदद कर सकता हूँ, ${name}?`,
-    suggestions:[
-      { label:"पाठ्यक्रम सुझाव", query:"क्या आप मुझे अगले सेमेस्टर के लिए सही कोर्स चुनने में मदद कर सकते हैं?" },
-      { label:"छात्रवृत्ति और वित्तीय सहायता", query:"कौन सी छात्रवृत्ति और वित्तीय सहायता विकल्प उपलब्ध हैं?" },
-      { label:"प्रवेश समय सीमा और फीस", query:"आगामी प्रवेश की समय सीमा और फीस संरचना क्या है?" },
-    ]
-  },
-  Marathi:{
-    initialMsg:(name) => `नमस्कार ${name}! मी मित्रा आहे, तुमचा कॅम्पस समुपदेशक आणि शैक्षणिक सल्लागार. आज मी तुमची काय मदत करू शकतो?`,
-    newChatMsg:(name) => `नमस्कार ${name}! या नवीन सत्रात मी तुमची काय मदत करू शकतो?`,
-    resetMsg:(name) => `नवीन सुरुवात! आज मी तुमची काय मदत करू शकतो, ${name}?`,
-    suggestions:[
-      { label:"अभ्यासक्रम शिफारसी", query:"पुढील सत्रासाठी योग्य अभ्यासक्रम निवडण्यासाठी तुम्ही मला मदत करू शकता का?" },
-      { label:"शिष्यवृत्ती आणि आर्थिक मदत", query:"कोणते शिष्यवृत्ती आणि आर्थिक मदतीचे पर्याय उपलब्ध आहेत?" },
-      { label:"प्रवेश अंतिम मुदत आणि फी", query:"आगामी प्रवेशाची अंतिम मुदत आणि फी संरचना काय आहे?" },
-    ]
-  },
-  Gujarati:{
-    initialMsg:(name) => `નમસ્તે ${name}! હું મિત્રા છું, તમારો કેમ્પસ કાઉન્સેલર અને શૈક્ષણિક સલાહકાર. આજે હું તમારી શું મદદ કરી શકું?`,
-    newChatMsg:(name) => `નમસ્તે ${name}! આ નવા સત્રમાં હું તમારી શું મદદ કરી શકું?`,
-    resetMsg:(name) => `નવી શરૂઆત! આજે હું તમારી શું મદદ કરી શકું, ${name}?`,
-    suggestions:[
-      { label:"કોર્સ ભલામણો", query:"શું તમે મને આગલા સેમેસ્ટર માટે યોગ્ય કોર્સ પસંદ કરવામાં મદદ કરી શકો છો?" },
-      { label:"શિષ્યવૃત્તિ અને નાણાકીય સહાય", query:"કયા શિષ્યવૃત્તિ અને નાણાકીય સહાયના વિકલ્પો ઉપલબ્ધ છે?" },
-      { label:"પ્રવેશની અંતિમ તારીખ અને ફી", query:"આગામી પ્રવેશની અંતિમ તારીખ અને ફી માળખું શું છે?" },
-    ]
-  }
-};
-
-const humanResponses = {
-  course: "Choosing the right courses can feel overwhelming, but you don't have to do it alone! Based on your academic interests, I recommend balancing core requirements with electives that excite you. Would you like me to look at specific branch specializations or course syllabi with you?",
-  scholarship: "We have several merit-based and need-based financial aid programs available! Applications for the upcoming term are currently open. Should I guide you through the eligibility criteria or document submission process?",
-  housing: "Living on campus is a great way to experience university life! We offer single and shared dorms with 24/7 Wi-Fi, study lounges, and dining hall access. Are you interested in on-campus hostels or nearby off-campus options?",
-  admission: "Admission dates vary slightly by department, but key deadlines for the upcoming semester are approaching fast. Fees can be paid in flexible installments. What specific degree program are you looking into?",
-  default: "I hear you! As your campus counselor, I'm here to support you through every step of your college journey—whether it's managing study workload, navigating campus resources, or planning your career path. Tell me a bit more so I can help best!"
-};
+import ChatAdminView from "@/components/chat/ChatAdminView";
+import ChatFeedbackModal from "@/components/chat/ChatFeedbackModal";
+import { languages, translations } from "@/constants/chatTranslations";
+import styles from "./styles/Chat.module.css";
 
 const getFormattedTime = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -87,31 +29,50 @@ const getFormattedTime = () =>
 const generateId = () => Date.now();
 const SESSION_IDLE_TIMEOUT = 10 * 60 * 1000;
 
-export default function Chat(){
-  const [user]=useState(() => {
+export default function Chat() {
+  const [user] = useState(() => {
     const storedUser = localStorage.getItem("user");
-    if(storedUser){
-      try{
+    if (storedUser) {
+      try {
         return JSON.parse(storedUser);
-      } 
-      catch{
+      } catch {
         return null;
       }
     }
     return null;
   });
-  const userName = user?.username || user?.full_name || "Friend";
-  const shouldPromptForProfile = !user?.role || ["student", "parent"].includes(String(user.role).toLowerCase());
+
+  const userName = user?.username || "Friend";
+  const isAdmin = String(user?.role || "").toLowerCase() === "admin";
+
+  // If Admin, render the dedicated Admin Inquiries Inspector
+  if (isAdmin) {
+    return <ChatAdminView user={user} userName={userName} />;
+  }
+
+  return <StudentChatRoom user={user} userName={userName} />;
+}
+
+function StudentChatRoom({ user, userName }) {
   const navigate = useNavigate();
-  const location=useLocation();
-  const initialHandledRef=useRef(false);
+  const location = useLocation();
+
+  const shouldPromptForProfile =
+    !user?.role ||
+    ["student", "parent"].includes(String(user.role).toLowerCase());
+
+  // Input & message states
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isVoiceBusy, setIsVoiceBusy] = useState(false);
-  const [isCollapsed, setIsCollapsed]=useState(false);
-  const [language, setLanguage]=useState(() => localStorage.getItem("preferredLanguage") || "English");
-  const [feedbackRatings, setFeedbackRatings]=useState(() => {
-    const saved=localStorage.getItem("chatFeedbackRatings");
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [language, setLanguage] = useState(
+    () => localStorage.getItem("preferredLanguage") || "English"
+  );
+
+  // Message feedback states
+  const [feedbackRatings, setFeedbackRatings] = useState(() => {
+    const saved = localStorage.getItem("chatFeedbackRatings");
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -122,32 +83,50 @@ export default function Chat(){
     return {};
   });
   const [feedbackStatus, setFeedbackStatus] = useState({});
-  const [profilePromptVisible, setProfilePromptVisible] = useState(shouldPromptForProfile);
+
+  // Session & inactivity tracking states
+  const [profilePromptVisible, setProfilePromptVisible] = useState(
+    shouldPromptForProfile
+  );
   const [profilePromptNonce, setProfilePromptNonce] = useState(0);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [sessionEndedManually, setSessionEndedManually] = useState(false);
   const [sessionNeedsFollowup, setSessionNeedsFollowup] = useState(false);
   const [sessionRating, setSessionRating] = useState(0);
-  const [contactPhone, setContactPhone] = useState(user?.phone || user?.phone_number || "");
+  const [contactPhone, setContactPhone] = useState(
+    user?.phone || user?.phone_number || ""
+  );
   const [contactEmail, setContactEmail] = useState(user?.email || "");
   const [sessionFeedbackBusy, setSessionFeedbackBusy] = useState(false);
   const [sessionFeedbackSaved, setSessionFeedbackSaved] = useState(false);
   const [sessionFeedbackError, setSessionFeedbackError] = useState("");
+
   const messagesEndRef = useRef(null);
   const idleTimerRef = useRef(null);
   const sessionStatusRef = useRef("active");
   const markActivityRef = useRef(() => {});
   const endSessionRef = useRef(() => {});
-  const latestInteractionRef = useRef({ chatId: null, userMessage: null, aiReply: null });
+  const latestInteractionRef = useRef({
+    chatId: null,
+    userMessage: null,
+    aiReply: null,
+  });
   const sessionChatIdsRef = useRef([]);
+  const initialHandledRef = useRef(false);
+
   const requiresContact = sessionNeedsFollowup || sessionEndedManually;
 
+  // Auto-dismiss profile reminder toast after 8 seconds
   useEffect(() => {
     if (!shouldPromptForProfile || !profilePromptVisible) return undefined;
-    const timer = window.setTimeout(() => setProfilePromptVisible(false), 8000);
+    const timer = window.setTimeout(
+      () => setProfilePromptVisible(false),
+      8000
+    );
     return () => window.clearTimeout(timer);
   }, [profilePromptNonce, profilePromptVisible, shouldPromptForProfile]);
 
+  // Inactivity timeout effect (10 mins)
   useEffect(() => {
     const expireSession = async () => {
       if (sessionStatusRef.current !== "active") return;
@@ -171,7 +150,10 @@ export default function Chat(){
     const markActivity = () => {
       if (sessionStatusRef.current !== "active") return;
       window.clearTimeout(idleTimerRef.current);
-      idleTimerRef.current = window.setTimeout(expireSession, SESSION_IDLE_TIMEOUT);
+      idleTimerRef.current = window.setTimeout(
+        expireSession,
+        SESSION_IDLE_TIMEOUT
+      );
     };
     const handleActivity = () => {
       if (!document.hidden) markActivity();
@@ -194,6 +176,7 @@ export default function Chat(){
     };
   }, []);
 
+  // Per-message thumbs feedback
   const handleFeedback = async (msg, score) => {
     const msgId = typeof msg === "object" ? msg.id : msg;
     setFeedbackRatings((prev) => {
@@ -219,49 +202,56 @@ export default function Chat(){
     }
   };
 
-  const [messages, setMessages]=useState(() => {
-    const defaultLang=localStorage.getItem("preferredLanguage") || "English";
-    const t=translations[defaultLang] || translations.English;
+  // Initial messages state
+  const [messages, setMessages] = useState(() => {
+    const defaultLang = localStorage.getItem("preferredLanguage") || "English";
+    const t = translations[defaultLang] || translations.English;
     return [
       {
-        id:"msg-init",
-        sender:"counselor",
-        text:t.initialMsg(userName),
-        type:"initialMsg",
-        time:"10:30 AM",
+        id: "msg-init",
+        sender: "counselor",
+        text: t.initialMsg(userName),
+        type: "initialMsg",
+        time: "10:30 AM",
       },
     ];
   });
 
-  const handleLanguageChange=(newLang) => {
+  const handleLanguageChange = (newLang) => {
     setLanguage(newLang);
     localStorage.setItem("preferredLanguage", newLang);
-    const t=translations[newLang] || translations.English;
+    const t = translations[newLang] || translations.English;
     setMessages((prev) =>
       prev.map((m) => {
-        if (m.type === "initialMsg") return { ...m, text:t.initialMsg(userName) };
-        if (m.type === "resetMsg") return { ...m, text:t.resetMsg(userName) };
+        if (m.type === "initialMsg")
+          return { ...m, text: t.initialMsg(userName) };
+        if (m.type === "resetMsg")
+          return { ...m, text: t.resetMsg(userName) };
         return m;
       })
     );
   };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior:"smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
+  // Send message to backend
   const handleSend = async (textToSend) => {
     const query = textToSend || inputValue.trim();
     if (!query || sessionStatusRef.current !== "active") return;
     markActivityRef.current();
-    latestInteractionRef.current = { chatId: null, userMessage: query, aiReply: null };
+    latestInteractionRef.current = {
+      chatId: null,
+      userMessage: query,
+      aiReply: null,
+    };
 
-    const userMsgTime = getFormattedTime();
-    const userMsg={
+    const userMsg = {
       id: generateId(),
       sender: "user",
       text: query,
-      time: userMsgTime,
+      time: getFormattedTime(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -275,39 +265,34 @@ export default function Chat(){
         if (typeof raw === "string") return raw;
         if (!raw) return "";
         if (Array.isArray(raw)) {
-          return raw.map((item) => parseResponse(item)).filter(Boolean).join("\n\n");
+          return raw
+            .map((item) => parseResponse(item))
+            .filter(Boolean)
+            .join("\n\n");
         }
         if (typeof raw === "object") {
-          return raw.text || raw.answer || raw.message || raw.content || JSON.stringify(raw);
+          return (
+            raw.text ||
+            raw.answer ||
+            raw.message ||
+            raw.content ||
+            JSON.stringify(raw)
+          );
         }
         return String(raw);
       };
 
-      try {
-        const res = await api.post("/chat", {
-          query,
-          student_id: user?.student_id || user?.id || null,
-          language: language,
-        });
-        responseText = parseResponse(res.data?.answer || res.data?.message);
-        chatId = res.data?.chat_id || null;
-      } catch {
-        const directRes = await fetch("http://localhost:5000/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query,
-            student_id: user?.student_id || user?.id || null,
-            language: language,
-          }),
-        });
-        const directData = await directRes.json();
-        responseText = parseResponse(directData?.answer || directData?.message);
-        chatId = directData?.chat_id || null;
-      }
+      const res = await api.post("/chat", {
+        query,
+        student_id: user?.student_id || user?.id || null,
+        language: language,
+      });
+      responseText = parseResponse(res.data?.answer || res.data?.message);
+      chatId = res.data?.chat_id || null;
 
       if (!responseText) {
-        responseText = humanResponses.default;
+        responseText =
+          "I hear you! As your campus counselor, I'm here to support you through every step of your polytechnic journey. Tell me a bit more so I can assist you best!";
       }
 
       const counselorMsg = {
@@ -331,19 +316,11 @@ export default function Chat(){
     } catch (err) {
       console.error("Chat error:", err);
       const counselorMsg = {
-        id:generateId(),
+        id: generateId(),
         sender: "counselor",
         text: "Sorry, I couldn't reach the admission assistant server. Please check that backend services are running.",
         time: getFormattedTime(),
       };
-      latestInteractionRef.current = {
-        ...latestInteractionRef.current,
-        userMessage: query,
-        aiReply: counselorMsg.text,
-      };
-      if (latestInteractionRef.current.chatId && !sessionChatIdsRef.current.includes(latestInteractionRef.current.chatId)) {
-        sessionChatIdsRef.current.push(latestInteractionRef.current.chatId);
-      }
       setMessages((prev) => [...prev, counselorMsg]);
     } finally {
       setIsTyping(false);
@@ -351,24 +328,17 @@ export default function Chat(){
     }
   };
 
-  const handleSendRef=useRef(handleSend);
+  const handleSendRef = useRef(handleSend);
   useEffect(() => {
-    handleSendRef.current=handleSend;
-  });
-
-  useEffect(() => {
-    const initialQuery=location.state?.initialQuery;
+    const initialQuery = location.state?.initialQuery;
     if (initialQuery && !initialHandledRef.current) {
-      initialHandledRef.current=true;
-      navigate(location.pathname, { replace:true, state:{} });
+      initialHandledRef.current = true;
+      navigate(location.pathname, { replace: true, state: {} });
       handleSendRef.current(initialQuery);
     }
   }, [location.state?.initialQuery, location.pathname, navigate]);
 
   const handleStartNewSession = () => {
-    const resetId = generateId();
-    const resetTime = getFormattedTime();
-
     sessionStatusRef.current = "active";
     setSessionExpired(false);
     setSessionEndedManually(false);
@@ -379,15 +349,21 @@ export default function Chat(){
     setSessionFeedbackBusy(false);
     setSessionFeedbackSaved(false);
     setSessionFeedbackError("");
-    latestInteractionRef.current = { chatId: null, userMessage: null, aiReply: null };
+    latestInteractionRef.current = {
+      chatId: null,
+      userMessage: null,
+      aiReply: null,
+    };
     sessionChatIdsRef.current = [];
     setMessages([
       {
-        id:resetId,
-        sender:"counselor",
-        text:(translations[language] || translations.English).resetMsg(userName),
-        type:"resetMsg",
-        time:resetTime,
+        id: generateId(),
+        sender: "counselor",
+        text: (
+          translations[language] || translations.English
+        ).resetMsg(userName),
+        type: "resetMsg",
+        time: getFormattedTime(),
       },
     ]);
     if (shouldPromptForProfile) {
@@ -408,7 +384,12 @@ export default function Chat(){
   const handleFinalFeedbackSubmit = async (event) => {
     event.preventDefault();
     const hasContact = Boolean(contactPhone.trim() || contactEmail.trim());
-    if (sessionRating < 1 || (requiresContact && !hasContact) || sessionFeedbackBusy) return;
+    if (
+      sessionRating < 1 ||
+      (requiresContact && !hasContact) ||
+      sessionFeedbackBusy
+    )
+      return;
 
     setSessionFeedbackBusy(true);
     setSessionFeedbackError("");
@@ -439,7 +420,10 @@ export default function Chat(){
       setSessionFeedbackSaved(true);
     } catch (error) {
       console.error("Could not submit session feedback:", error);
-      setSessionFeedbackError(error.response?.data?.message || "We couldn't save this yet. Please try again.");
+      setSessionFeedbackError(
+        error.response?.data?.message ||
+          "We couldn't save this yet. Please try again."
+      );
     } finally {
       setSessionFeedbackBusy(false);
     }
@@ -447,11 +431,18 @@ export default function Chat(){
 
   return (
     <div className={styles.chatPage}>
+      {/* Profile Prompt Toast */}
       {profilePromptVisible && shouldPromptForProfile && (
-        <div className={`${styles.counselorHeader} ${styles.profilePromptToast}`} role="status" aria-live="polite">
+        <div
+          className={`${styles.counselorHeader} ${styles.profilePromptToast}`}
+          role="status"
+          aria-live="polite"
+        >
           <div>
             <h2>Personalize your chats</h2>
-            <p className={styles.subtitle}>Complete your profile for more helpful, tailored answers.</p>
+            <p className={styles.subtitle}>
+              Complete your profile for more helpful, tailored answers.
+            </p>
           </div>
           <div className={styles.headerActions}>
             <button
@@ -473,100 +464,31 @@ export default function Chat(){
         </div>
       )}
 
-      {sessionExpired && (
-        <section className={`${styles.counselorHeader} ${styles.sessionFeedbackToast}`} role="dialog" aria-labelledby="session-feedback-title">
-          {sessionFeedbackSaved ? (
-            <div className={`${styles.headerActions} ${styles.sessionFeedbackSuccess}`}>
-              <div>
-                <h2>Thanks for your feedback.</h2>
-                <p className={styles.subtitle}>Your follow-up details have been saved for the admissions team.</p>
-              </div>
-              <button type="button" className={`${modalStyles.primaryButton} ${styles.sessionSubmitButton}`} onClick={handleStartNewSession}>
-                Start a new conversation
-              </button>
-            </div>
-          ) : (
-            <form className={styles.sessionFeedbackForm} onSubmit={handleFinalFeedbackSubmit}>
-              <div>
-                <h2 id="session-feedback-title">How was your chat?</h2>
-                <p className={styles.subtitle}>
-                  {sessionEndedManually
-                    ? "Your chat has ended. Leave a rating and add a phone number or email so our admissions team can follow up."
-                    : sessionNeedsFollowup
-                      ? "This conversation ended after 10 minutes of inactivity. Leave a rating and contact details so our admissions team can follow up."
-                      : "This conversation ended after 10 minutes of inactivity. How helpful was Mitra?"}
-                </p>
-              </div>
+      {/* Session Expiry & Callback Feedback Modal */}
+      <ChatFeedbackModal
+        isOpen={sessionExpired}
+        sessionFeedbackSaved={sessionFeedbackSaved}
+        sessionEndedManually={sessionEndedManually}
+        sessionNeedsFollowup={sessionNeedsFollowup}
+        sessionRating={sessionRating}
+        setSessionRating={setSessionRating}
+        contactPhone={contactPhone}
+        setContactPhone={setContactPhone}
+        contactEmail={contactEmail}
+        setContactEmail={setContactEmail}
+        sessionFeedbackBusy={sessionFeedbackBusy}
+        sessionFeedbackError={sessionFeedbackError}
+        requiresContact={requiresContact}
+        onSubmit={handleFinalFeedbackSubmit}
+        onStartNewSession={handleStartNewSession}
+      />
 
-              <div className={styles.feedbackContainer}>
-                <span className={styles.feedbackLabel}>Your rating</span>
-                <PeekRating
-                  value={sessionRating}
-                  onChange={setSessionRating}
-                  labels={["Poor", "Fair", "Good", "Helpful", "Exceptional"]}
-                  size={20}
-                  lift={4}
-                  activeColor="var(--primary)"
-                  idleColor="var(--muted)"
-                  tipColor="var(--card)"
-                  tipTextColor="var(--text)"
-                  ariaLabel="Rate your chat session"
-                />
-              </div>
-
-              {requiresContact && (
-                <div className={profileStyles.formGrid}>
-                  <div className={profileStyles.formGroup}>
-                    <label>
-                      Phone number
-                      <input
-                        type="tel"
-                        value={contactPhone}
-                        onChange={(event) => setContactPhone(event.target.value)}
-                        placeholder="e.g. +91 98765 43210"
-                        pattern="[0-9+() .-]{7,20}"
-                        title="Enter a valid phone number"
-                        required={!contactEmail.trim()}
-                        disabled={sessionFeedbackBusy}
-                      />
-                    </label>
-                  </div>
-                  <div className={profileStyles.formGroup}>
-                    <label>
-                      Email address
-                      <input
-                        type="email"
-                        value={contactEmail}
-                        onChange={(event) => setContactEmail(event.target.value)}
-                        placeholder="you@example.com"
-                        required={!contactPhone.trim()}
-                        disabled={sessionFeedbackBusy}
-                      />
-                    </label>
-                  </div>
-                </div>
-              )}
-
-              {sessionFeedbackError && <p className={styles.feedbackThankYou} style={{ color: "var(--warning)" }} role="alert">{sessionFeedbackError}</p>}
-
-              <div className={styles.headerActions}>
-                <span className={styles.feedbackLabel}>
-                  {requiresContact ? "Add at least one contact method." : "Your rating is saved with this chat."}
-                </span>
-                <button
-                  type="submit"
-                  className={`${modalStyles.primaryButton} ${styles.sessionSubmitButton}`}
-                  disabled={sessionFeedbackBusy || sessionRating < 1 || (requiresContact && !contactPhone.trim() && !contactEmail.trim())}
-                >
-                  {sessionFeedbackBusy ? "Saving…" : "Submit feedback"}
-                </button>
-              </div>
-            </form>
-          )}
-        </section>
-      )}
-
-      <aside className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed:""}`}>
+      {/* Student Sidebar */}
+      <aside
+        className={`${styles.sidebar} ${
+          isCollapsed ? styles.sidebarCollapsed : ""
+        }`}
+      >
         <div className={styles.sidebarHeader}>
           {!isCollapsed && (
             <div className={styles.brandGroup}>
@@ -582,10 +504,14 @@ export default function Chat(){
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className={styles.collapseBtn}
-            title={isCollapsed ? "Expand sidebar":"Collapse sidebar"}
-            aria-label={isCollapsed ? "Expand sidebar":"Collapse sidebar"}
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {isCollapsed ? <PanelLeftOpen size={18} />:<PanelLeftClose size={18} />}
+            {isCollapsed ? (
+              <PanelLeftOpen size={18} />
+            ) : (
+              <PanelLeftClose size={18} />
+            )}
           </button>
         </div>
 
@@ -618,24 +544,32 @@ export default function Chat(){
         </div>
 
         <div className={styles.sidebarFooter}>
-          <div className={styles.userCard} title={`${userName} (${user?.role || "Student"})`}>
+          <div
+            className={styles.userCard}
+            title={`${userName} (${user?.role || "Student"})`}
+          >
             <div className={styles.userAvatar}>
               {userName.charAt(0).toUpperCase()}
             </div>
             <div className={styles.userInfo}>
               <span className={styles.userName}>{userName}</span>
-              <span className={styles.userRole}>{user?.role || "Student"}</span>
+              <span className={styles.userRole}>
+                {user?.role || "Student"}
+              </span>
             </div>
           </div>
         </div>
       </aside>
 
+      {/* Main Chat Interface */}
       <div className={styles.chatMainArea}>
         <main className={styles.mainLayout}>
           <header className={styles.counselorHeader}>
             <div>
               <h2>Mitra</h2>
-              <p className={styles.subtitle}>Senior Academic Advisor & Student Counselor</p>
+              <p className={styles.subtitle}>
+                Senior Academic Advisor & Student Counselor
+              </p>
             </div>
             <div className={styles.headerActions}>
               <GlideSelect
@@ -657,10 +591,18 @@ export default function Chat(){
                 glideDuration={240}
                 rememberPosition
               />
-              <button className={styles.actionBtn} onClick={handleStartNewSession} disabled={sessionExpired}>
+              <button
+                className={styles.actionBtn}
+                onClick={handleStartNewSession}
+                disabled={sessionExpired}
+              >
                 Reset
               </button>
-              <button className={styles.actionBtn} onClick={handleEndSession} disabled={sessionExpired}>
+              <button
+                className={styles.actionBtn}
+                onClick={handleEndSession}
+                disabled={sessionExpired}
+              >
                 End chat
               </button>
               <ThemeToggle />
@@ -672,7 +614,9 @@ export default function Chat(){
               <div
                 key={msg.id}
                 className={`${styles.messageRow} ${
-                  msg.sender === "user" ? styles.userRow:styles.counselorRow
+                  msg.sender === "user"
+                    ? styles.userRow
+                    : styles.counselorRow
                 }`}
               >
                 <div className={styles.messageBubble}>
@@ -680,44 +624,67 @@ export default function Chat(){
                   <span className={styles.timeStamp}>{msg.time}</span>
                 </div>
 
-                {msg.sender === "counselor" && msg.type !== "initialMsg" && msg.type !== "resetMsg" && (
-                  <div className={styles.feedbackContainer}>
-                    <span className={styles.feedbackLabel}>
-                      {feedbackRatings[msg.id] ? "Feedback:" : "Was this helpful?"}
-                    </span>
-                    <div className={styles.thumbsGroup}>
-                      <button
-                        type="button"
-                        className={`${styles.thumbButton} ${feedbackRatings[msg.id] === 5 ? styles.thumbActiveUp : ""}`}
-                        onClick={() => handleFeedback(msg, 5)}
-                        disabled={feedbackStatus[msg.id] === "submitting"}
-                        title="Helpful (Thumbs up)"
-                        aria-label="Helpful"
-                      >
-                        <ThumbsUp size={13} />
-                      </button>
-                      <button
-                        type="button"
-                        className={`${styles.thumbButton} ${feedbackRatings[msg.id] === 1 ? styles.thumbActiveDown : ""}`}
-                        onClick={() => handleFeedback(msg, 1)}
-                        disabled={feedbackStatus[msg.id] === "submitting"}
-                        title="Not helpful (Thumbs down)"
-                        aria-label="Not helpful"
-                      >
-                        <ThumbsDown size={13} />
-                      </button>
+                {msg.sender === "counselor" &&
+                  msg.type !== "initialMsg" &&
+                  msg.type !== "resetMsg" && (
+                    <div className={styles.feedbackContainer}>
+                      <span className={styles.feedbackLabel}>
+                        {feedbackRatings[msg.id]
+                          ? "Feedback:"
+                          : "Was this helpful?"}
+                      </span>
+                      <div className={styles.thumbsGroup}>
+                        <button
+                          type="button"
+                          className={`${styles.thumbButton} ${
+                            feedbackRatings[msg.id] === 5
+                              ? styles.thumbActiveUp
+                              : ""
+                          }`}
+                          onClick={() => handleFeedback(msg, 5)}
+                          disabled={feedbackStatus[msg.id] === "submitting"}
+                          title="Helpful (Thumbs up)"
+                          aria-label="Helpful"
+                        >
+                          <ThumbsUp size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          className={`${styles.thumbButton} ${
+                            feedbackRatings[msg.id] === 1
+                              ? styles.thumbActiveDown
+                              : ""
+                          }`}
+                          onClick={() => handleFeedback(msg, 1)}
+                          disabled={feedbackStatus[msg.id] === "submitting"}
+                          title="Not helpful (Thumbs down)"
+                          aria-label="Not helpful"
+                        >
+                          <ThumbsDown size={13} />
+                        </button>
+                      </div>
+                      {feedbackStatus[msg.id] === "submitting" && (
+                        <span className={styles.feedbackThankYou}>
+                          • Saving...
+                        </span>
+                      )}
+                      {(feedbackStatus[msg.id] === "saved" ||
+                        (!feedbackStatus[msg.id] &&
+                          feedbackRatings[msg.id] > 0)) && (
+                        <span className={styles.feedbackThankYou}>
+                          • Thanks!
+                        </span>
+                      )}
+                      {feedbackStatus[msg.id] === "error" && (
+                        <span
+                          className={styles.feedbackThankYou}
+                          style={{ color: "var(--warning)" }}
+                        >
+                          • Saved locally
+                        </span>
+                      )}
                     </div>
-                    {feedbackStatus[msg.id] === "submitting" && (
-                      <span className={styles.feedbackThankYou}>• Saving...</span>
-                    )}
-                    {(feedbackStatus[msg.id] === "saved" || (!feedbackStatus[msg.id] && feedbackRatings[msg.id] > 0)) && (
-                      <span className={styles.feedbackThankYou}>• Thanks!</span>
-                    )}
-                    {feedbackStatus[msg.id] === "error" && (
-                      <span className={styles.feedbackThankYou} style={{ color: "var(--warning)" }}>• Saved locally</span>
-                    )}
-                  </div>
-                )}
+                  )}
               </div>
             ))}
 
@@ -735,7 +702,9 @@ export default function Chat(){
 
             {messages.length < 3 && !isTyping && (
               <div className={styles.suggestionsArea}>
-                {(translations[language] || translations.English).suggestions.map((item, idx) => (
+                {(
+                  translations[language] || translations.English
+                ).suggestions.map((item, idx) => (
                   <button
                     key={idx}
                     className={styles.suggestionChip}
@@ -755,7 +724,8 @@ export default function Chat(){
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
-            }}>
+            }}
+          >
             <input
               type="text"
               className={styles.chatInput}
@@ -763,14 +733,17 @@ export default function Chat(){
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               disabled={sessionExpired || isVoiceBusy}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}/>
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            />
 
             <VoiceInput
               disabled={sessionExpired || isTyping}
               language={language}
               onBusyChange={setIsVoiceBusy}
               onTranscript={(transcript) => {
-                setInputValue((current) => [current.trim(), transcript].filter(Boolean).join(" "));
+                setInputValue((current) =>
+                  [current.trim(), transcript].filter(Boolean).join(" ")
+                );
                 markActivityRef.current();
               }}
             />
@@ -778,8 +751,14 @@ export default function Chat(){
             <button
               type="submit"
               className={styles.sendBtn}
-              disabled={!inputValue.trim() || isTyping || sessionExpired || isVoiceBusy}
-              aria-label="Send message">
+              disabled={
+                !inputValue.trim() ||
+                isTyping ||
+                sessionExpired ||
+                isVoiceBusy
+              }
+              aria-label="Send message"
+            >
               <Send size={16} />
             </button>
           </form>

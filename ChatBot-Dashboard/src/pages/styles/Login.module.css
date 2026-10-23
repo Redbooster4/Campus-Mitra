@@ -13,7 +13,6 @@ body,
   min-height: 100vh;
   display: flex;
   flex-direction: row;
-  background: var(--bg);
   overflow: hidden;
 }
 .leftSection{
@@ -33,8 +32,8 @@ body,
   text-align: center;
 }
 .logo{
-  width: 120px;
-  height: 120px;
+  width: 200px;
+  height: 200px;
   margin: 0 auto 1rem;
 
   border-radius: 50%;
@@ -43,6 +42,10 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.logo > div{
+  width: 100%;
+  height: 100%;
 }
 .left h1{
   margin: 0 0 0.5rem;
@@ -65,7 +68,7 @@ body,
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: var(--card);
+  background: var(--card-hover);
 }
 
 .loginThemeToggle{

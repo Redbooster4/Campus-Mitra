@@ -3,14 +3,13 @@ import AnimatedLogo from "./AnimatedLogo";
 import logo from "../assets/logo.png";
 import styles from "./BrandLogos.module.css";
 
-export default function BrandLogos({ className = "" }) {
-  const navigate = useNavigate();
+export default function BrandLogos({ className = "" }){
+  const navigate=useNavigate();
 
-  const handleMascotClick = (e) => {
+  const handleMascotClick=(e)=>{
     e.stopPropagation();
     navigate("/dashboard");
   };
-
   return (
     <div className={`${styles.logos} ${className}`.trim()}>
       <button
@@ -18,13 +17,10 @@ export default function BrandLogos({ className = "" }) {
         className={styles.mascotBtn}
         onClick={handleMascotClick}
         title="Chat with Mitra AI Counselor"
-        aria-label="Mitra AI Counselor"
-      >
+        aria-label="Mitra AI Counselor">
         <AnimatedLogo />
       </button>
-
       <span className={styles.divider} aria-hidden="true" />
-
       <a
         href="http://sbmp.ac.in/"
         target="_blank"

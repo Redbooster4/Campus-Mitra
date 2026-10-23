@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import StaggeredMenu from '../components/StaggeredMenu';
-import { ArrowRight, MessageSquare, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowRight, MessageSquare, PhoneCall, Zap } from 'lucide-react';
 import styles from './styles/Home.module.css';
 import { HOME_MENU_ITEMS, SOCIAL_ITEMS } from '../constants/navigation';
 import MaskedHeading from '../components/MaskedHeading';
@@ -49,7 +49,7 @@ export default function Home(){
           textScale={0.125}
         />
         <p className={styles.description}>
-          The intelligent, AI-powered admission and counselling portal for SVKM's Shri Bhagubhai Mafatlal Polytechnic. Get personalized guidance, instant document verification, and real-time status updates.
+          The intelligent, AI-powered academic advisory and counseling portal for SVKM's Shri Bhagubhai Mafatlal Polytechnic. Get personalized cutoff guidance, fee breakdowns, and real-time counseling support.
         </p>
 
         <div className={styles.btngroup}>
@@ -69,14 +69,14 @@ export default function Home(){
               <MessageSquare size={24} />
             </div>
             <h3 className={styles.featureTitle}>24/7 AI Guidance</h3>
-            <p className={styles.description}>Have questions about courses, cut-offs, or fees? Our AI chatbot provides instant, accurate answers anytime.</p>
+            <p className={styles.description}>Have questions about courses, cut-offs, or fees? Mitra provides instant, verified answers anytime.</p>
           </div>
           <div className={styles.card}>
             <div className={styles.icon}>
-              <ShieldCheck size={24} />
+              <PhoneCall size={24} />
             </div>
-            <h3 className={styles.featureTitle}>Smart Verification</h3>
-            <p className={styles.description}>Upload your documents securely. Our system automatically scans and verifies them to speed up your admission process.</p>
+            <h3 className={styles.featureTitle}>Counselor Callback</h3>
+            <p className={styles.description}>Need one-on-one personal guidance? Request an official phone callback or schedule a counseling session directly through chat.</p>
           </div>
 
           <div className={styles.card}>

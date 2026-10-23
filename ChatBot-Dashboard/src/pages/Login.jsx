@@ -35,46 +35,47 @@ function Login() {
     function handleChange(e){
         setData({ ...data, [e.target.name]: e.target.value });
     }
-    async function handleLogin(){
+    async function handleLogin(e){
+        if(e?.preventDefault) e.preventDefault();
         setError("");
         if(!data.username.trim() || !data.password.trim()){
             setError("Username and Password are required");
             return;
         }
         if(data.password.length < 6){
-            setError("Password must be 6 characters");
+            setError("Password must be at least 6 characters");
             return;
         }
         try{
             setLoading(true);
-                const resp = await api.post(
-                "/auth/login",
-                {
-                    username: data.username,
-                    password: data.password
-                },
-                { withCredentials: true });
-                if(resp.data?.success && resp.data?.token){
-                    localStorage.setItem("token", resp.data.token);
-                    if (resp.data.user) {
-                        localStorage.setItem("user", JSON.stringify(resp.data.user));
-                    }
+            const resp = await api.post(
+            "/auth/login",
+            {
+                username: data.username,
+                password: data.password
+            },
+            { withCredentials: true });
+            if(resp.data?.success && resp.data?.token){
+                localStorage.setItem("token", resp.data.token);
+                if (resp.data.user) {
+                    localStorage.setItem("user", JSON.stringify(resp.data.user));
                 }
+            }
 
-                const user = resp.data?.user;
-                if(user?.role === "Student" && !user?.student_id){
-                    navigate("/onboarding");
-                }
-                else if(user?.role === "Counselor" && !user?.counselor_id){
-                    navigate("/onboarding/counselor-profile");
-                }
-                else if(user?.role === "Admin"){
-                    navigate("/admin");
-                }
-                else{
-                    navigate("/dashboard");
-                }
-            } catch(err){
+            const user = resp.data?.user;
+            if(user?.role === "Student" && !user?.student_id){
+                navigate("/onboarding");
+            }
+            else if(user?.role === "Counselor" && !user?.counselor_id){
+                navigate("/onboarding/counselor-profile");
+            }
+            else if(user?.role === "Admin"){
+                navigate("/admin");
+            }
+            else{
+                navigate("/dashboard");
+            }
+        } catch(err){
             console.log("Login Error Occured: ", err);
             const backendMessage = err.response?.data?.message;
             setError(backendMessage || "Login Failed");
@@ -84,7 +85,7 @@ function Login() {
         }
     }
     async function handleRegisterInitiate(e){
-        e.preventDefault();
+        if(e?.preventDefault) e.preventDefault();
         setError("");
         if(!data.username.trim()){
             setError("Username is Required")
@@ -95,7 +96,7 @@ function Login() {
             return
         }
         if(data.password.length < 6){
-            setError("Password must be atleast 6 characters")
+            setError("Password must be at least 6 characters")
             return
         }
         try{
@@ -115,18 +116,21 @@ function Login() {
                 }
             }
             const user = resp.data?.user;
-            if(!user.onboardingCompleted){
+            if(user?.role === "Admin") {
+                navigate("/admin");
+            } 
+            else if(!user?.onboardingCompleted) {
                 navigate("/onboarding");
-            }
+            } 
             else{
                 navigate("/dashboard");
             }
         }
         catch(err){
-            console.log("Registeration Error Occured: ", err);
+            console.log("Registration Error Occurred: ", err);
             const backendMessage = err.response?.data?.message;
             console.log("Backend Message: ", backendMessage);
-            setError(backendMessage || "Registeration Failed");
+            setError(backendMessage || "Registration Failed");
         }
         finally {
             setLoading(false);
@@ -150,7 +154,7 @@ function Login() {
                         <AnimatedLogo/>
                     </div>
                     <h1>Welcome Back</h1>
-                    <p>Your ChatBot is waiting</p>
+                    <p>Campus Mitra is ready to assist you</p>
                 </div>
             </div>
             <div className={styles.rightSection}>
@@ -166,7 +170,7 @@ function Login() {
                     <p className={styles.subtitle}>Enter your credentials to continue</p>
 
                     {isRegister && (
-                        <div className={styles.form}>
+                        <form className={styles.form} onSubmit={handleRegisterInitiate}>
                             <input
                                 type="text"
                                 name="username"
@@ -174,6 +178,7 @@ function Login() {
                                 value={data.username}
                                 onChange={handleChange}
                                 className={styles.loginInput}
+                                autoComplete="username"
                             />
                             <select
                                 name="role"
@@ -195,19 +200,20 @@ function Login() {
                                 value={data.password}
                                 onChange={handleChange}
                                 className={styles.loginInput}
+                                autoComplete="new-password"
                             />
                             <button 
+                                type="submit"
                                 className={styles.btn}
-                                onClick={handleRegisterInitiate}
                                 disabled={loading}>
                                 Register
                             </button>
-                        </div>
+                        </form>
                     )}
                     
                     
                     {!isRegister && (
-                        <div className={styles.form}>
+                        <form className={styles.form} onSubmit={handleLogin}>
                             <input
                                 type="text"
                                 name="username"
@@ -215,6 +221,7 @@ function Login() {
                                 value={data.username}
                                 onChange={handleChange}
                                 className={styles.loginInput}
+                                autoComplete="username"
                             />
                             <input
                                 type="password"
@@ -223,14 +230,15 @@ function Login() {
                                 value={data.password}
                                 onChange={handleChange}
                                 className={styles.loginInput}
+                                autoComplete="current-password"
                             />
                             <button 
+                                type="submit"
                                 className={styles.btn}
-                                onClick={handleLogin}
                                 disabled={loading}>
                                 {loading?"Loading...":"Login"}
                             </button>
-                        </div>
+                        </form>
                     )}
                     
                     <p className={styles.switch}>

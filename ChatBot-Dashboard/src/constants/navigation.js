@@ -7,7 +7,9 @@ export const STUDENT_MENU_ITEMS=[
 
 export const ADMIN_MENU_ITEMS=[
   { label:"Dashboard", ariaLabel:"Admin Dashboard", link:"/admin" },
+  { label:"Student Inquiries", ariaLabel:"Student Queries & Chats", link:"/chat" },
   { label:"Analytics", ariaLabel:"System Analytics", link:"/admin/analytics" },
+  { label:"About", ariaLabel: "About the portal", link:"/about" },
 ];
 
 export const HOME_MENU_ITEMS=[

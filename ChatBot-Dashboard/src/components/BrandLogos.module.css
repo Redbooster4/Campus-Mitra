@@ -30,7 +30,7 @@
 
 .divider {
   width: 1px;
-  height: 24px;
+  height: 25px;
   background: var(--border);
   opacity: 0.6;
 }

@@ -16,7 +16,6 @@ import {
 import { ADMIN_MENU_ITEMS } from "../../constants/navigation";
 
 const COLORS=['#fdba74', '#fed7aa', '#f97316', '#fb923c', '#ffedd5'];
-
 export default function Analytics() {
   const [admin]=useState(() => {
     const storedUser=localStorage.getItem("user");

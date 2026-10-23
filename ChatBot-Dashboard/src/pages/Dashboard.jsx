@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
-import { ArrowUpRight, Bot, Sparkles, ChevronRight, UserRound, PhoneCall } from "lucide-react";
+import { ArrowUpRight, MessageSquare, HelpCircle, Headphones, ChevronRight, UserRound, PhoneCall } from "lucide-react";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import styles from "./styles/Dashboard.module.css";
 
@@ -24,6 +24,11 @@ export default function Dashboard() {
       return null;
     }
   });
+  useEffect(() => {
+    if (user?.role === "Admin") {
+      navigate("/admin", { replace: true });
+    }
+  }, [user, navigate]);
 
   const [academicProfile, setAcademicProfile]=useState(() => {
     try {
@@ -67,7 +72,8 @@ export default function Dashboard() {
           }
         }
       } 
-      catch(err){
+      catch (err) {
+        console.warn("Profile sync error:", err);
       }
     };
     if (localStorage.getItem("token")) {
@@ -90,7 +96,6 @@ export default function Dashboard() {
       subtitle="Your centralized AI counseling center. Have questions about cutoffs, fees, or documents? Mitra is ready."
     >
       <div className={`${styles.card} ${styles.aiHeroCard}`}>
-        <div className={styles.aiGlow} />
 
         <div>
           <h2 className={styles.aiHeroTitle}>What would you like to explore today?</h2>
@@ -125,7 +130,7 @@ export default function Dashboard() {
                 className={styles.promptChip}
                 onClick={() => handleLaunch(chip)}
               >
-                <Sparkles size={14} />
+                <HelpCircle size={14} />
                 <span>{chip}</span>
               </button>
             ))}
@@ -133,7 +138,7 @@ export default function Dashboard() {
         </div>
 
         <button type="button" className={styles.primaryButton} onClick={() => handleLaunch()}>
-          <Bot size={18} />
+          <MessageSquare size={18} />
           <span>Start Counseling with Mitra</span>
           <ArrowUpRight size={16} />
         </button>
@@ -180,14 +185,14 @@ export default function Dashboard() {
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <div className={styles.cardIcon}>
-              <Bot size={18} />
+              <Headphones size={18} />
             </div>
             <h3 className={styles.cardTitle}>Support & Services</h3>
           </div>
 
           <button type="button" className={styles.quickActionItem} onClick={() => handleLaunch()}>
             <span className={styles.cardIcon}>
-              <Bot size={18} />
+              <MessageSquare size={18} />
             </span>
             <span>
               <strong>Instant AI Session</strong>

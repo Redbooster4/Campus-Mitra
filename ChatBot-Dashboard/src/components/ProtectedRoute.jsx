@@ -9,7 +9,7 @@ export default function ProtectedRoute({ children, allowedRoles }){
             const storedUser = localStorage.getItem("user");
             const user = storedUser ? JSON.parse(storedUser) : null;
             if(!user || !allowedRoles.includes(user.role)) {
-                return <Navigate to="/dashboard" replace />;
+                return <Navigate to={user?.role === "Admin" ? "/admin" : "/dashboard"} replace />;
             }
         } 
         catch{

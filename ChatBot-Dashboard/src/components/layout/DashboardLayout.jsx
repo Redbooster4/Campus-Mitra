@@ -49,7 +49,6 @@ export default function DashboardLayout({
             <span className={styles.notificationDot} />
           </button>
         </header>
-
         <section className={styles.contentGrid}>
           {children}
         </section>
