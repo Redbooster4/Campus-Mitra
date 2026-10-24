@@ -42,3 +42,5 @@ Thumbs.db
 
 **/pdf_cache/*
 !**/pdf_cache/.gitkeep
+
+install-skills-fixed.sh
