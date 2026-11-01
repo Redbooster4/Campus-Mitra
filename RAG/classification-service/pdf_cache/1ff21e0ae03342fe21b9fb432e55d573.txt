@@ -1,0 +1,44 @@
+Based on the image provided, here is the extracted information:
+
+**Institution Details:**
+*   **Name:** Shri Vile Parle Kelavani Mandal's, SHRI BHAGUBHAI MAFATLAL POLYTECHNIC
+*   **Address:** Irla Juhu Road, Vile Parle (W), Mumbai - 400056 
+*   **Telephone:** 42336000
+*   **Date of Document:** 13.05.2025
+
+**Document Header:**
+*   **Title:** ACADEMIC CALENDER- Term – June 2025 to December 2025 (III / V semester) Tentative
+
+---
+
+### **Academic Calendar Table (III / V Semester)**
+
+| Sr. No | Activities | Start Date | End Date | Duration (No. of Days) |
+| :--- | :--- | :--- | :--- | :--- |
+| **1** | Academic Term (Period of Instructions and Submission) | 30/06/2025 | 18/10/2025 | 90 Days |
+| **2** | Registration for Odd Term Courses | 30/06/2025 | 30/07/2025 | 30 Days |
+| **3** | Periodical Test – I | 21/08/2025 | 23/08/2025 | 03 Days |
+| **4** | Periodical Test – II | 06/10/2025 | 08/10/2025 | 03 Days |
+| **5** | Mid Term Review | 25/08/2025 to 26/08/2025 | | 02 Days |
+| **6** | Parent Meeting-1 (Department wise) | 30/08/2025 | | 01 Day |
+| **7** | Internal Monitoring Committee | 08/09/2025 | 10/09/2025 | 03 Days |
+| **8** | External Monitoring Committee | As per MSBTE calendar | | 01 Day |
+| **9** | Defaulter List | 18/10/2025 | | 01 Day |
+| **10** | Parent Meeting-2 (Department wise) | 11/10/2025 | | 01 Day |
+| **11** | Practical Examination | 24/10/2025 | 04/11/2025 | 10 Days |
+| **12** | Theory Examination / Online Examination | 10/11/2025 | 26/11/2025 | 15 Days |
+| **13** | Declaration of Result | 17/12/2025 | 27/12/2025 | 01 Day (during the said period) |
+| **14** | Start of next term Even semester | 02/01/2026 | | |
+| **15** | Remedial classes of Re-Examination | 03/01/2026 | 31/01/2026 | |
+| **16** | Re-Examination (I / III / V semester) | 03/02/2026 | 13/02/2026 | 10 DAYS |
+| **17** | Re-examination result | 24/02/2026 | 03/03/2026 | 01 Day |
+
+---
+
+**Additional Notes:**
+*   *Loss of Lectures/Practical's on account of any reasons shall be compensated by conducting extra lectures.*
+
+**Signatures:**
+*   COE (Controller of Examinations)
+*   Vice-Principal
+*   Principal

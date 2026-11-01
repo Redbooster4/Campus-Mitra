@@ -1,0 +1,28 @@
+meta {
+  name: Get Profile (Me)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/auth/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Profile returns 200 with student details", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  if (res.getStatus() === 200) {
+    const data = res.getBody();
+    if (data && data.user && data.user.student_id) {
+      bru.setEnvVar("studentId", data.user.student_id);
+    }
+  }
+}

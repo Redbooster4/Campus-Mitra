@@ -1,0 +1,43 @@
+meta {
+  name: Register User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "full_name": "Rohan Sharma",
+    "phone_number": "9876543210",
+    "email": "rohan.sharma@example.com",
+    "password": "password123",
+    "role": "Student",
+    "target_branch": "Computer Engineering",
+    "entrance_score": "96.42"
+  }
+}
+
+tests {
+  test("Registration returns 201 Created", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  
+  if (res.getStatus() === 201) {
+    const data = res.getBody();
+    if (data && data.token) {
+      bru.setEnvVar("token", data.token);
+    }
+    if (data && data.user && data.user.student_id) {
+      bru.setEnvVar("studentId", data.user.student_id);
+    }
+  }
+}

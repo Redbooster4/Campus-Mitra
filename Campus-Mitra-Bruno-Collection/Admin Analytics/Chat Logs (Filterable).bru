@@ -1,0 +1,29 @@
+meta {
+  name: Chat Logs (Filterable)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/admin/analytics/chats?page=1&limit=20&needs_followup=true
+  body: none
+  auth: bearer
+}
+
+params:query {
+  page: 1
+  limit: 20
+  ~needs_followup: true
+  ~callback_requested: true
+  ~target_branch: Computer
+  ~followup_status: Pending
+  ~search: cutoff
+  ~student_id: 
+  ~department_id: 
+  ~startDate: 
+  ~endDate: 
+}
+
+auth:bearer {
+  token: {{token}}
+}

@@ -1,0 +1,36 @@
+meta {
+  name: Request Counselor Callback
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/chat/request-callback
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "phone": "9876543210",
+    "full_name": "Rohan Sharma",
+    "target_branch": "Computer Engineering",
+    "notes": "Student requested guidance on CAP Round 1 cutoff concessions.",
+    "student_id": "{{studentId}}",
+    "chat_id": "{{chatId}}"
+  }
+}
+
+tests {
+  test("Callback request returns 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

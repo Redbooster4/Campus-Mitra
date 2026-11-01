@@ -1,0 +1,60 @@
+---
+- name: Install Necessary Softwares for Campus-Mitra Project
+  hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+    - name: 1. Update Package Cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+
+    - name: 2. Install Git (Version Control)
+      package:
+        name: git
+        state: present
+
+    - name: 3. Install Node.js and npm (Frontend & Backend Runtime)
+      package:
+        name:
+          - nodejs
+          - npm
+        state: present
+
+    - name: 4. Install Python3 and pip (For RAG & AI Services)
+      package:
+        name:
+          - python3
+          - python3-pip
+        state: present
+
+    - name: 5. Install PostgreSQL Database (Database Server)
+      package:
+        name:
+          - postgresql
+          - postgresql-contrib
+        state: present
+
+    - name: 6. Ensure PostgreSQL Service is Started and Enabled
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
+      ignore_errors: yes
+
+    - name: 7. Verify Installed Software Versions
+      command: "{{ item }}"
+      register: installed_versions
+      loop:
+        - git --version
+        - node -v
+        - npm -v
+        - python3 --version
+      changed_when: false
+
+    - name: 8. Print Installed Software Versions
+      debug:
+        msg: "{{ item.stdout }}"
+      loop: "{{ installed_versions.results }}"

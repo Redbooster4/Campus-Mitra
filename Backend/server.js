@@ -1,9 +1,13 @@
+require("dotenv").config();
 const express = require("express");
 const pool = require("./src/config/db.js");
 const cors = require("cors");
-require("dotenv").config();
 
 const authRoutes = require("./src/routes/auth.routes.js");
+const chatRoutes = require("./src/routes/chat.routes.js");
+const voiceRoutes = require("./src/routes/voice.routes.js");
+const analyticsRoutes = require("./src/routes/analytics.routes.js");
+
 const app = express();
 app.use(express.json());
 app.use(cors({
@@ -13,6 +17,10 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use("/api/auth", authRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/voice", voiceRoutes);
+app.use("/api/admin/analytics", analyticsRoutes);
+
 
 app.get("/", (req, res) => {
     res.send("CampusMitra Backend API is running!");

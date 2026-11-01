@@ -1,0 +1,15 @@
+meta {
+  name: Feedback Analytics
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/admin/analytics/feedback
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}

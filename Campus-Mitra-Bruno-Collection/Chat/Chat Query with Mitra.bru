@@ -1,0 +1,41 @@
+meta {
+  name: Chat Query with Mitra
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/chat
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "query": "What are the cutoff percentiles for Computer Engineering?",
+    "language": "English",
+    "student_id": "{{studentId}}",
+    "needs_followup": false
+  }
+}
+
+tests {
+  test("Chat returns 200 with answer", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  if (res.getStatus() === 200) {
+    const data = res.getBody();
+    if (data && data.chat_id) {
+      bru.setEnvVar("chatId", data.chat_id);
+    }
+  }
+}
