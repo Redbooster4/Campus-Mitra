@@ -8,44 +8,44 @@ import modalStyles from "../../pages/styles/Modal.module.css";
 import { STUDENT_MENU_ITEMS, SOCIAL_ITEMS } from "../../constants/navigation";
 
 export default function DashboardLayout({
-  menuItems = STUDENT_MENU_ITEMS,
-  socialItems = SOCIAL_ITEMS,
-  greeting = "Welcome back,",
+  menuItems=STUDENT_MENU_ITEMS,
+  socialItems=SOCIAL_ITEMS,
+  greeting="Welcome back,",
   displayName,
   subtitle,
   children,
 }) {
-  const navigate = useNavigate();
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [adminAlerts, setAdminAlerts] = useState({
+  const navigate=useNavigate();
+  const [isNotifOpen, setIsNotifOpen]=useState(false);
+  const [adminAlerts, setAdminAlerts]=useState({
     pendingCallbacks: 0,
     urgentQueries: 0,
     recentInquiries: [],
   });
 
-  const [isAdmin] = useState(() => {
+  const [isAdmin]=useState(()=>{
     try {
-      const u = JSON.parse(localStorage.getItem("user"));
+      const u=JSON.parse(localStorage.getItem("user"));
       return String(u?.role || "").toLowerCase() === "admin";
     } catch {
       return false;
     }
   });
 
-  useEffect(() => {
+  useEffect(()=>{
     if (!isAdmin || !localStorage.getItem("token")) return;
-    let isMounted = true;
+    let isMounted=true;
 
-    const fetchAdminAlerts = async () => {
+    const fetchAdminAlerts=async()=>{
       try {
-        const [summaryRes, chatsRes] = await Promise.all([
+        const [summaryRes, chatsRes]=await Promise.all([
           api.get("/admin/analytics/summary", { withCredentials: true }).catch(() => null),
           api.get("/admin/analytics/chats?limit=4", { withCredentials: true }).catch(() => null),
         ]);
 
         if (isMounted) {
-          const s = summaryRes?.data?.data;
-          const chats = chatsRes?.data?.chats || chatsRes?.data?.data || [];
+          const s=summaryRes?.data?.data;
+          const chats=chatsRes?.data?.chats || chatsRes?.data?.data || [];
           setAdminAlerts({
             pendingCallbacks: s?.followups?.pendingCallbacks || 0,
             urgentQueries: s?.followups?.queriesNeedingFollowup || 0,
@@ -58,16 +58,15 @@ export default function DashboardLayout({
     };
 
     fetchAdminAlerts();
-    const interval = setInterval(fetchAdminAlerts, 30000);
-    return () => {
-      isMounted = false;
+    const interval=setInterval(fetchAdminAlerts, 30000);
+    return()=>{
+      isMounted=false;
       clearInterval(interval);
     };
   }, [isAdmin]);
+  const totalAlerts=adminAlerts.pendingCallbacks+adminAlerts.urgentQueries;
 
-  const totalAlerts = adminAlerts.pendingCallbacks + adminAlerts.urgentQueries;
-
-  return (
+  return(
     <div className={styles.dashboard}>
       <StaggeredMenu
         position="left"
@@ -92,18 +91,16 @@ export default function DashboardLayout({
             <button
               className={styles.notificationButton}
               aria-label="Inquiry Notifications"
-              onClick={() => setIsNotifOpen(true)}
-            >
+              onClick={() => setIsNotifOpen(true)}>
               <Bell size={20} />
-              {totalAlerts > 0 ? (
+              {totalAlerts>0?(
                 <span className={styles.notificationBadge}>{totalAlerts}</span>
-              ) : (
+              ):(
                 <span className={styles.notificationDot} />
               )}
             </button>
           )}
         </header>
-
         <section className={styles.contentGrid}>
           {children}
         </section>

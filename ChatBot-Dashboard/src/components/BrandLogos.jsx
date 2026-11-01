@@ -3,16 +3,16 @@ import logo from "../assets/logo.png";
 import styles from "./BrandLogos.module.css";
 
 export default function BrandLogos({ className = "", onLogoClick }){
-  const handleMascotClick = (e) => {
+  const handleMascotClick=(e)=>{
     e.stopPropagation();
-    if (onLogoClick) {
+    if(onLogoClick){
       onLogoClick(e);
       return;
     }
     window.dispatchEvent(new CustomEvent("toggle-menu"));
   };
 
-  return (
+  return(
     <div className={`${styles.logos} ${className}`.trim()}>
       <button
         type="button"

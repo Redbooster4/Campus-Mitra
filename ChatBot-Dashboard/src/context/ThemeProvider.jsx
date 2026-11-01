@@ -1,10 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext(null);
-
 const STORAGE_KEY = "campus-mitra-theme";
 
-function getInitialTheme() {
+function getInitialTheme(){
   if (typeof window === "undefined") return "light";
 
   const stored = window.localStorage.getItem(STORAGE_KEY);

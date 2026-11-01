@@ -4,7 +4,7 @@ import styles from "./AnimatedLogo.module.css";
 
 export default function AnimatedLogo({ onClick, className, title }){
   const videoRef=useRef(null);
-  const handleMouseEnter = () => {
+  const handleMouseEnter=()=>{
     if(videoRef.current){
       videoRef.current.currentTime = 0; 
       videoRef.current.play();

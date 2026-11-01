@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
-import { ArrowUpRight, MessageSquare, HelpCircle, Headphones, ChevronRight, UserRound, PhoneCall } from "lucide-react";
+import { ArrowUpRight, MessageSquare, HelpCircle, Headphones, ChevronRight, UserRound } from "lucide-react";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import styles from "./styles/Dashboard.module.css";
 
