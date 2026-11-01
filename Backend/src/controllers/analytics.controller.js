@@ -335,11 +335,6 @@ const getStudentChatHistory = async (req, res) => {
         });
     }
 };
-
-/**
- * PATCH /api/admin/analytics/students/:student_id/followup
- * Update the counselor follow-up stage and notes for an applicant
- */
 const updateStudentFollowup = async (req, res) => {
     try {
         const { student_id } = req.params;
@@ -374,11 +369,6 @@ const updateStudentFollowup = async (req, res) => {
         });
     }
 };
-
-/**
- * GET /api/admin/analytics/feedback
- * Provides aggregated feedback statistics and recent feedback submissions
- */
 const getFeedbackAnalytics = async (req, res) => {
     try {
         const statsQuery = `

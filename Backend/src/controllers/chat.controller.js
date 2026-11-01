@@ -31,7 +31,7 @@ const chatWithMitra = async(req, res) => {
                     language: selectedLanguage,
                     needs_followup: Boolean(needs_followup)
                 }),
-                signal: AbortSignal.timeout(15000)
+                signal: AbortSignal.timeout(parseInt(process.env.RAG_TIMEOUT_MS) || 90000)
             });
 
             if (ragResponse.ok) {

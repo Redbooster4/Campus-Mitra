@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import sys
 from dotenv import load_dotenv
@@ -113,9 +114,18 @@ Provide a direct, concise, and on-point answer to the specific question asked st
         ("human", prompt)
     ])
 
+    def fix_sbmp_links(text):
+        if not isinstance(text, str):
+            return text
+        return re.sub(
+            r"https?://(?:www\.)?sbmp\.ac\.in/(?!cdn/uploads/|Common/Uploads/)([^\s\)\"'>]+\.pdf)",
+            r"https://sbmp.ac.in/cdn/uploads/\1",
+            text
+        )
+
     raw_content = response.content
     if isinstance(raw_content, str):
-        return raw_content
+        return fix_sbmp_links(raw_content)
     if isinstance(raw_content, list):
         parts = []
         for item in raw_content:
@@ -127,7 +137,7 @@ Provide a direct, concise, and on-point answer to the specific question asked st
                 parts.append(getattr(item, "text"))
             else:
                 parts.append(str(item))
-        return "\n".join(parts)
+        return fix_sbmp_links("\n".join(parts))
     if isinstance(raw_content, dict):
-        return raw_content.get("text", "") or raw_content.get("content", "") or str(raw_content)
-    return str(raw_content)
+        return fix_sbmp_links(raw_content.get("text", "") or raw_content.get("content", "") or str(raw_content))
+    return fix_sbmp_links(str(raw_content))

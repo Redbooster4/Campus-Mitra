@@ -31,8 +31,7 @@ const transcribeVoice = async (req, res) => {
             return res.status(504).json({ error: "Transcription took too long. Please try a shorter recording." });
         }
 
-        if (error.code === "TRANSCRIPTION_PROVIDER_ERROR") {
-            // Log the provider's explanation for debugging without logging audio or credentials.
+        if (error.code === "TRANSCRIPTION_PROVIDER_ERROR") { 
             console.error("Voice transcription provider error:", {
                 status: error.status,
                 code: error.providerCode,

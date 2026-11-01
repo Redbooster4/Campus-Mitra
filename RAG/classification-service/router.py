@@ -182,9 +182,13 @@ def extract_all_known_pdf_links():
         for d in all_docs:
             found = re.findall(r"(?:https?://[^\s\"')>]+\.pdf|/[^\s\"')>]+\.pdf)", d)
             for f in found:
-                prefix = "https://sbmp.ac.in" if not f.startswith("http") else ""
-                slash = "" if f.startswith("/") or f.startswith("http") else "/"
-                links.add(prefix + slash + f)
+                if f.startswith("http"):
+                    url = f
+                elif "cdn/uploads" in f:
+                    url = f"https://sbmp.ac.in{'' if f.startswith('/') else '/'}{f}"
+                else:
+                    url = f"https://sbmp.ac.in/cdn/uploads/{f.lstrip('/')}"
+                links.add(url)
         return list(links)
     except Exception as e:
         return []
@@ -230,7 +234,12 @@ def query_chromadb(query_text, n_results=50):
             # Check if chunk itself is a PDF link or URL
             is_pdf_url = bool(re.search(r"(\.pdf|/cdn/uploads/)", clean_chunk, re.I)) and len(clean_chunk) < 350
             if is_pdf_url:
-                url = clean_chunk if clean_chunk.startswith("http") else f"https://sbmp.ac.in{'' if clean_chunk.startswith('/') else '/'}{clean_chunk}"
+                if clean_chunk.startswith("http"):
+                    url = clean_chunk
+                elif "cdn/uploads" in clean_chunk:
+                    url = f"https://sbmp.ac.in{'' if clean_chunk.startswith('/') else '/'}{clean_chunk}"
+                else:
+                    url = f"https://sbmp.ac.in/cdn/uploads/{clean_chunk.lstrip('/')}"
                 if url not in pdf_links:
                     pdf_links.append(url)
             else:
@@ -239,7 +248,12 @@ def query_chromadb(query_text, n_results=50):
             # Also check metadata for source file links
             source_file = meta.get("file_name") or meta.get("source") or meta.get("fileName") or ""
             if source_file and re.search(r"\.pdf", source_file, re.I):
-                url = source_file if source_file.startswith("http") else f"https://sbmp.ac.in{'' if source_file.startswith('/') else '/'}{source_file}"
+                if source_file.startswith("http"):
+                    url = source_file
+                elif "cdn/uploads" in source_file:
+                    url = f"https://sbmp.ac.in{'' if source_file.startswith('/') else '/'}{source_file}"
+                else:
+                    url = f"https://sbmp.ac.in/cdn/uploads/{source_file.lstrip('/')}"
                 if url not in pdf_links:
                     pdf_links.append(url)
 
