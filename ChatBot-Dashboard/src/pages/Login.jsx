@@ -1,119 +1,124 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import{ useState, useMemo } from "react";
+import{ useNavigate } from "react-router-dom";
 import PixelTrail from '../components/PixelTrail.jsx';
 import api from '../api/api.js';
 import AnimatedLogo from "../components/AnimatedLogo.jsx";
 import ThemeToggle from "../components/ThemeToggle.jsx";
-import { useTheme } from "@/context/ThemeProvider";
+import{ useTheme } from "@/context/ThemeProvider";
 import styles from "./styles/Login.module.css";
 
-function useCssVar(prop) {
-  const { theme } = useTheme();
-  return useMemo(() => {
-    if (typeof window === "undefined") return "";
+function useCssVar(prop){
+  const{ theme }=useTheme();
+  return useMemo(() =>{
+    if(typeof window === "undefined") return "";
     void theme;
     return getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
   }, [theme, prop]);
 }
 
-export default function Login() {
-  const [data, setData] = useState({ username: "", role: "Student", password: "" });
-  const [isRegister, setIsRegister] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const trailColor = useCssVar("--primary");
+export default function Login(){
+  const [data, setData]=useState({ username: "", role: "Student", password: "" });
+  const [isRegister, setIsRegister]=useState(false);
+  const [error, setError]=useState("");
+  const [loading, setLoading]=useState(false);
+  const navigate=useNavigate();
+  const trailColor=useCssVar("--primary");
 
-  function handleChange(e) {
+  function handleChange(e){
     setData({ ...data, [e.target.name]: e.target.value });
   }
 
-  function validate() {
-    if (!data.username.trim() || !data.password.trim()) {
+  function validate(){
+    if(!data.username.trim() || !data.password.trim()){
       setError("Username and Password are required");
       return false;
     }
-    if (data.password.length < 6) {
+    if(data.password.length < 6){
       setError("Password must be at least 6 characters");
       return false;
     }
     return true;
   }
 
-  async function handleLogin(e) {
-    if (e?.preventDefault) e.preventDefault();
+  async function handleLogin(e){
+    if(e?.preventDefault) e.preventDefault();
     setError("");
-    if (!validate()) return;
-
-    try {
+    if(!validate()) return;
+    try{
       setLoading(true);
-      const resp = await api.post("/auth/login", {
+      const resp=await api.post("/auth/login",{
         username: data.username,
         password: data.password
-      }, { withCredentials: true });
+      },{ withCredentials: true });
 
-      if (resp.data?.success && resp.data?.token) {
+      if(resp.data?.success && resp.data?.token){
         localStorage.setItem("token", resp.data.token);
-        if (resp.data.user) {
+        if(resp.data.user){
           localStorage.setItem("user", JSON.stringify(resp.data.user));
         }
       }
 
-      const user = resp.data?.user;
-      if (user?.role === "Student" && !user?.student_id) {
+      const user=resp.data?.user;
+      if(user?.role === "Student" && !user?.student_id){
         navigate("/onboarding");
-      } else if (user?.role === "Counselor" && !user?.counselor_id) {
-        navigate("/onboarding/counselor-profile");
-      } else if (user?.role === "Admin") {
+      }
+      else if(user?.role === "Admin"){
         navigate("/admin");
-      } else {
+      } 
+      else{
         navigate("/dashboard");
       }
-    } catch (err) {
+    } 
+    catch(err){
       console.error("Login error:", err);
       setError(err.response?.data?.message || "Login Failed");
-    } finally {
+    }
+    finally{
       setLoading(false);
     }
   }
 
-  async function handleRegisterInitiate(e) {
-    if (e?.preventDefault) e.preventDefault();
+  async function handleRegisterInitiate(e){
+    if(e?.preventDefault) e.preventDefault();
     setError("");
-    if (!validate()) return;
+    if(!validate()) return;
 
-    try {
+    try{
       setLoading(true);
-      const resp = await api.post("/auth/register", {
+      const resp=await api.post("/auth/register",{
         username: data.username,
         role: data.role,
         password: data.password
-      }, { withCredentials: true });
+      },{ withCredentials: true });
 
-      if (resp.data?.success && resp.data?.token) {
+      if(resp.data?.success && resp.data?.token){
         localStorage.setItem("token", resp.data.token);
-        if (resp.data.user) {
+        if(resp.data.user){
           localStorage.setItem("user", JSON.stringify(resp.data.user));
         }
       }
 
-      const user = resp.data?.user;
-      if (user?.role === "Admin") {
+      const user=resp.data?.user;
+      if(user?.role === "Admin"){
         navigate("/admin");
-      } else if (!user?.onboardingCompleted) {
+      } 
+      else if(!user?.onboardingCompleted){
         navigate("/onboarding");
-      } else {
+      }
+      else{
         navigate("/dashboard");
       }
-    } catch (err) {
+    } 
+    catch(err){
       console.error("Registration error:", err);
       setError(err.response?.data?.message || "Registration Failed");
-    } finally {
+    }
+    finally{
       setLoading(false);
     }
   }
 
-  return (
+  return(
     <div className={styles.container}>
       <div className={styles.leftSection}>
         <PixelTrail
@@ -153,7 +158,7 @@ export default function Login() {
               className={styles.loginInput}
               autoComplete="username"
             />
-            {isRegister && (
+           {isRegister &&(
               <select
                 name="role"
                 value={data.role}
@@ -162,7 +167,6 @@ export default function Login() {
               >
                 <option value="Student">Student</option>
                 <option value="Admin">Admin</option>
-                <option value="Counselor">Counselor</option>
               </select>
             )}
             <input
@@ -175,22 +179,22 @@ export default function Login() {
               autoComplete={isRegister ? "new-password" : "current-password"}
             />
             <button type="submit" className={styles.btn} disabled={loading}>
-              {loading ? "Loading..." : isRegister ? "Register" : "Login"}
+             {loading ? "Loading..." : isRegister ? "Register" : "Login"}
             </button>
           </form>
 
           <p className={styles.switch}>
-            {isRegister ? "Already Have An Account ?" : "Don't have an Account ?"}
+           {isRegister ? "Already Have An Account ?" : "Don't have an Account ?"}
             <span
-              onClick={() => {
+              onClick={() =>{
                 setIsRegister(!isRegister);
                 setError("");
               }}
             >
-              {isRegister ? " Log In" : " Sign up"}
+             {isRegister?" Log In":" Sign up"}
             </span>
           </p>
-          {error && <p className={styles.error}>{error}</p>}
+         {error && <p className={styles.error}>{error}</p>}
         </div>
       </div>
     </div>
