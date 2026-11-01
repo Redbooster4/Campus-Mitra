@@ -1,9 +1,9 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import{ useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import api from "@/api/api";
 import "./styles/Onboarding.css";
 
-const FIELD_LABELS = {
+const FIELD_LABELS ={
   language: "Preferred Language",
   journey: "Academic Qualification",
   program: "Target SBMP Program",
@@ -12,11 +12,11 @@ const FIELD_LABELS = {
   source: "Information Source",
 };
 
-export default function OnboardingPreview() {
+export default function OnboardingPreview(){
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const{ state } = useLocation();
 
-  const preview = state?.preview || {
+  const preview = state?.preview ||{
     language: localStorage.getItem("preferredLanguage") || "English",
     program: localStorage.getItem("preferredBranch") || "Computer Engineering",
     journey: "Class 10th (SSC / Appearing)",
@@ -24,31 +24,31 @@ export default function OnboardingPreview() {
   };
 
   const entries = Object.entries(preview).filter(
-    ([key, value]) => Boolean(value) && FIELD_LABELS[key]
+   ([key, value]) => Boolean(value) && FIELD_LABELS[key]
   );
 
-  const handleComplete = async () => {
-    try {
+  const handleComplete = async() =>{
+    try{
       const storedUser = localStorage.getItem("user");
-      if (storedUser) {
+      if(storedUser){
         const parsed = JSON.parse(storedUser);
-        const updated = {
+        const updated ={
           ...parsed,
           target_branch: preview.program || parsed.target_branch,
           onboardingCompleted: true,
         };
         localStorage.setItem("user", JSON.stringify(updated));
 
-        await api.put("/auth/profile", {
+        await api.put("/auth/profile",{
           target_branch: preview.program || null,
-        }).catch(() => {});
+        }).catch(() =>{});
       }
-    } catch (err) {
+    } catch(err){
       console.warn("Could not sync profile completion:", err);
     }
 
-    navigate("/chat", {
-      state: {
+    navigate("/chat",{
+      state:{
         initialQuery: preview.program
           ? `I'm interested in the ${preview.program} diploma program. Can you guide me on eligibility, cutoffs, and admissions?`
           : null,
@@ -56,7 +56,7 @@ export default function OnboardingPreview() {
     });
   };
 
-  return (
+  return(
     <main className="onboarding-wrapper">
       <div className="onboarding-theme-toggle">
         <ThemeToggle />
@@ -71,16 +71,16 @@ export default function OnboardingPreview() {
         </header>
 
         <div className="preview-summary-card">
-          {entries.length > 0 ? (
-            entries.map(([key, value]) => (
+         {entries.length>0 ?(
+            entries.map(([key, value]) =>(
               <div key={key} className="preview-summary-row">
                 <span className="preview-summary-label">
-                  {FIELD_LABELS[key] || key}
+                 {FIELD_LABELS[key] || key}
                 </span>
                 <span className="preview-summary-value">{String(value)}</span>
               </div>
             ))
-          ) : (
+          ) :(
             <div className="preview-summary-row">
               <span className="preview-summary-label">Preferred Branch</span>
               <span className="preview-summary-value">Engineering Diploma</span>
@@ -92,15 +92,13 @@ export default function OnboardingPreview() {
           <button
             type="button"
             className="preview-button"
-            onClick={handleComplete}
-          >
+            onClick={handleComplete}>
             Start Counseling with Mitra
           </button>
           <button
             type="button"
             className="preview-secondary-button"
-            onClick={() => navigate("/onboarding")}
-          >
+            onClick={() => navigate("/onboarding")}>
             Edit Preferences
           </button>
         </div>

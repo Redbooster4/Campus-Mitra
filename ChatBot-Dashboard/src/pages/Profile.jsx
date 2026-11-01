@@ -1,38 +1,38 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import{ useState, useEffect } from "react";
+import{ useNavigate } from "react-router-dom";
 import api from "../api/api";
 import StaggeredMenu from "../components/StaggeredMenu";
-import {
+import{
   ArrowLeft, MessageSquare, User, GraduationCap, Sliders, Check, Save,
 } from "lucide-react";
 import styles from "./styles/Profile.module.css";
-import { STUDENT_MENU_ITEMS, SOCIAL_ITEMS } from "../constants/navigation";
+import{ STUDENT_MENU_ITEMS, SOCIAL_ITEMS } from "../constants/navigation";
 import SquishSwitch from '../components/SquishSwitch';
 
-const LANGUAGES = ["English", "Hindi", "Marathi", "Gujarati"];
-const TONE_OPTIONS = [
-  { value: "detailed", title: "Detailed & In-Depth", desc: "Includes cut-off trends, placement stats, and syllabus breakdowns." },
-  { value: "concise", title: "Quick & Direct", desc: "Brief answers focused strictly on cut-off numbers and document lists." },
-  { value: "mentorship", title: "Step-by-Step Mentorship", desc: "Friendly, roadmap-style advice explaining each CAP round step." },
+const LANGUAGES=["English", "Hindi", "Marathi", "Gujarati"];
+const TONE_OPTIONS=[
+ { value: "detailed", title: "Detailed & In-Depth", desc: "Includes cut-off trends, placement stats, and syllabus breakdowns." },
+ { value: "concise", title: "Quick & Direct", desc: "Brief answers focused strictly on cut-off numbers and document lists." },
+ { value: "mentorship", title: "Step-by-Step Mentorship", desc: "Friendly, roadmap-style advice explaining each CAP round step." },
 ];
 
-export default function Profile() {
-  const navigate = useNavigate();
+export default function Profile(){
+  const navigate=useNavigate();
 
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) {
-      try { return JSON.parse(stored); } catch { return null; }
+  const [user, setUser]=useState(() =>{
+    const stored=localStorage.getItem("user");
+    if(stored){
+      try{ return JSON.parse(stored); } catch{ return null; }
     }
     return null;
   });
 
-  const [academicData, setAcademicData] = useState(() => {
-    const saved = localStorage.getItem("studentAcademicProfile");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (err) { console.debug(err); }
+  const [academicData, setAcademicData]=useState(() =>{
+    const saved=localStorage.getItem("studentAcademicProfile");
+    if(saved){
+      try{ return JSON.parse(saved); } catch(err){ console.debug(err); }
     }
-    return {
+    return{
       sscPercentage: "",
       hscPercentage: "",
       entranceExam: "MHT-CET",
@@ -42,90 +42,90 @@ export default function Profile() {
     };
   });
 
-  const [counselingPrefs, setCounselingPrefs] = useState(() => {
-    const savedLang = user?.preferredLanguage || localStorage.getItem("preferredLanguage") || "English";
-    const saved = localStorage.getItem("counselingPreferences");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return { ...parsed, language: savedLang };
-      } catch (err) {
+  const [counselingPrefs, setCounselingPrefs]=useState(() =>{
+    const savedLang=user?.preferredLanguage || localStorage.getItem("preferredLanguage") || "English";
+    const saved=localStorage.getItem("counselingPreferences");
+    if(saved){
+      try{
+        const parsed=JSON.parse(saved);
+        return{ ...parsed, language: savedLang };
+      } catch(err){
         console.error("Failed to parse preferences", err);
       }
     }
-    return { language: savedLang, tone: "detailed", targetYear: "2026-2027" };
+    return{ language: savedLang, tone: "detailed", targetYear: "2026-2027" };
   });
 
-  const [parentMode, setParentMode] = useState(false);
-  const [savedStatus, setSavedStatus] = useState(false);
+  const [parentMode, setParentMode]=useState(false);
+  const [savedStatus, setSavedStatus]=useState(false);
 
-  const handleAcademicChange = (e) => {
-    setAcademicData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleAcademicChange=(e) =>{
+    setAcademicData((prev) =>({ ...prev, [e.target.name]: e.target.value }));
     setSavedStatus(false);
   };
 
-  const handleLanguageSelect = (lang) => {
-    setCounselingPrefs((prev) => ({ ...prev, language: lang }));
+  const handleLanguageSelect=(lang) =>{
+    setCounselingPrefs((prev) =>({ ...prev, language: lang }));
     localStorage.setItem("preferredLanguage", lang);
     setSavedStatus(false);
   };
 
-  const handleToneSelect = (tone) => {
-    setCounselingPrefs((prev) => ({ ...prev, tone }));
+  const handleToneSelect=(tone) =>{
+    setCounselingPrefs((prev) =>({ ...prev, tone }));
     setSavedStatus(false);
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchRemoteProfile = async () => {
-      try {
-        const resp = await api.get("/auth/me");
-        if (isMounted && resp.data?.user) {
-          const u = resp.data.user;
-          setUser((prev) => {
-            const updated = { ...(prev || {}), ...u };
+  useEffect(() =>{
+    let isMounted=true;
+    const fetchRemoteProfile=async() =>{
+      try{
+        const resp=await api.get("/auth/me");
+        if(isMounted && resp.data?.user){
+          const u=resp.data.user;
+          setUser((prev) =>{
+            const updated={ ...(prev ||{}), ...u };
             localStorage.setItem("user", JSON.stringify(updated));
             return updated;
           });
-          setAcademicData((prev) => ({
+          setAcademicData((prev) =>({
             ...prev,
             targetBranch: u.target_branch || prev.targetBranch || "Computer Engineering",
             entrancePercentile: u.entrance_score || prev.entrancePercentile || "",
             category: u.category || prev.category || "General / Open",
           }));
         }
-      } catch (err) {
+      } catch(err){
         console.warn("Could not fetch remote profile:", err);
       }
     };
-    if (localStorage.getItem("token")) {
+    if(localStorage.getItem("token")){
       fetchRemoteProfile();
     }
-    return () => { isMounted = false; };
+    return() =>{ isMounted=false; };
   }, []);
 
-  const handleSave = async () => {
+  const handleSave=async() =>{
     localStorage.setItem("studentAcademicProfile", JSON.stringify(academicData));
     localStorage.setItem("counselingPreferences", JSON.stringify(counselingPrefs));
     localStorage.setItem("preferredLanguage", counselingPrefs.language);
 
-    try {
-      const resp = await api.put("/auth/profile", {
+    try{
+      const resp=await api.put("/auth/profile",{
         target_branch: academicData.targetBranch,
         entrance_score: academicData.entrancePercentile,
         category: academicData.category,
       });
-      if (resp.data?.user) {
-        const mergedUser = { ...user, ...resp.data.user, preferredLanguage: counselingPrefs.language };
+      if(resp.data?.user){
+        const mergedUser={ ...user, ...resp.data.user, preferredLanguage: counselingPrefs.language };
         localStorage.setItem("user", JSON.stringify(mergedUser));
         setUser(mergedUser);
       }
-    } catch (err) {
+    } catch(err){
       console.warn("Backend profile sync error, saved locally:", err);
     }
 
-    if (user) {
-      const updatedUser = { ...user, preferredLanguage: counselingPrefs.language };
+    if(user){
+      const updatedUser={ ...user, preferredLanguage: counselingPrefs.language };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
     }
@@ -133,15 +133,15 @@ export default function Profile() {
     setTimeout(() => setSavedStatus(false), 3000);
   };
 
-  const handleStartCounseling = () => {
+  const handleStartCounseling=() =>{
     handleSave();
     navigate("/chat");
   };
 
-  const displayName = user?.username || "Student";
-  const displayEmail = user?.email || `${displayName.toLowerCase().replace(/\s+/g, "")}@student.ac.in`;
+  const displayName=user?.username || "Student";
+  const displayEmail=user?.email || `${displayName.toLowerCase().replace(/\s+/g, "")}@student.ac.in`;
 
-  return (
+  return(
     <div className={styles.profilePage}>
       <StaggeredMenu
         position="left"
@@ -205,12 +205,12 @@ export default function Profile() {
           />
         </div>
 
-        {parentMode && (
+       {parentMode &&(
           <section className={styles.parentPanel}>
             <div className={styles.parentRow}>
               <div className={styles.parentBox}>
                 <h4>Transparent Fee Breakdown</h4>
-                <p>Tuition, development, and university exam fees are governed strictly by FRA (Fees Regulating Authority). TFWS and EBC concessions apply as per norms.</p>
+                <p>Tuition, development, and university exam fees are governed strictly by FRA(Fees Regulating Authority). TFWS and EBC concessions apply as per norms.</p>
               </div>
               <div className={styles.parentBox}>
                 <h4>Hostel & Campus Safety</h4>
@@ -219,8 +219,8 @@ export default function Profile() {
               <div className={styles.parentBox}>
                 <h4>Direct Admission Helpline</h4>
                 <p>
-                  +91 (022) 4233-6000 (SBMP Admission Desk)<br />
-                  Office hours: Mon - Sat (9:30 AM to 5:00 PM)
+                  +91(022) 4233-6000(SBMP Admission Desk)<br />
+                  Office hours: Mon - Sat(9:30 AM to 5:00 PM)
                 </p>
               </div>
             </div>
@@ -241,7 +241,7 @@ export default function Profile() {
 
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
-                <label htmlFor="sscPercentage">Class 10th (SSC)%</label>
+                <label htmlFor="sscPercentage">Class 10th(SSC)%</label>
                 <input
                   id="sscPercentage"
                   name="sscPercentage"
@@ -253,7 +253,7 @@ export default function Profile() {
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="hscPercentage">Class 12th (HSC)%</label>
+                <label htmlFor="hscPercentage">Class 12th(HSC)%</label>
                 <input
                   id="hscPercentage"
                   name="hscPercentage"
@@ -274,8 +274,8 @@ export default function Profile() {
                 >
                   <option value="MHT-CET">MHT-CET</option>
                   <option value="JEE Main">JEE Main</option>
-                  <option value="Both">Both (MHT-CET & JEE)</option>
-                  <option value="Diploma Merit">Diploma Merit (DSE)</option>
+                  <option value="Both">Both(MHT-CET & JEE)</option>
+                  <option value="Diploma Merit">Diploma Merit(DSE)</option>
                 </select>
               </div>
 
@@ -319,8 +319,8 @@ export default function Profile() {
                   <option value="OBC">OBC</option>
                   <option value="SC">SC</option>
                   <option value="ST">ST</option>
-                  <option value="EWS">EWS (Economically Weaker Section)</option>
-                  <option value="TFWS">TFWS (Tuition Fee Waiver Scheme)</option>
+                  <option value="EWS">EWS(Economically Weaker Section)</option>
+                  <option value="TFWS">TFWS(Tuition Fee Waiver Scheme)</option>
                 </select>
               </div>
             </div>
@@ -340,14 +340,14 @@ export default function Profile() {
             <div className={styles.formGroupFull}>
               <label>Counseling Interaction Language</label>
               <div className={styles.languagePills}>
-                {LANGUAGES.map((lang) => (
+               {LANGUAGES.map((lang) =>(
                   <button
                     key={lang}
                     type="button"
                     className={`${styles.langPill} ${counselingPrefs.language === lang ? styles.langPillActive : ""}`}
                     onClick={() => handleLanguageSelect(lang)}
                   >
-                    {lang}
+                   {lang}
                   </button>
                 ))}
               </div>
@@ -356,7 +356,7 @@ export default function Profile() {
             <div className={styles.formGroupFull} style={{ marginTop: 18 }}>
               <label>Counselor Guidance Style</label>
               <div className={styles.toneList}>
-                {TONE_OPTIONS.map((opt) => (
+               {TONE_OPTIONS.map((opt) =>(
                   <label
                     key={opt.value}
                     className={`${styles.toneOption} ${counselingPrefs.tone === opt.value ? styles.toneActive : ""}`}
@@ -380,7 +380,7 @@ export default function Profile() {
         </div>
 
         <div className={styles.saveBar}>
-          {savedStatus && (
+         {savedStatus &&(
             <span className={styles.saveSuccess}>
               <Check size={16} style={{ marginRight: 6, verticalAlign: "middle" }} />
               Preferences saved

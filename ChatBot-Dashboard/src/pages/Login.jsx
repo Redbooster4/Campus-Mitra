@@ -163,8 +163,7 @@ export default function Login(){
                 name="role"
                 value={data.role}
                 onChange={handleChange}
-                className={styles.loginSelect}
-              >
+                className={styles.loginSelect}>
                 <option value="Student">Student</option>
                 <option value="Admin">Admin</option>
               </select>
@@ -189,8 +188,7 @@ export default function Login(){
               onClick={() =>{
                 setIsRegister(!isRegister);
                 setError("");
-              }}
-            >
+              }}>
              {isRegister?" Log In":" Sign up"}
             </span>
           </p>
