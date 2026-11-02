@@ -48,7 +48,8 @@ export default function AdminDashboard(){
         console.error("Failed to fetch analytics:", err);
         if(err.response?.status === 401 || err.response?.status === 403) {
           setError("Log in with an Admin account");
-        } else {
+        } 
+        else{
           setError("Failed to load");
         }
       }

@@ -183,7 +183,7 @@ export default function ChatAdminView({ user, userName }) {
                     )}
                     {isCallback && (
                       <span style={{ fontSize: "0.65rem", color: "var(--primary)", fontWeight: 700, flexShrink: 0 }}>
-                        📞 Callback
+                        Callback
                       </span>
                     )}
                   </div>
@@ -215,15 +215,15 @@ export default function ChatAdminView({ user, userName }) {
               <p className={styles.subtitle}>
                 {selectedInquiry ? (
                   <>
-                    {field(selectedInquiry, "phone") && `📞 ${field(selectedInquiry, "phone")} | `}
-                    {field(selectedInquiry, "email") && `✉️ ${field(selectedInquiry, "email")} | `}
+                    {field(selectedInquiry, "phone") && `${field(selectedInquiry, "phone")} | `}
+                    {field(selectedInquiry, "email") && `${field(selectedInquiry, "email")} | `}
                     {(selectedInquiry.student?.target_branch || selectedInquiry.target_branch) &&
                       `Branch: ${selectedInquiry.student?.target_branch || selectedInquiry.target_branch} | `}
                     {selectedInquiry.created_at &&
                       new Date(selectedInquiry.created_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
                     {(selectedInquiry.student_rating || studentChatThread?.student?.student_rating) && (
                       <span style={{ color: "#f59e0b", fontWeight: 700, marginLeft: "6px" }}>
-                        | ⭐ {selectedInquiry.student_rating || studentChatThread?.student?.student_rating}/5 Rating
+                        | {selectedInquiry.student_rating || studentChatThread?.student?.student_rating}/5 Rating
                       </span>
                     )}
                   </>
@@ -275,7 +275,7 @@ export default function ChatAdminView({ user, userName }) {
                         idx === 0 && (
                           <div className={styles.feedbackContainer}>
                             <span className={styles.feedbackLabel} style={{ color: "var(--primary)", fontWeight: 600 }}>
-                              📞 Callback Requested:{" "}
+                              Callback Requested:{" "}
                               {selectedInquiry.student?.phone || selectedInquiry.student_phone || "Phone on file"}{" "}
                               ({selectedInquiry.student?.followup_status || selectedInquiry.followup_status || "Pending"})
                             </span>
@@ -285,7 +285,7 @@ export default function ChatAdminView({ user, userName }) {
                       {item.needs_followup && (
                         <div className={styles.feedbackContainer}>
                           <span className={styles.feedbackLabel} style={{ color: "#f59e0b", fontWeight: 600 }}>
-                            ⚠️ Flagged for counselor follow-up
+                            Flagged for counselor follow-up
                           </span>
                         </div>
                       )}

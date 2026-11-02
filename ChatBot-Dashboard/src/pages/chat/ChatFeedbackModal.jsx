@@ -101,7 +101,7 @@ export default function ChatFeedbackModal({
               style={{ color: "var(--warning, #f59e0b)" }}
               role="alert"
             >
-              ⚠️ {sessionFeedbackError}
+              {sessionFeedbackError}
             </p>
           )}
 
