@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext(null);
@@ -19,7 +20,7 @@ export function ThemeProvider({ children }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    setMounted(true); // eslint-disable-line react-hooks/set-state-in-effect
     document.documentElement.setAttribute("data-theme", theme);
     window.localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);

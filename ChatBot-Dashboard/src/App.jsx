@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import api from "./api/api";
 import { ThemeProvider } from "@/context/ThemeProvider";
@@ -13,6 +13,8 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Analytics from "./pages/admin/Analytics";
+import CommandPalette from "./components/CommandPalette";
+import VivaDemoLauncher from "./components/VivaDemoLauncher";
 
 function LogoutHandler() {
   const navigate = useNavigate();
@@ -28,10 +30,35 @@ function LogoutHandler() {
   return null;
 }
 
+function GlobalCommandPalette() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsOpen((prev) => !prev);
+      }
+    };
+    const handleOpen = () => setIsOpen(true);
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("open-command-palette", handleOpen);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("open-command-palette", handleOpen);
+    };
+  }, []);
+
+  return <CommandPalette isOpen={isOpen} onClose={() => setIsOpen(false)} />;
+}
+
 function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
+        <GlobalCommandPalette />
+        <VivaDemoLauncher />
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace/>}/>
           <Route path="/login" element={<Login/>}/>

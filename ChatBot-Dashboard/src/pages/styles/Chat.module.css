@@ -638,3 +638,262 @@
     width:100%;
   }
 }
+
+
+/* ── Counselor Header Live Badge & Actions ── */
+.counselorBrand {
+  display: flex;
+  flex-direction: column;
+}
+
+.counselorTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.onlineStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #10b981;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.onlineStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* ── Message Actions (Copy & Read Aloud) ── */
+.msgActionsGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.msgActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 7px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.msgActionBtn:hover {
+  background: var(--card-hover);
+  color: var(--heading);
+  border-color: var(--primary);
+}
+
+.msgActionCopied {
+  color: #10b981 !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+}
+
+.msgActionSpeaking {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  background: var(--primary-soft) !important;
+  animation: pulseSpeaking 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseSpeaking {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 88, 12, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(234, 88, 12, 0); }
+}
+
+.actionSeparator {
+  color: var(--border);
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+/* ── Quick Prompt Chips Bar ── */
+.quickPromptBar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.quickPromptBar::-webkit-scrollbar {
+  display: none;
+}
+
+.quickPromptLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  padding-right: 0.2rem;
+}
+
+.quickPromptChip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quickPromptChip:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+  transform: translateY(-1px);
+}
+
+.quickPromptChip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Clear Input Button ── */
+.clearInputBtn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 0.2s ease;
+}
+
+.clearInputBtn:hover {
+  color: var(--heading);
+}
+
+/* ── RAG Citation Inspector ── */
+.msgActionRag {
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  color: #6366f1 !important;
+}
+
+.msgActionRag:hover {
+  background: rgba(99, 102, 241, 0.1) !important;
+}
+
+.ragCitationCard {
+  margin-top: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.78rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 95%;
+  animation: fadeInDown 0.2s ease;
+  box-shadow: 0 4px 14px var(--shadow-color);
+}
+
+.ragCitationHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ragCitationTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.ragSparkleIcon {
+  color: #6366f1;
+}
+
+.ragConfidenceBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.ragSourceList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ragSourceItem {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 8px;
+  background: var(--bg);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.ragDocName {
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.ragDocMeta {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.ragFooterRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 4px;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.ragFooterRow strong {
+  color: var(--heading);
+}

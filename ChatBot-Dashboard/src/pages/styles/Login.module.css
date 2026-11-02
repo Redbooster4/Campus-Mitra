@@ -4,6 +4,7 @@
   min-height: 100vh;
   display: flex;
   overflow: hidden;
+  background: var(--bg);
 }
 
 .leftSection {
@@ -16,23 +17,27 @@
   position: relative;
   overflow: hidden;
   background: var(--bg);
+  border-right: 1px solid var(--border);
 }
 
 .left {
   position: absolute;
   z-index: 10;
   text-align: center;
+  padding: 2rem;
+  max-width: 440px;
 }
 
 .logo {
-  width: 200px;
-  height: 200px;
-  margin: 0 auto 1rem;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 1.5rem;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 10px 30px var(--primary-glow);
 }
 
 .logo > div {
@@ -42,15 +47,28 @@
 
 .left h1 {
   margin: 0 0 0.5rem;
-  color: var(--text);
-  font-size: 2.25rem;
-  font-weight: 700;
+  color: var(--heading);
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .left p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.875rem;
+  margin: 0 0 1rem;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.institutionTag {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: var(--primary);
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-soft-border);
 }
 
 .rightSection {
@@ -61,79 +79,207 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 3rem 2rem;
   background: var(--card-hover);
 }
 
-.loginThemeToggle {
+.topActions {
   position: absolute;
   top: 1.5rem;
-  right: 1.5rem;
+  left: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   z-index: 10;
+}
+
+.backHomeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backHomeBtn:hover {
+  background: var(--bg);
+  color: var(--heading);
+  border-color: var(--primary);
 }
 
 .box {
   width: 100%;
-  max-width: 28rem;
+  max-width: 26rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.25rem;
+  box-shadow: 0 12px 32px var(--shadow-color);
+  animation: fadeInBox 0.3s ease;
+}
+
+@keyframes fadeInBox {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobileBrand {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.mobileLogoWrapper {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 14px var(--primary-glow);
+}
+
+.mobileBrandTitle {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.mobileBrandSub {
+  margin: 0.2rem 0 0;
+  font-size: 0.78rem;
+  color: var(--primary);
+  font-weight: 600;
 }
 
 .title {
-  margin: 0 0 0.25rem;
-  color: var(--text);
-  font-size: 1.875rem;
+  margin: 0 0 0.35rem;
+  color: var(--heading);
+  font-size: 1.65rem;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  margin: 0 0 2rem;
+  margin: 0 0 1.5rem;
   color: var(--muted);
   font-size: 0.875rem;
+  line-height: 1.45;
 }
 
 .form {
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 1rem;
+  gap: 1.1rem;
 }
 
-.loginInput, .loginSelect {
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.inputLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--heading);
+}
+
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.loginInput,
+.loginSelect {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: 10px;
   background: var(--bg);
   color: var(--text);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
+  font-family: inherit;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.loginInput:focus, .loginSelect:focus {
+.passwordWrapper .loginInput {
+  padding-right: 2.8rem;
+}
+
+.loginInput:focus,
+.loginSelect:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .loginSelect {
   cursor: pointer;
 }
 
-.btn {
-  width: 10rem;
-  padding: 0.5rem 1rem;
-  margin-bottom: 1rem;
+.eyeBtn {
+  position: absolute;
+  right: 0.75rem;
+  background: transparent;
   border: none;
-  border-radius: 0.75rem;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-weight: 600;
+  color: var(--muted);
   cursor: pointer;
-  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s ease;
 }
 
-.btn:hover {
+.eyeBtn:hover {
+  color: var(--heading);
+}
+
+.btn {
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  margin-top: 0.5rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px var(--primary-glow);
+}
+
+.btn:hover:not(:disabled) {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px var(--primary-glow);
+  box-shadow: 0 6px 18px var(--primary-glow);
 }
 
 .btn:disabled {
@@ -141,52 +287,137 @@
   cursor: not-allowed;
 }
 
-.switch {
-  margin-top: 1.5rem;
-  color: var(--muted);
-  font-size: 0.875rem;
-  text-align: center;
+.spinner {
+  animation: spin 0.8s linear infinite;
 }
 
-.switch span {
-  color: var(--primary);
-  font-weight: 500;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.demoHelper {
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.demoHelperLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.demoBtnGroup {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.demoBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.demoBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.switch {
+  margin-top: 1.25rem;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.switchBtn {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.switchBtn:hover {
+  color: var(--primary-hover);
 }
 
 .error {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--danger) 20%, transparent);
-  border-radius: 0.5rem;
+  margin-top: 0.25rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  border-radius: 8px;
   background: color-mix(in srgb, var(--danger) 10%, transparent);
   color: var(--danger);
-  font-size: 0.875rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: left;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .leftSection {
     display: none;
   }
   .rightSection {
     flex: 0 0 100%;
     width: 100%;
+    padding: 5rem 1.5rem 2rem;
+  }
+  .mobileBrand {
+    display: flex;
   }
 }
 
-@media (max-width: 600px) {
-  .rightSection {
-    padding: 1.5rem;
+@media (max-width: 480px) {
+  .box {
+    padding: 1.75rem 1.25rem;
+    border-radius: 16px;
   }
-}
-
-@media (max-width: 400px) {
-  .rightSection {
-    padding: 1rem;
+  .topActions {
+    left: 1rem;
+    right: 1rem;
   }
-  .btn {
-    width: 100%;
+  .demoHelper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .demoBtnGroup {
+    justify-content: stretch;
+  }
+  .demoBtn {
+    flex: 1;
+    justify-content: center;
   }
 }

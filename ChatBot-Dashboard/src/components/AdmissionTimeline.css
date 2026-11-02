@@ -1,0 +1,210 @@
+.timeline-wrapper {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 1.5rem;
+  align-items: stretch;
+  text-align: left;
+}
+
+.timeline-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.timeline-step-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.timeline-step-btn:hover {
+  background: var(--card-hover);
+  border-color: var(--primary);
+  transform: translateX(3px);
+}
+
+.timeline-step-active {
+  background: var(--primary-soft) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.step-num-pill {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.timeline-step-active .step-num-pill {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.step-nav-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.step-nav-title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.step-nav-time {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.timeline-detail-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 8px 24px var(--shadow-color);
+  animation: fadeInStep 0.3s ease;
+}
+
+@keyframes fadeInStep {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.step-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-soft);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.step-status-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.12);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+.step-timeframe-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.timeline-detail-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--heading);
+  letter-spacing: -0.01em;
+}
+
+.timeline-detail-desc {
+  margin: 1.25rem 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.timeline-tip-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.tip-icon {
+  color: var(--primary);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.tip-content strong {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--heading);
+  margin-bottom: 0.2rem;
+}
+
+.tip-content p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.timeline-ask-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.35rem;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.timeline-ask-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px var(--primary-glow);
+}
+
+@media (max-width: 860px) {
+  .timeline-wrapper {
+    grid-template-columns: 1fr;
+  }
+}

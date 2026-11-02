@@ -386,3 +386,129 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ── Profile Enhancements: Role badge, Cutoff Prediction & Docs Checklist ── */
+.userRoleBadge {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-soft);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+
+.predictionCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.predictionTitle {
+  display: inline-block;
+  margin-right: 0.35rem;
+  color: var(--heading);
+  font-weight: 700;
+}
+
+.predictionText {
+  color: var(--text);
+}
+
+.badgeHigh {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.badgeHigh svg {
+  color: #10b981;
+}
+
+.badgeMedium {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.badgeMedium svg {
+  color: #3b82f6;
+}
+
+.badgeReach {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.badgeReach svg {
+  color: #f59e0b;
+}
+
+.badgeNeutral {
+  background: var(--bg);
+  color: var(--muted);
+}
+
+.badgeNeutral svg {
+  color: var(--muted);
+}
+
+.docsRequiredBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.docsRequiredBox strong {
+  display: block;
+  color: var(--heading);
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+}
+
+.docsRequiredBox p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.docsRequiredIcon {
+  color: var(--primary);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.quickTipsBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  margin-top: 1.5rem;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.quickTipsBox svg {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}

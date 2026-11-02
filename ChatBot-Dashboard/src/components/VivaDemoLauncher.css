@@ -1,0 +1,294 @@
+.viva-launcher-root {
+  position: relative;
+  z-index: 99998;
+}
+
+.viva-fab-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+  color: #f8fafc;
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px rgba(49, 46, 129, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.viva-fab-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  border-color: #818cf8;
+  box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.6);
+}
+
+.viva-fab-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  animation: vivaPulse 2s infinite;
+}
+
+@keyframes vivaPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
+}
+
+.viva-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: vivaFadeIn 0.2s ease forwards;
+}
+
+@keyframes vivaFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.viva-modal-card {
+  width: 100%;
+  max-width: 680px;
+  background: var(--card, #ffffff);
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  text-align: left;
+  animation: vivaScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dark .viva-modal-card {
+  background: rgba(18, 24, 38, 0.96);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+}
+
+@keyframes vivaScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.viva-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.viva-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.viva-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.dark .viva-badge {
+  color: #a5b4fc;
+}
+
+.viva-subtitle {
+  font-size: 0.75rem;
+  color: var(--muted, #64748b);
+  font-weight: 600;
+}
+
+.viva-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted, #64748b);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.viva-close-btn:hover {
+  color: var(--text, #0f172a);
+}
+
+.viva-title {
+  margin: 0 0 4px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--heading, #0f172a);
+}
+
+.viva-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted, #64748b);
+  line-height: 1.5;
+}
+
+.viva-scenarios-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.viva-scenario-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--bg, #f8fafc);
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dark .viva-scenario-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.viva-scenario-item:hover {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.06);
+  transform: translateX(3px);
+}
+
+.viva-scenario-left {
+  flex: 1;
+}
+
+.viva-scenario-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #6366f1;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.dark .viva-scenario-tag {
+  color: #a5b4fc;
+}
+
+.viva-scenario-title {
+  margin: 0 0 2px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--heading, #0f172a);
+}
+
+.viva-scenario-desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted, #64748b);
+  line-height: 1.4;
+}
+
+.viva-play-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #6366f1;
+  color: #ffffff;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.viva-scenario-item:hover .viva-play-btn {
+  background: #4f46e5;
+  transform: scale(1.05);
+}
+
+.viva-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.viva-footer-text {
+  font-size: 0.72rem;
+  color: var(--muted, #64748b);
+  flex: 1;
+}
+
+.viva-inspect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text, #0f172a);
+  cursor: pointer;
+}
+
+.viva-inspect-btn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+@media (max-width: 640px) {
+  .viva-fab-btn {
+    bottom: 16px;
+    right: 16px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+  }
+  .viva-modal-card {
+    padding: 1.25rem;
+  }
+}

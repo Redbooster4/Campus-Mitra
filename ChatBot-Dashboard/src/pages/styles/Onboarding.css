@@ -63,13 +63,13 @@
 [data-slot="questionnaire-choice"]:hover {
   border-color: var(--border-hover);
   background: var(--card-hover);
-  color: var(--white);
+  color: var(--heading);
 }
 
 [data-slot="questionnaire-choice"][data-checked] {
   border-color: var(--primary);
   background: var(--primary-soft);
-  color: var(--primary-foreground);
+  color: var(--heading);
   box-shadow: 0 0 15px var(--primary-glow);
 }
 
@@ -100,7 +100,7 @@
 
 [data-slot="questionnaire-choice"][data-checked] [data-slot="questionnaire-choice-indicator-check"] {
   display: block;
-  color: var(--white);
+  color: var(--heading);
 }
 
 .option-label {
@@ -148,7 +148,7 @@
   padding: 0.5rem 1.25rem;
   border-radius: var(--radius);
   background: var(--primary);
-  color: var(--primary-foreground);
+  color: var(--heading);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
@@ -157,7 +157,7 @@
 
 .next-btn:hover, .submit-btn:hover, [data-slot="questionnaire-submit"]:hover, [data-slot="questionnaire-next"]:hover {
   background: var(--primary-hover);
-  color: var(--primary-foreground);
+  color: var(--heading);
   transform: translateY(-1px);
   box-shadow: 0 4px 15px var(--primary-glow);
 }
@@ -241,7 +241,7 @@
   margin: 1rem auto;
   border-radius: var(--radius);
   background: var(--primary);
-  color: var(--primary-foreground);
+  color: var(--heading);
   font: inherit;
   cursor: pointer;
   transition: background 0.2s;

@@ -1,8 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
-import { ArrowUpRight, MessageSquare, HelpCircle, Headphones, ChevronRight, UserRound } from "lucide-react";
+import {
+  ArrowUpRight,
+  MessageSquare,
+  HelpCircle,
+  Headphones,
+  ChevronRight,
+  UserRound,
+  Calculator,
+  FileText,
+  Briefcase,
+  Sparkles,
+  PhoneCall,
+  CheckCircle2,
+} from "lucide-react";
 import DashboardLayout from "../components/layout/DashboardLayout";
+import SpotlightCard from "../components/SpotlightCard";
 import styles from "./styles/Dashboard.module.css";
 
 const PROMPT_CHIPS = [
@@ -10,6 +24,34 @@ const PROMPT_CHIPS = [
   "Calculate fees & scholarship concessions",
   "Hostel, mess & campus facilities",
   "List of mandatory CAP admission documents",
+  "Explain 3.5-year sandwich training companies",
+];
+
+const ADMISSION_ACTIONS = [
+  {
+    icon: Calculator,
+    title: "Cutoff Analysis & Chances",
+    desc: "Calculate admission cutoff match for CAP rounds",
+    prompt: "What were the round 1, 2, and 3 cutoffs for Computer Engineering and IT at SBMP last year?",
+  },
+  {
+    icon: FileText,
+    title: "CAP Documents Checklist",
+    desc: "Mandatory certificates for DTE verification",
+    prompt: "List all mandatory documents needed for diploma admission verification in CAP rounds.",
+  },
+  {
+    icon: Briefcase,
+    title: "Sandwich Pattern Placements",
+    desc: "L&T, Siemens, Godrej in-plant training details",
+    prompt: "Which companies recruit SBMP sandwich diploma students and what are the average packages?",
+  },
+  {
+    icon: PhoneCall,
+    title: "Request Human Counselor Call",
+    desc: "Escalate for official staff callback",
+    prompt: "Escalate my query to a human counselor for phone callback.",
+  },
 ];
 
 export default function Dashboard() {
@@ -80,7 +122,9 @@ export default function Dashboard() {
     if (localStorage.getItem("token")) {
       fetchRemoteProfile();
     }
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleLaunch = (text) => {
@@ -92,24 +136,47 @@ export default function Dashboard() {
     }
   };
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning,";
+    if (hour < 18) return "Good afternoon,";
+    return "Good evening,";
+  };
+
+  const numericScore = parseFloat(String(academicProfile.entrancePercentile).replace(/%$/, ""));
+  const isHighMatch = !isNaN(numericScore) && numericScore >= 92;
+
   const snapshotItems = [
     { label: "Target Branch", value: academicProfile.targetBranch },
-    { label: "Percentile", value: `${String(academicProfile.entrancePercentile).replace(/%$/, "")}%` },
+    { label: "Percentile / Score", value: `${String(academicProfile.entrancePercentile).replace(/%$/, "")}%` },
     { label: "Category", value: academicProfile.category },
-    { label: "AI Language", value: preferredLanguage },
+    { label: "Counseling Language", value: preferredLanguage },
   ];
 
   return (
-    <DashboardLayout displayName={user?.username || "Student"}>
-      <div className={`${styles.card} ${styles.aiHeroCard}`}>
+    <DashboardLayout
+      displayName={user?.username || "Student"}
+      greeting={getGreeting()}
+      subtitle="Welcome to your SVKM's SBMP academic advisory center"
+    >
+      <SpotlightCard className={`${styles.card} ${styles.aiHeroCard}`}>
         <div>
+          <div className={styles.aiHeroBadge}>
+            <Sparkles size={14} />
+            <span>AI Admission Assistant • Live</span>
+          </div>
           <h2 className={styles.aiHeroTitle}>What would you like to explore today?</h2>
+          <p className={styles.aiDescription}>
+            Mitra is trained on official SVKM's SBMP syllabus, previous years' CAP cutoffs, fee concessions (TFWS/EWS), and autonomous academic schedules.
+          </p>
+
           <form
             className={styles.queryLauncher}
             onSubmit={(e) => {
               e.preventDefault();
               handleLaunch();
-            }}>
+            }}
+          >
             <input
               type="text"
               className={styles.queryInput}
@@ -142,15 +209,19 @@ export default function Dashboard() {
           <span>Start Counseling with Mitra</span>
           <ArrowUpRight size={16} />
         </button>
-      </div>
+      </SpotlightCard>
 
       <div className={styles.sideStack}>
-        <div className={styles.card}>
+        {/* Profile Snapshot Card */}
+        <SpotlightCard className={styles.card}>
           <div className={styles.cardHeader}>
             <div className={styles.cardIcon}>
               <UserRound size={18} />
             </div>
-            <h3 className={styles.cardTitle}>Current Profile</h3>
+            <div>
+              <h3 className={styles.cardTitle}>Academic Profile Snapshot</h3>
+              <p className={styles.cardEyebrow}>Loaded in AI Counseling Memory</p>
+            </div>
           </div>
 
           <div className={styles.snapshotGrid}>
@@ -162,35 +233,60 @@ export default function Dashboard() {
             ))}
           </div>
 
+          <div className={styles.matchStatusBanner}>
+            <CheckCircle2 size={16} className={styles.matchStatusIcon} />
+            <span>
+              {isHighMatch
+                ? `Strong eligibility for ${academicProfile.targetBranch} based on ${numericScore}% score.`
+                : `Score recorded. Check CAP round cut-offs and TFWS quota.`}
+            </span>
+          </div>
+
           <button
             type="button"
             className={styles.outlineActionBtn}
             onClick={() => navigate("/profile")}
           >
-            <span>Manage Profile & Preferences</span>
+            <span>Update Profile & Preferences</span>
             <ChevronRight size={15} />
           </button>
-        </div>
+        </SpotlightCard>
 
-        <div className={styles.card}>
+        {/* Support & Quick Services */}
+        <SpotlightCard className={styles.card}>
           <div className={styles.cardHeader}>
             <div className={styles.cardIcon}>
               <Headphones size={18} />
             </div>
-            <h3 className={styles.cardTitle}>Support & Services</h3>
+            <div>
+              <h3 className={styles.cardTitle}>Admission Action Hub</h3>
+              <p className={styles.cardEyebrow}>Frequently Requested Services</p>
+            </div>
           </div>
 
-          <button type="button" className={styles.quickActionItem} onClick={() => handleLaunch()}>
-            <div className={styles.cardIcon}>
-              <MessageSquare size={18} />
-            </div>
-            <div className={styles.quickActionText}>
-              <strong>Instant AI Session</strong>
-              <span>24/7 personalized answers</span>
-            </div>
-            <ChevronRight size={16} />
-          </button>
-        </div>
+          <div className={styles.quickActions}>
+            {ADMISSION_ACTIONS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.title}
+                  type="button"
+                  className={styles.quickActionItem}
+                  onClick={() => handleLaunch(item.prompt)}
+                >
+                  <div className={styles.cardIcon}>
+                    <Icon size={17} />
+                  </div>
+                  <div className={styles.quickActionText}>
+                    <strong>{item.title}</strong>
+                    <span>{item.desc}</span>
+                  </div>
+                  <ChevronRight size={16} />
+                </button>
+              );
+            })}
+          </div>
+        </SpotlightCard>
       </div>
     </DashboardLayout>
   );

@@ -152,3 +152,72 @@
   margin:0.75rem 0;
 }
 
+
+
+/* ── Code block with Copy Action ── */
+.inlineCode {
+  background: var(--code-bg);
+  color: var(--primary);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.86em;
+  font-family: "Geist Mono", "Fira Code", monospace;
+  border: 1px solid var(--border);
+}
+
+.codeContainer {
+  margin: 0.75rem 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--pre-bg);
+  overflow: hidden;
+}
+
+.codeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.85rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.codeLang {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.copyCodeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copyCodeBtn:hover {
+  background: var(--card-hover);
+  color: var(--heading);
+  border-color: var(--primary);
+}
+
+.copyCodeBtn .checkIcon {
+  color: var(--success);
+}
+
+.codeBlock {
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0.85rem 1rem !important;
+}

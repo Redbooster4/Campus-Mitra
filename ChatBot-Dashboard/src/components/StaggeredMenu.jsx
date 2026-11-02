@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, isValidElement } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api/api';
 import './StaggeredMenu.css';
 import BrandLogos from './BrandLogos';
@@ -13,7 +13,7 @@ export const StaggeredMenu = ({
   displayItemNumbering = true,
   className = '',
   logoUrl = null,
-  accentColor = '#5227FF',
+  accentColor = '#ea580c',
   isFixed = false,
   closeOnClickAway = true,
   onMenuOpen,
@@ -23,6 +23,7 @@ export const StaggeredMenu = ({
   const panelRef = useRef(null);
   const toggleBtnRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleItemClick = async (e, item) => {
     if (item.isLogout || item.link === '/logout' || item.label?.toLowerCase() === 'logout') {
@@ -39,7 +40,19 @@ export const StaggeredMenu = ({
       }
       return;
     }
-    setOpen(false);
+
+    if (item.link && !item.link.startsWith('http')) {
+      e.preventDefault();
+      setOpen(false);
+      navigate(item.link);
+    } else {
+      setOpen(false);
+    }
+  };
+
+  const isItemActive = (link) => {
+    if (!link || link.startsWith('http')) return false;
+    return location.pathname === link;
   };
 
   const toggleMenu = useCallback(() => {
@@ -58,7 +71,6 @@ export const StaggeredMenu = ({
     }
   }, [open, onMenuClose]);
 
-  // Close when clicking outside of the drawer panel and toggle button
   useEffect(() => {
     if (!closeOnClickAway || !open) return;
 
@@ -77,7 +89,6 @@ export const StaggeredMenu = ({
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [closeOnClickAway, open, closeMenu]);
 
-  // Close on Escape key for accessibility
   useEffect(() => {
     if (!open) return;
 
@@ -91,7 +102,6 @@ export const StaggeredMenu = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, closeMenu]);
 
-  // Global event listener for opening/toggling the menu from any logo or button
   useEffect(() => {
     const handleToggle = () => toggleMenu();
     window.addEventListener('toggle-menu', handleToggle);
@@ -130,7 +140,6 @@ export const StaggeredMenu = ({
       data-open={open ? '' : undefined}
       style={accentColor ? { '--sm-accent': accentColor } : undefined}
     >
-      {/* Background overlay */}
       <div
         className="sm-backdrop"
         onClick={closeMenu}
@@ -173,25 +182,34 @@ export const StaggeredMenu = ({
         aria-hidden={!open}
       >
         <div className="sm-panel-inner">
+          <div className="sm-panel-brand">
+            <span className="sm-panel-institution">SVKM's SBMP</span>
+            <span className="sm-panel-subtitle">Campus Mitra • AI Counseling Portal</span>
+          </div>
+
           <ul
             className="sm-panel-list"
             role="list"
             data-numbering={displayItemNumbering || undefined}
           >
             {items && items.length > 0 ? (
-              items.map((item, index) => (
-                <li className="sm-panel-itemWrap" key={item.label + index}>
-                  <a
-                    className="sm-panel-item"
-                    href={item.link}
-                    aria-label={item.ariaLabel}
-                    data-index={index + 1}
-                    onClick={(e) => handleItemClick(e, item)}
-                  >
-                    <span className="sm-panel-itemLabel">{item.label}</span>
-                  </a>
-                </li>
-              ))
+              items.map((item, index) => {
+                const active = isItemActive(item.link);
+                return (
+                  <li className="sm-panel-itemWrap" key={item.label + index}>
+                    <a
+                      className={`sm-panel-item ${active ? 'sm-panel-itemActive' : ''}`}
+                      href={item.link}
+                      aria-label={item.ariaLabel}
+                      aria-current={active ? 'page' : undefined}
+                      data-index={index + 1}
+                      onClick={(e) => handleItemClick(e, item)}
+                    >
+                      <span className="sm-panel-itemLabel">{item.label}</span>
+                    </a>
+                  </li>
+                );
+              })
             ) : (
               <li className="sm-panel-itemWrap" aria-hidden="true">
                 <span className="sm-panel-item">
@@ -203,7 +221,7 @@ export const StaggeredMenu = ({
 
           {displaySocials && socialItems && socialItems.length > 0 && (
             <div className="sm-socials" aria-label="Social links">
-              <h3 className="sm-socials-title">Socials</h3>
+              <h3 className="sm-socials-title">Portal Links</h3>
               <ul className="sm-socials-list" role="list">
                 {socialItems.map((social, index) => (
                   <li key={social.label + index} className="sm-socials-item">

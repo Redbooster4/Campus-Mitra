@@ -46,7 +46,7 @@ const MaskedHeading = ({
   const words = useMemo(() => String(text).split(/\s+/).filter(Boolean), [text]);
 
   const settingsRef = useRef({});
-  settingsRef.current = { fillScale, parallax, drift, brightness, saturation, grayscale, textScale };
+  settingsRef.current = { fillScale, parallax, drift, brightness, saturation, grayscale, textScale }; // eslint-disable-line react-hooks/refs
 
   const place = useCallback(() => {
     const root = rootRef.current;

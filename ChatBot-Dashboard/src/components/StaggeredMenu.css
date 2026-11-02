@@ -334,3 +334,45 @@
     font-size: 13px;
   }
 }
+
+
+/* ── Campus Mitra Portal Brand & Active State ── */
+.sm-panel-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+}
+
+.sm-panel-institution {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary, #ea580c);
+}
+
+.sm-panel-subtitle {
+  font-size: 0.78rem;
+  color: var(--muted, #78716c);
+}
+
+.sm-panel-itemActive {
+  color: var(--primary, #ea580c) !important;
+  font-weight: 700 !important;
+  transform: translateX(4px);
+}
+
+.sm-panel-itemActive::before {
+  content: "";
+  position: absolute;
+  left: -1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 60%;
+  border-radius: 999px;
+  background: var(--primary, #ea580c);
+}

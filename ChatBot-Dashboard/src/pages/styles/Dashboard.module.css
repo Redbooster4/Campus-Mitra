@@ -857,3 +857,464 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ── AI Hero Badge & Match Status Banner ── */
+.aiHeroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.matchStatusBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-soft-border);
+  color: var(--text);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.matchStatusIcon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Admin Workspace Tabs & Controls ── */
+.adminTabContainer {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.adminTabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  padding: 5px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.adminTabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.adminTabBtn:hover {
+  color: var(--text);
+  background: var(--card-hover);
+}
+
+.adminTabBtnActive {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.adminTabBtnActive:hover {
+  background: var(--primary-hover);
+  color: var(--primary-foreground);
+}
+
+.tabCountBadge {
+  font-size: 0.7rem;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+  font-weight: 700;
+}
+
+.adminTopActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Live System Health Bar ── */
+.systemHealthBar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 0.8rem;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.healthCluster {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.healthItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+.healthDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.healthDotAmber {
+  background: #f59e0b;
+  box-shadow: 0 0 6px #f59e0b;
+}
+
+/* ── Export Center ── */
+.exportSection {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.exportGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.exportCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  transition: all 0.25s ease;
+}
+
+.exportCard:hover {
+  border-color: var(--primary);
+  box-shadow: 0 6px 20px var(--primary-glow);
+  transform: translateY(-2px);
+}
+
+.exportCardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.exportCardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.exportCardMeta {
+  flex: 1;
+}
+
+.exportCardTitle {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.exportCardDesc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exportBtn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.exportBtnPrimary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.exportBtnPrimary:hover {
+  background: var(--primary-hover);
+}
+
+/* ── Inquiries & Callback Management Table ── */
+.tableContainer {
+  grid-column: 1 / -1;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tableToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.tableSearchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 12px;
+  flex: 1;
+  min-width: 260px;
+  max-width: 480px;
+}
+
+.tableSearchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: inherit;
+  width: 100%;
+}
+
+.tableFilters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tableSelect {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.tableScrollArea {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.inquiryTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.82rem;
+}
+
+.inquiryTable th {
+  background: var(--card-hover);
+  padding: 12px 14px;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.inquiryTable td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.inquiryTable tr:last-child td {
+  border-bottom: none;
+}
+
+.inquiryTable tr:hover td {
+  background: var(--card-hover);
+}
+
+.studentMetaCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.studentNameText {
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.studentContactText {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.queryTextWrap {
+  max-width: 320px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.statusSelectWrap {
+  display: inline-flex;
+}
+
+.statusDropdown {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+}
+
+.statusDropdownPending {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.statusDropdownResolved {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.statusDropdownEnrolled {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+.chartCardExportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chartCardExportBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.paginationControls {
+  display: flex;
+  gap: 6px;
+}
+
+.pageBtn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
